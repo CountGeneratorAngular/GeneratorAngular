@@ -299,7 +299,7 @@ if(doc[0].#foreach($url in $parent)#if(!$url.equals(${actualParent}))#set($indNi
 {id : req.params.${url}Id#else,"#foreach($urlIn in $parent)#set($indexIn = $foreach.count)#set($temp = $index - 1)#if($index > 0 && !$urlIn.equals($parent.get(0)) && ${indexIn} <= $index)${urlIn}.#end#if($indexIn.equals($parent.size()))#set($temp = $index - 1)id" : 	req.params.${parent.get($temp)}Id#end#end#end#end
         #end
         },
-        {$addToSet:{${item.get(1)}:{
+        {$addToSet:{"#foreach($urlIn in $parent)#if(!$urlIn.equals(${actualParent}))$urlIn.$.#end#end${item.get(1)}":{
         id:resulCount
 
 		}}},function (err, data) 
