@@ -174,10 +174,16 @@ app.get('/rest/#foreach($url in $parent)${url}/:${url}Id/#end${item.get(1)}', fu
 		  
 		  #end
     ).sort("id").exec(function(err, doc){
+    console.log("/////////")
+              console.log(doc[0])
             if(!err) {
-           
-           res.json(doc[0].#foreach($url in $parent)#if(!$url.equals(${actualParent}))#set($indNiveau = $foreach.count)${url}[req.params.${url}Id].#end#end#if(!$url.equals(${actualParent}))$item.get(1)#end[req.params.${item.get(1)}Id]);
-		     
+            #set($valueOfItem=${item.get(1)})
+            #set($valueactualParent=${actualParent})
+            #if($valueOfItem.equals($valueactualParent))
+            res.json(doc[0]);
+            #else
+         res.json(doc[0].#foreach($url in $parent)#if(!$url.equals(${actualParent}))#set($indNiveau = $foreach.count)${url}[req.params.${url}Id].#end#end#if(!$url.equals(${actualParent}))$item.get(1)#end[req.params.${item.get(1)}Id]);    
+		#end
 		 console.log("GET2:");
 		     }
             else
