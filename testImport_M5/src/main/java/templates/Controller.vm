@@ -61,7 +61,7 @@
               self.delete = function(id)                                     // Edition------------------------------
            {	
             ${EntityName}Factory
-            .delete({${EntityName}Id:id})
+            .delete({#if($Parent.size() > 0)#foreach($p in $Parent)#set($indexVirgule = $foreach.count)#if($indexVirgule > 1),#end${p}Id : ${d}routeParams.${p}Id#end,#end${EntityName}Id:id})
            .$promise
             .then(function() {
             $route.reload();  
@@ -78,8 +78,12 @@
         self.Redirect = function(aim){
         ${d}location.path("/index/${EntityName}/"+aim);
         }
+         self.Create = function(aim){
         
-        self.create = function(aim){
+         var res = ${d}location.path().substr(0,${d}location.path().length-8);
+         ${d}location.path(res+aim);
+        }
+         self.create = function(aim){
          var res = ${d}location.path().substr(0,${d}location.path().length-8);
          ${d}location.path(res+aim);
         
