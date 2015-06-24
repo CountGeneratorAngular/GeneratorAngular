@@ -149,8 +149,7 @@ var $item.get(1)Schema =  new Schema({
 		var ${actualParent}Builder = mongoose.model('${item.get(1)}',$item.get(1)Schema);
 		var sample$item.get(1) = new ${actualParent}Builder({});
 		#end
-		
-		app.get('/rest/#foreach($url in $parent)${url}/:${url}Id/#end${item.get(1)}', function(req,res)
+app.get('/rest/#foreach($url in $parent)${url}/:${url}Id/#end${item.get(1)}', function(req,res)
 		{
 		${actualParent}Builder.find(		#if($parent.size() == 0){#else#foreach($url in $parent)#set($index = $foreach.count)#if($index.equals(1)){id : req.params.${url}Id#else,"#foreach($urlIn in $parent)#set($indexIn = $foreach.count)#set($temp = $index - 1)#if($index > 0 && !$urlIn.equals($parent.get(0)) && ${indexIn} <= $index)${urlIn}.#end#if($indexIn.equals($parent.size()))#set($temp = $index - 1)id" : 	req.params.${parent.get($temp)}Id#end#end#if($index == $parent.size())
 
@@ -184,6 +183,7 @@ var $item.get(1)Schema =  new Schema({
         })
 		
 		});
+
 		#if($parent.size() == 0)
 		app.delete('/rest/#foreach($url in $parent)${url}/:${url}Id/#end${item.get(1)}/:${item.get(1)}Id', function(req, res)
 		{
