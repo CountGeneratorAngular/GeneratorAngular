@@ -159,9 +159,9 @@ app.get('/rest/#foreach($url in $parent)${url}/:${url}Id/#end${item.get(1)}', fu
 		#end}
 		, function(err, doc){
 		console.log("GET :${item.get(1)} : ");
-		console.log(doc#foreach($url in $parent)#if(!$url.equals($actualParent))[0].${url}#end#end#if(!$item.get(1).equals($actualParent))[0].${item.get(1)}#end);
-		   res.json(doc#foreach($url in $parent)#if(!$url.equals($actualParent))[0].${url}#end#end#if(!$item.get(1).equals($actualParent))[0].${item.get(1)}#end);
-		
+		console.log( res.json(doc[0]#if(${parent.size()}!=0).#foreach($url in $parent)#if(!$url.equals(${actualParent}))#set($indNiveau = $foreach.count)${url}[req.params.${url}Id].#end#end#if(!$url.equals(${actualParent}))$item.get(1)#end[req.params.${item.get(1)}Id]#end);    
+	    res.json(doc[0]#if(${parent.size()}!=0).#foreach($url in $parent)#if(!$url.equals(${actualParent}))#set($indNiveau = $foreach.count)${url}[req.params.${url}Id].#end#end#if(!$url.equals(${actualParent}))$item.get(1)#end[req.params.${item.get(1)}Id]#end);    
+	
 		});
 		});
 		#set($getActualParent=0)
@@ -366,5 +366,4 @@ if(doc[0].#foreach($url in $parent)#if(!$url.equals(${actualParent}))#set($indNi
 
 console.log("Server Lance sur localhost:9000/");
 //}
-
 
