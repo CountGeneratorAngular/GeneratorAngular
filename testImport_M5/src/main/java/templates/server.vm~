@@ -215,15 +215,13 @@ app.get('/rest/#foreach($url in $parent)${url}/:${url}Id/#end${item.get(1)}', fu
 		${actualParent}Builder.find(#foreach($url in $parent)#set($index = $foreach.count)#if($index.equals(1)){id : req.params.${url}Id#else,"#foreach($urlIn in $parent)#set($indexIn = $foreach.count)#set($temp = $index - 1)#if($index > 0 && !$urlIn.equals($parent.get(0)) && ${indexIn} <= $index)${urlIn}.#end#if($indexIn.equals($parent.size()))#set($temp = $index - 1)id":req.params.${parent.get($temp)}Id#end#end#end#end}
 		 , function(err, doc){
                     
-                    doc[0].${item.get(1)}.splice([req.params.questionId],1);
+                    doc[0].${item.get(1)}.splice([req.params.${item.get(1)}Id],1);
                     for (var i =0; i<doc[0].${item.get(1)}.length; i++)
                     {
                         doc[0].${item.get(1)}[i].id = i;
                     }
-                    ${actualParent}Builder.update({id:req.params.${item.get(1)}Id},
-                        {id:req.params.${item.get(1)}Id,
-                            Titre:doc[0].Titre,
-                            ${item.get(1)}:doc[0].${item.get(1)}}, function(err, doc)
+                    doc.save({},
+                        function(err, doc)
                         {
                             if(!err)
                             res.json("");
@@ -234,8 +232,6 @@ app.get('/rest/#foreach($url in $parent)${url}/:${url}Id/#end${item.get(1)}', fu
 		});
 		#end
 
-		
-		
 		#set($indNiveau=0)
 		 app.post('/rest/#foreach($url in $parent)#set($indNiveau = $foreach.count)${url}/:${url}Id/#end${item.get(1)}', function(req, res)
   {
