@@ -17,6 +17,7 @@ app.listen(9000);
 #set($entityToClose = [])
 #set($lastEntityDepth = 0)
 #set($entityNew = false)
+#set($Parser = 0)
 var mongoose = require('mongoose'), Schema = mongoose.Schema
 var mongoURI = "mongodb://localhost:27017/DBB";
 var MongoDB = mongoose.connect(mongoURI).connection;
@@ -34,11 +35,55 @@ console.log('connection error', err);
 db.once('open', function () {
 console.log('connected.');
 });
+#foreach( $entity in $entitiesReversal)
+#set($found = "false")
+#if($entity.get(0).equals("Entity"))
+#set($first = "true")
+#set($broke = "false")
+#foreach($item in $structure)
+#if($Parser.parseInt($item.get(4)) > 1)
+#if($entity.get(1).equals($item.get(1)))
+var $item.get(1)Schema =  new Schema({
+#set($DepthReversal = $item.get(4))
+#set($found = "true")
+#else
+#if($found.equals("true"))
+#if($item.get(0).equals("Entity") )
+#if($DepthReversal.equals($item.get(4)))
+});
+var ${entity.get(1)}Builder = mongoose.model('${entity.get(1)}',${entity.get(1)}Schema);
+#set($broke = "true")
+#break
+#else
+#set($tempInt = $Parser.parseInt($item.get(4)) - 1)
+#if($Parser.parseInt($DepthReversal).equals($tempInt))
+#if($first.equals("true"))#set($first="false")#else,#end
+"${item.get(1)}":[${item.get(1)}Schema]
+#end
+#end
+#else
+#if($DepthReversal.equals($item.get(4)))
+#if($first.equals("true"))#set($first="false")#else,#end
+"${item.get(1)}":"${item.get(2)}"	
+#end			
+#if($DepthReversal > $item.get(4))
+});
+var ${entity.get(1)}Builder = mongoose.model('${entity.get(1)}',${entity.get(1)}Schema);
+#set($broke = "true")
+#break
+#end
+#end
+#end
+#end	
+#end
+#end
+#if(!$broke.equals("true") && $Parser.parseInt($entity.get(4)) > 1)
+});
+var ${entity.get(1)}Builder = mongoose.model('${entity.get(1)}',${entity.get(1)}Schema);
+#end
+#end
 
-
-
-
-
+#end
 
 #set($memory = [])
 #set($oldDepth = 0)
@@ -146,39 +191,25 @@ var $item.get(1)Schema =  new Schema({
 		#set($ParentName=$item.get(1))
 		#if($depthInt.parseInt($item.get(4))==2)
 		#set($actualParent = $item.get(1))
-		var ${actualParent}Builder = mongoose.model('${item.get(1)}',$item.get(1)Schema);
 		var sample$item.get(1) = new ${actualParent}Builder({});
 		#end
 app.get('/rest/#foreach($url in $parent)${url}/:${url}Id/#end${item.get(1)}', function(req,res)
 		{
-		${actualParent}Builder.find(		#if($parent.size() == 0){#else#foreach($url in $parent)#set($index = $foreach.count)#if($index.equals(1)){id : req.params.${url}Id#else,"#foreach($urlIn in $parent)#set($indexIn = $foreach.count)#set($temp = $index - 1)#if($index > 0 && !$urlIn.equals($parent.get(0)) && ${indexIn} <= $index)${urlIn}.#end#if($indexIn.equals($parent.size()))#set($temp = $index - 1)id" : 	req.params.${parent.get($temp)}Id#end#end#if($index == $parent.size())
-
-		#end
-		#end
-		#end
-		#end}
+		${actualParent}Builder.find({id:req.params.${actualParent}Id}
 		, function(err, doc){
 		console.log("GET :${item.get(1)} : ");
-		console.log(doc#foreach($url in $parent)#if(!$url.equals($actualParent))[0].${url}#end#end#if(!$item.get(1).equals($actualParent))[0].${item.get(1)}#end);
-		   res.json(doc#foreach($url in $parent)#if(!$url.equals($actualParent))[0].${url}#end#end#if(!$item.get(1).equals($actualParent))[0].${item.get(1)}#end);
-		
+		console.log(doc[0]#if(${parent.size()}!=0).#foreach($url in $parent)#if(!$url.equals(${actualParent}))#set($indNiveau = $foreach.count)${url}[req.params.${url}Id].#end#end#if(!$url.equals(${actualParent}))$item.get(1)#end#end);
+		   res.json(doc[0]#if(${parent.size()}!=0).#foreach($url in $parent)#if(!$url.equals(${actualParent}))#set($indNiveau = $foreach.count)${url}[req.params.${url}Id].#end#end#if(!$url.equals(${actualParent}))$item.get(1)#end#end);
 		});
 		});
 		#set($getActualParent=0)
                 app.get('/rest/#foreach($url in $parent)#set($zzz=${item.get(1)})${url}/:${url}Id/#end${item.get(1)}/:${item.get(1)}Id', function(req,res)
 		{
-		${actualParent}Builder.find( 
-		#if($parent.size() == 0){id : req.params.${item.get(1)}Id#else#foreach($url in $parent)#set($index = $foreach.count)#if($index.equals(1)){id : req.params.${url}Id#else,"#foreach($urlIn in $parent)#set($indexIn = $foreach.count)#set($temp = $index - 1)#if($index > 0 && !$urlIn.equals($parent.get(0)) && ${indexIn} <= $index)${urlIn}.#end#if($indexIn.equals($parent.size()))#set($temp = $index - 1)id" : 	req.params.${parent.get($temp)}Id#end#end#if($index == $parent.size()),"#foreach($urlIn in $parent)#set($indexIn = $foreach.count)#set($temp = $index - 1)#if($index > 0 && !$urlIn.equals($parent.get(0)) && ${indexIn} <= $index)${urlIn}.#end#if($indexIn.equals($parent.size()))#set($temp = $index - 1)${item.get(1)}.id" :req.params.${item.get(1)}Id#end#end#end#end#end#end}
-		  #if(!$actualParent.equals(${item.get(1)}))
-		  
-		  #end
-    ).sort("id").exec(function(err, doc){
+		${actualParent}Builder.find({id:req.params.${actualParent}Id}).sort("id").exec(function(err, doc){
     console.log("/////////")
               console.log(doc[0])
-            if(!err) {
-         
+            if(!err) {   
          res.json(doc[0]#if(${parent.size()}!=0).#foreach($url in $parent)#if(!$url.equals(${actualParent}))#set($indNiveau = $foreach.count)${url}[req.params.${url}Id].#end#end#if(!$url.equals(${actualParent}))$item.get(1)#end[req.params.${item.get(1)}Id]#end);    
-	
 		 console.log("GET2:");
 		     }
             else
@@ -186,7 +217,6 @@ app.get('/rest/#foreach($url in $parent)${url}/:${url}Id/#end${item.get(1)}', fu
                 console.log(err);
             }
         })
-		
 		});
 
 		#if($parent.size() == 0)
@@ -236,13 +266,7 @@ app.get('/rest/#foreach($url in $parent)${url}/:${url}Id/#end${item.get(1)}', fu
 		 app.post('/rest/#foreach($url in $parent)#set($indNiveau = $foreach.count)${url}/:${url}Id/#end${item.get(1)}', function(req, res)
   {
    var resulCount;
-  ${actualParent}Builder.find(#if($parent.size() == 0){#else#foreach($url in $parent)#set($index = $foreach.count)#if($index.equals(1)){id : req.params.${url}Id#else,"#foreach($urlIn in $parent)#set($indexIn = $foreach.count)#set($temp = $index - 1)#if($index > 0 && !$urlIn.equals($parent.get(0)) && ${indexIn} <= $index)${urlIn}.#end#if($indexIn.equals($parent.size()))#set($temp = $index - 1)id" : 	req.params.${parent.get($temp)}Id#end#end#if($index == $parent.size())
-
-		#end
-		#end
-		#end
-		#end
-		} , function(err, doc){
+  ${actualParent}Builder.find({id: req.params.${actualParent}Id} , function(err, doc){
 		
 		if(doc[0])
 			if("${item.get(1)}" != "${actualParent}")
@@ -290,32 +314,17 @@ if(doc[0].#foreach($url in $parent)#if(!$url.equals(${actualParent}))#set($indNi
   #else
   //$indNiveau
  //Les autres niveaux
-  ${actualParent}Builder.update(
-        #if($parent.size() == 0)
-	        {id : req.params.${item.get(1)}Id
-	        #else
-	        #foreach($url in $parent)
-	        	#set($index = $foreach.count)
-	        	#if($index.equals(1))
-{id : req.params.${url}Id#else,"#foreach($urlIn in $parent)#set($indexIn = $foreach.count)#set($temp = $index - 1)#if($index > 0 && !$urlIn.equals($parent.get(0)) && ${indexIn} <= $index)${urlIn}.#end#if($indexIn.equals($parent.size()))#set($temp = $index - 1)id" : 	req.params.${parent.get($temp)}Id#end#end#end#end
-        #end
-        },
-        {$addToSet:{"#foreach($urlIn in $parent)#if(!$urlIn.equals(${actualParent}))$urlIn.$.#end#end${item.get(1)}":{
-        id:resulCount
-
-		}}},function (err, data) 
-			{
-		if (err){
-			 console.log(err);
-			 	}
-		else 
-				{
-				console.log('Created: $item.get(1)', data);
-				res.send("${item.get(1)} created:"+data);
-				}
-			}
-		  
-		)
+ 	var sample$item.get(1) =new $item.get(1)Builder();
+ 	sample${item.get(1)}.id = resulCount;
+	doc[0]#if(${parent.size()}!=0).#foreach($url in $parent)#if(!$url.equals(${actualParent}))#set($indNiveau = $foreach.count)${url}[req.params.${url}Id].#end#end#if(!$url.equals(${actualParent}))$item.get(1)#end#end.push(sample$item.get(1)) ;
+	doc[0].save({},
+                        function(err, doc)
+                        {
+                            if(!err)
+                            res.json("");
+                            else
+                            res.json(err);
+                        })
 		#end
   });
   });

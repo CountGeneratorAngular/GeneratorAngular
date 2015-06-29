@@ -13,6 +13,8 @@ import java.lang.reflect.Field;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 
 import objectsQcm.Attribute;
 import objectsQcm.Entity;
@@ -53,6 +55,7 @@ public class CreateController {
 		ArrayList<String[]> liste = new ArrayList<String[]>();
 		ArrayList<String[]> Entities = new ArrayList<String[]>();
 		ArrayList<String[]> Struct = new ArrayList<String[]>();
+		ArrayList<String[]> StructSorted = new ArrayList<String[]>();
 		ArrayList<String> External = new ArrayList<String>();
 		Entity globalDBB = new Entity("DBB",false);
 		
@@ -228,6 +231,7 @@ public class CreateController {
 
 		
 		Object[] StructObject = new Object[Struct.size()];
+		Object[] StructObjectSorted = new Object[Struct.size()];
 		Object[] ExtObject = new Object[External.size()];
 		Object[] ParentListObject = new Object[ParentList.size()];
 		
@@ -276,6 +280,29 @@ public class CreateController {
 		context.put("controller", "controller");
 		//context.put("EntitiesConstruct", EntitiesObject);
 		context.put("AppName", "Test");
+		System.out.println(Struct.get(0)[4]);
+		StructSorted=Struct;
+		
+		Collections.sort(StructSorted, new DepthComparator());
+
+		for(int i =0;i<StructSorted.size();i++)
+		{
+			StructObjectSorted[i]=StructSorted.get(i);
+			
+		}
+		
+		
+		for(int i=0;i<StructObjectSorted.length;i++)
+		{
+			System.out.println(StructObjectSorted[i]);
+			
+		}
+		
+		
+		
+		
+		
+		context.put("entitiesReversal", StructObjectSorted);
 		context.put("structure", StructObject);
 		context.put("external", ExtObject);
 		
@@ -300,6 +327,7 @@ public class CreateController {
 		Object[] EntityFirstLevelObject;
 		for(int k = 0; k<EntitiesList.size(); k++)
 		{
+			System.out.println(Struct.get(k)[4]);
 			getEntitiesAttributeFirstLevel(EntitiesList.get(k),listAttribute);
 			context.put("EntityName", listAttribute.get(0)[0]);
 			EntityFirstLevelObject = new Object[listAttribute.size()];
@@ -337,12 +365,6 @@ public class CreateController {
 
 		return "createObjet";
 	}
-	
-	
-	
-	
-	
-	
 	public static void getEntitiesAttribute(Entity e, ArrayList<String[]> listAttribute,ArrayList<String[]> Entities, String parent ){
 		ArrayList<String> EntityConstructor = new ArrayList<String>();
 		EntityConstructor.add(e.getName());
@@ -405,9 +427,6 @@ public class CreateController {
 			
 			getEntitiesAndType(tempEnt.get(j), Struct,External, depth);
 		}
-		
-		
-		
 	}
 	public static void createFile(Template temp, Context context, String name, String ext){
 		
