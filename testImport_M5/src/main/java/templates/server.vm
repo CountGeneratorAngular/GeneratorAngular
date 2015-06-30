@@ -85,85 +85,6 @@ var ${entity.get(1)}Builder = mongoose.model('${entity.get(1)}',${entity.get(1)}
 
 #end
 
-#set($memory = [])
-#set($oldDepth = 0)
-#set($memoryDepth = [])
-#set($first = "nope")
-#foreach($item in $structure)
-#set($Depth = $depthInt.parseInt($item.get(4)))
-#if($Depth > 1)
-#if($item.get(0).equals("Entity"))
-#if($Depth == 2)
-#if($foreach.count > 2)
-#set($distance = $memory.size() - 1)
-#foreach($range in [0..$distance]) 
-#set($lastMemInput = $memory.size() - 1)
-#set($tempRange = $distance - $range)
-#foreach($ran in [0..$tempRange])	#end${memory[$lastMemInput]}
-#set($action = $memory.remove($lastMemInput))
-#set($action = $memoryDepth.remove($lastMemInput))
-#end
-#end
-var $item.get(1)Schema =  new Schema({
-#set($action = $memory.add("});"))
-#set($action = $memoryDepth.add($Depth))	
-#else
-#if($oldDepth < $Depth)
-	
-#foreach($range in [0..$Depth])	#end#if($first.equals("false")),#else #set($first = "false")#{end}"$item.get(1)" : [{
-#set($action = $memory.add("}]"))	
-#set($action = $memoryDepth.add($Depth))		
-#else
-#if($oldDepth == $Depth)
-#set($lastMemInput = $memory.size() - 1)
-#if($lastMemInput>=0 && $memoryDepth[$lastMemInput] == $Depth)
-						
-#foreach($range in [0..$Depth])	#end${memory[$lastMemInput]}
-#set($action = $memory.remove($lastMemInput))
-#set($action = $memoryDepth.remove($lastMemInput))
-#end
-#foreach($range in [0..$Depth])	#end#if($first.equals("false")),#else #set($first = "false")#{end}"$item.get(1)" : [{
-#set($action = $memory.add("}]"))	
-#set($action = $memoryDepth.add($Depth))
-#set($countAccfermante=$countAccfermante+1)	
-#else
-#set($distance = $oldDepth - $Depth)
-#foreach($range in [0..$distance])
-#set($lastMemInput = $memory.size() - 1)
-
-#set($tempRange = $distance - $range)
-#foreach($ran in [0..$tempRange])	#end${memory[$lastMemInput]}
-#set($action = $memory.remove($lastMemInput))
-#set($action = $memoryDepth.remove($lastMemInput))
-#end
-#foreach($range in [0..$Depth])	#end#if($first.equals("false")),#else #set($first = "false")#{end}"$item.get(1)" : [{
-#set($action = $memory.add("}]"))	
-#set($action = $memoryDepth.add($Depth))
-#set($countAccfermante=$countAccfermante+1)
-#end
-#end
-#end
-#set($first = "true")
-#else
-
-#foreach($range in [0..$Depth])	#end#if($first.equals("false")),#else #set($first = "false")#end#if($item.get(3).equals("true"))"$item.get(1)" : "array"#else"$item.get(1)" : "$item.get(2)"#end	
-#end
-#end
-#set($oldDepth = $Depth)
-#end
-#set($distance = $memory.size() - 1)
-#foreach($range in [0..$distance]) 
-#set($lastMemInput = $memory.size() - 1)
-#set($tempRange = $distance - $range)
-#foreach($ran in [0..$tempRange])	#end${memory[$lastMemInput]}
-#set($action = $memory.remove($lastMemInput))
-#set($action = $memoryDepth.remove($lastMemInput))
-#end
-
-
-
-
-
 
 
 #set($oldDepth = 2) 
@@ -195,11 +116,11 @@ var $item.get(1)Schema =  new Schema({
 		#end
 app.get('/rest/#foreach($url in $parent)${url}/:${url}Id/#end${item.get(1)}', function(req,res)
 		{
-		${actualParent}Builder.find({id:req.params.${actualParent}Id}
-		, function(err, doc){
+		${actualParent}Builder.find(#if(!$item.get(1).equals(${actualParent})){id:req.params.${actualParent}Id},#end
+		 function(err, doc){
 		console.log("GET :${item.get(1)} : ");
-		console.log(doc[0]#if(${parent.size()}!=0).#foreach($url in $parent)#if(!$url.equals(${actualParent}))#set($indNiveau = $foreach.count)${url}[req.params.${url}Id].#end#end#if(!$url.equals(${actualParent}))$item.get(1)#end#end);
-		   res.json(doc[0]#if(${parent.size()}!=0).#foreach($url in $parent)#if(!$url.equals(${actualParent}))#set($indNiveau = $foreach.count)${url}[req.params.${url}Id].#end#end#if(!$url.equals(${actualParent}))$item.get(1)#end#end);
+		console.log(doc#if(!$item.get(1).equals(${actualParent}))[0]#end#if(${parent.size()}!=0).#foreach($url in $parent)#if(!$url.equals(${actualParent}))#set($indNiveau = $foreach.count)${url}[req.params.${url}Id].#end#end#if(!$url.equals(${actualParent}))$item.get(1)#end#end);
+		   res.json(doc#if(!$item.get(1).equals(${actualParent}))[0]#end#if(${parent.size()}!=0).#foreach($url in $parent)#if(!$url.equals(${actualParent}))#set($indNiveau = $foreach.count)${url}[req.params.${url}Id].#end#end#if(!$url.equals(${actualParent}))$item.get(1)#end#end);
 		});
 		});
 		#set($getActualParent=0)
@@ -222,7 +143,7 @@ app.get('/rest/#foreach($url in $parent)${url}/:${url}Id/#end${item.get(1)}', fu
 		#if($parent.size() == 0)
 		app.delete('/rest/#foreach($url in $parent)${url}/:${url}Id/#end${item.get(1)}/:${item.get(1)}Id', function(req, res)
 		{
-		${actualParent}Builder.remove(#if($parent.size() == 0){id : req.params.${item.get(1)}Id#else#foreach($url in $parent)#set($index = $foreach.count)#if($index.equals(1)){id : req.params.${url}Id#else,"#foreach($urlIn in $parent)#set($indexIn = $foreach.count)#set($temp = $index - 1)#if($index > 0 && !$urlIn.equals($parent.get(0)) && ${indexIn} <= $index)${urlIn}.#end#if($indexIn.equals($parent.size()))#set($temp = $index - 1)id" : 	req.params.${parent.get($temp)}Id#end#end#if($index == $parent.size()),"#foreach($urlIn in $parent)#set($indexIn = $foreach.count)#set($temp = $index - 1)#if($index > 0 && !$urlIn.equals($parent.get(0)) && ${indexIn} <= $index)${urlIn}.#end#if($indexIn.equals($parent.size()))#set($temp = $index - 1)${item.get(1)}Id" :req.params.${item.get(1)}Id#end#end#end#end#end#end}
+		${actualParent}Builder.remove({id:req.params.${actualParent}Id}
 		, function(err, doc){
 		        if (!err) {
             console.log('deleted');
@@ -242,13 +163,13 @@ app.get('/rest/#foreach($url in $parent)${url}/:${url}Id/#end${item.get(1)}', fu
 		#else
 				app.delete('/rest/#foreach($url in $parent)${url}/:${url}Id/#end${item.get(1)}/:${item.get(1)}Id', function(req, res)
 		{
-		${actualParent}Builder.find(#foreach($url in $parent)#set($index = $foreach.count)#if($index.equals(1)){id : req.params.${url}Id#else,"#foreach($urlIn in $parent)#set($indexIn = $foreach.count)#set($temp = $index - 1)#if($index > 0 && !$urlIn.equals($parent.get(0)) && ${indexIn} <= $index)${urlIn}.#end#if($indexIn.equals($parent.size()))#set($temp = $index - 1)id":req.params.${parent.get($temp)}Id#end#end#end#end}
+		${actualParent}Builder.find({id:req.params.${actualParent}Id}
 		 , function(err, doc){
                     
-                    doc[0]#if(${parent.size()}!=0).#foreach($url in $parent)#if(!$url.equals(${actualParent}))#set($indNiveau = $foreach.count)${url}[0].#end#end#if(!$url.equals(${actualParent}))$item.get(1)#end#end.splice([req.params.${item.get(1)}Id],1);
-                    for (var i =0; i<doc[0]#if(${parent.size()}!=0).#foreach($url in $parent)#if(!$url.equals(${actualParent}))#set($indNiveau = $foreach.count)${url}[0].#end#end#if(!$url.equals(${actualParent}))$item.get(1)#end#end.length; i++)
+                    doc[0]#if(${parent.size()}!=0).#foreach($url in $parent)#if(!$url.equals(${actualParent}))#set($indNiveau = $foreach.count)${url}[req.params.${url}Id].#end#end#if(!$url.equals(${actualParent}))$item.get(1)#end#end[req.params.${item.get(1)}Id].remove();
+                    for (var i =0; i<doc[0]#if(${parent.size()}!=0).#foreach($url in $parent)#if(!$url.equals(${actualParent}))#set($indNiveau = $foreach.count)${url}[req.params.${url}Id].#end#end#if(!$url.equals(${actualParent}))$item.get(1)#end#end.length; i++)
                     {
-                        doc[0]#if(${parent.size()}!=0).#foreach($url in $parent)#if(!$url.equals(${actualParent}))#set($indNiveau = $foreach.count)${url}[0].#end#end#if(!$url.equals(${actualParent}))$item.get(1)#end#end[i].id = i;
+                        doc[0]#if(${parent.size()}!=0).#foreach($url in $parent)#if(!$url.equals(${actualParent}))#set($indNiveau = $foreach.count)${url}[req.params.${url}Id].#end#end#if(!$url.equals(${actualParent}))$item.get(1)#end#end[i].id = i;
                     }
                     doc[0].save({},
                         function(err, doc)
@@ -266,7 +187,7 @@ app.get('/rest/#foreach($url in $parent)${url}/:${url}Id/#end${item.get(1)}', fu
 		 app.post('/rest/#foreach($url in $parent)#set($indNiveau = $foreach.count)${url}/:${url}Id/#end${item.get(1)}', function(req, res)
   {
    var resulCount;
-  ${actualParent}Builder.find({id: req.params.${actualParent}Id} , function(err, doc){
+  ${actualParent}Builder.find(#if(!$item.get(1).equals(${actualParent})){id: req.params.${actualParent}Id} , #{end}function(err, doc){
 		
 		if(doc[0])
 			if("${item.get(1)}" != "${actualParent}")
@@ -297,7 +218,7 @@ if(doc[0].#foreach($url in $parent)#if(!$url.equals(${actualParent}))#set($indNi
     #if(!$attribute.get(1).equals($item.get(1)))
      #if(!$first),#else #set($first = false) #end
     	 	#if($attribute.get(1).equals("id"))
-     	 ${attribute.get(1)}:resulCount++
+     	 ${attribute.get(1)}:resulCount
      	#else
      ${attribute.get(1)}:req.body.${attribute.get(1)}
      #end
