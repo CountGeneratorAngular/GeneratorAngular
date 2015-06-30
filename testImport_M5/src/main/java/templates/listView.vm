@@ -61,7 +61,7 @@ details: <input type="button" id="displayButton" value="Afficher" ng-click="${En
 		#set($sub = $att.get(0).length() - 2)
 				#if($sub > 0 && $att.get(0).substring($sub).equals("Id"))
 				#set($data = $att.get(0).substring(0,$sub))
-				{{${EntityName}.display${data}[item.id]}}		 
+				{{${EntityName}.display${data}[item.${data}Id].Nom}}		 
 				#else
 
 				#if($att.get(1).equals("Entity"))ENTITY#else{{item.${att.get(0)}}}#end
@@ -75,9 +75,9 @@ details: <input type="button" id="displayButton" value="Afficher" ng-click="${En
 	</div>	
 	</div>
 </div>
-#end
 <div class="resetFloat">
 <input type="button" value="new" ng-click="${EntityName}.create('createView')"/>
 <input type="button" value="new Vide" ng-click="${EntityName}.new()"/>
+#end
 </div>
 </div>

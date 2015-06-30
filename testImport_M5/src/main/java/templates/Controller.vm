@@ -36,15 +36,7 @@
 				#if($sub > 0 && $att.get(0).substring($sub).equals("Id"))
 				#set($data = $att.get(0).substring(0,$sub))
 				self.Externe.${att.get(0)} = sharedData.get('${data}');
-				tempClasse = sharedData.get('${data}');
-            self.display${data} = [];
-            		    for(var i = 0;i< self.${EntityName}Table.length;i++)
-            {
-
-						if(tempClasse[self.${EntityName}Table[i].${att.get(0)}])
-	            		self.display${data}[i] = tempClasse[self.${EntityName}Table[i].${att.get(0)}].Nom;
-
-            }
+				self.display${data} = sharedData.get('${data}');
             
             
 				#end
