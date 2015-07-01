@@ -88,7 +88,7 @@
        	self.Save = function()
        	{
 			   self.test = new ${EntityName}Factory();
-	           ${EntityName}Factory.get({${EntityName}Id:self.active})
+	           ${EntityName}Factory.get({#foreach($url in $Parent) ${url}Id: $routeParams.${url}Id, #end${EntityName}Id:self.active})
                 .${d}promise.then(function(data) {
 			            #foreach($item in $Attributes)
 			            	#if($item)
@@ -114,7 +114,7 @@
 			            			#end
 			            	#end
 			            #end	
-                        data.${d}save({${EntityName}Id: self.active}).then(function(){self.Redirect('listView')});;
+                        data.${d}save({#foreach($url in $Parent) ${url}Id: $routeParams.${url}Id, #end${EntityName}Id: self.active}).then(function(){self.Redirect('listView')});;
                         self.Redirect('listView')
                 }
             );
