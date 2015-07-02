@@ -93,7 +93,7 @@
                 <span class="glyphicon glyphicon-plus-sign"></span> Back</a>
         </div>
         <div class="col-sm-2">
-            <a id="Save" name="Save" class="btn btn-primary" ng-click="${EntityName}.new()">
+            <a id="Save" name="Save" class="btn btn-primary" ng-click="${EntityName}.Save()">
                 <span class="glyphicon glyphicon-plus-sign"></span>Save</a>
         </div>
     </div>
