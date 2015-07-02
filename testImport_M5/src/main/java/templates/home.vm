@@ -1,14 +1,14 @@
+    <h2>
+        <span class="glyphicon glyphicon-check"></span> Your application is running.
+    </h2>
+    <p>
+        <a target="_blank"
+           href="http://www.viseo.com/docs/index.html">Documentation</a>
+        | <a target="_blank"
+             href="https://twitter.com/viseotech">Get Excited!</a><br /> <a target="_blank" href="https://twitter.com/viseotech"><br />
+        VISEO Project</a> | <a target="_blank"
+                               href="https://community.viseo.org">User
+        Forums</a> | <a target="_blank"
+                        href="https://issues.viseo.org">Report an issue</a>
+    </p>
 
-<div>
-<h2>Sommaire</h2>
-<h3>aller a: <input type="text" /></h3> 
-<hr/>
-#foreach($item in $structure)
-	#if($item.get(0).equals("Entity") && $item.get(4) == 2)<br/>
-<div class="homeItem"><a href="#index/$item.get(1)/listView"><h4>$item.get(1)</h4></a> </div>
-
-
-	#end
-#end
-
-</div>

@@ -268,13 +268,15 @@ public class CreateController {
 		new File(System.getProperty("user.dir")+"/AngularNew/Src/View/").mkdir();
 		new File(System.getProperty("user.dir")+"/AngularNew/Src/Controller/").mkdir();
 		new File(System.getProperty("user.dir")+"/AngularNew/Js").mkdir();
+		new File(System.getProperty("user.dir")+"/AngularNew/img").mkdir();
 
 		
 		DuplicateFile(System.getProperty("user.dir")+"/angular.js",System.getProperty("user.dir")+"/AngularNew/Js/angular.js");
 		DuplicateFile(System.getProperty("user.dir")+"/angular-route.js",System.getProperty("user.dir")+"/AngularNew/Js/angular-route.js");
 		DuplicateFile(System.getProperty("user.dir")+"/angular-resource.js",System.getProperty("user.dir")+"/AngularNew/Js/angular-resource.js");
 		DuplicateFile(System.getProperty("user.dir")+"/checklist-model.js",System.getProperty("user.dir")+"/AngularNew/Js/checklist-model.js");
-
+		DuplicateFile(System.getProperty("user.dir")+"/splash-img.png",System.getProperty("user.dir")+"/AngularNew/img/splash-img.png");
+		
 		 //STEP 4: Create VelocityContext //
 		VelocityContext context = new VelocityContext();
 		context.put("controller", "controller");
@@ -323,7 +325,9 @@ public class CreateController {
 		Template templateListView = velocityEngine.getTemplate("/templates/listView.vm");
 		Template templateEditView = velocityEngine.getTemplate("/templates/editView.vm");
 		Template templateCreateView = velocityEngine.getTemplate("/templates/createView.vm");
-
+		Template TemplateNaviGatController = velocityEngine.getTemplate("/templates/NaviGatController.vm");
+		createFile(TemplateNaviGatController, context, "Src/Controller/NaviGatController", "js");
+		 
 		Object[] EntityFirstLevelObject;
 		for(int k = 0; k<EntitiesList.size(); k++)
 		{

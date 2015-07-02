@@ -161,7 +161,7 @@
 	  if (toSwitch.style.display != "block")
 	  {
 	  	toSwitch.style.display="block";
-	  	buttonSwitch.value="Cacher";
+	  	//buttonSwitch.value="Cacher";
 	  	}
 	  else
 	  {
