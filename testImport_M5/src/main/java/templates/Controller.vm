@@ -36,15 +36,7 @@
 				#if($sub > 0 && $att.get(0).substring($sub).equals("Id"))
 				#set($data = $att.get(0).substring(0,$sub))
 				self.Externe.${att.get(0)} = sharedData.get('${data}');
-				tempClasse = sharedData.get('${data}');
-            self.display${data} = [];
-            		    for(var i = 0;i< self.${EntityName}Table.length;i++)
-            {
-
-						if(tempClasse[self.${EntityName}Table[i].${att.get(0)}])
-	            		self.display${data}[i] = tempClasse[self.${EntityName}Table[i].${att.get(0)}].Nom;
-
-            }
+				self.display${data} = sharedData.get('${data}');
             
             
 				#end
@@ -96,7 +88,7 @@
        	self.Save = function()
        	{
 			   self.test = new ${EntityName}Factory();
-	           ${EntityName}Factory.get({${EntityName}Id:self.active})
+	           ${EntityName}Factory.get({#foreach($url in $Parent) ${url}Id: $routeParams.${url}Id, #end${EntityName}Id:self.active})
                 .${d}promise.then(function(data) {
 			            #foreach($item in $Attributes)
 			            	#if($item)
@@ -122,7 +114,7 @@
 			            			#end
 			            	#end
 			            #end	
-                        data.${d}save({${EntityName}Id: self.active}).then(function(){self.Redirect('listView')});;
+                        data.${d}save({#foreach($url in $Parent) ${url}Id: $routeParams.${url}Id, #end${EntityName}Id: self.active}).then(function(){self.Redirect('listView')});;
                         self.Redirect('listView')
                 }
             );
@@ -169,7 +161,7 @@
 	  if (toSwitch.style.display != "block")
 	  {
 	  	toSwitch.style.display="block";
-	  	buttonSwitch.value="Cacher";
+	  	//buttonSwitch.value="Cacher";
 	  	}
 	  else
 	  {

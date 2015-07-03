@@ -1,0 +1,9 @@
+app
+   .controller('LandingPageController', function LandingPageController() {
+  })
+  .controller('NaviGatController', function NaviGatController($scope, $location) {
+    $scope.matchesRoute = function(route) {
+        var path = $location.path();
+        return (path === ("/" + route) || path.indexOf("/" + route + "/") == 0);
+    };
+  });

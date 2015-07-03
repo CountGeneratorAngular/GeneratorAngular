@@ -17,6 +17,7 @@ app.listen(9000);
 #set($entityToClose = [])
 #set($lastEntityDepth = 0)
 #set($entityNew = false)
+#set($Parser = 0)
 var mongoose = require('mongoose'), Schema = mongoose.Schema
 var mongoURI = "mongodb://localhost:27017/DBB";
 var MongoDB = mongoose.connect(mongoURI).connection;
@@ -34,90 +35,55 @@ console.log('connection error', err);
 db.once('open', function () {
 console.log('connected.');
 });
-
-
-
-
-
-
-#set($memory = [])
-#set($oldDepth = 0)
-#set($memoryDepth = [])
-#set($first = "nope")
-#foreach($item in $structure)
-#set($Depth = $depthInt.parseInt($item.get(4)))
-#if($Depth > 1)
-#if($item.get(0).equals("Entity"))
-#if($Depth == 2)
-#if($foreach.count > 2)
-#set($distance = $memory.size() - 1)
-#foreach($range in [0..$distance]) 
-#set($lastMemInput = $memory.size() - 1)
-#set($tempRange = $distance - $range)
-#foreach($ran in [0..$tempRange])	#end${memory[$lastMemInput]}
-#set($action = $memory.remove($lastMemInput))
-#set($action = $memoryDepth.remove($lastMemInput))
-#end
-#end
-var $item.get(1)Schema =  new Schema({
-#set($action = $memory.add("});"))
-#set($action = $memoryDepth.add($Depth))	
-#else
-#if($oldDepth < $Depth)
-	
-#foreach($range in [0..$Depth])	#end#if($first.equals("false")),#else #set($first = "false")#{end}"$item.get(1)" : [{
-#set($action = $memory.add("}]"))	
-#set($action = $memoryDepth.add($Depth))		
-#else
-#if($oldDepth == $Depth)
-#set($lastMemInput = $memory.size() - 1)
-#if($lastMemInput>=0 && $memoryDepth[$lastMemInput] == $Depth)
-						
-#foreach($range in [0..$Depth])	#end${memory[$lastMemInput]}
-#set($action = $memory.remove($lastMemInput))
-#set($action = $memoryDepth.remove($lastMemInput))
-#end
-#foreach($range in [0..$Depth])	#end#if($first.equals("false")),#else #set($first = "false")#{end}"$item.get(1)" : [{
-#set($action = $memory.add("}]"))	
-#set($action = $memoryDepth.add($Depth))
-#set($countAccfermante=$countAccfermante+1)	
-#else
-#set($distance = $oldDepth - $Depth)
-#foreach($range in [0..$distance])
-#set($lastMemInput = $memory.size() - 1)
-
-#set($tempRange = $distance - $range)
-#foreach($ran in [0..$tempRange])	#end${memory[$lastMemInput]}
-#set($action = $memory.remove($lastMemInput))
-#set($action = $memoryDepth.remove($lastMemInput))
-#end
-#foreach($range in [0..$Depth])	#end#if($first.equals("false")),#else #set($first = "false")#{end}"$item.get(1)" : [{
-#set($action = $memory.add("}]"))	
-#set($action = $memoryDepth.add($Depth))
-#set($countAccfermante=$countAccfermante+1)
-#end
-#end
-#end
+#foreach( $entity in $entitiesReversal)
+#set($found = "false")
+#if($entity.get(0).equals("Entity"))
 #set($first = "true")
+#set($broke = "false")
+#foreach($item in $structure)
+#if($Parser.parseInt($item.get(4)) > 1)
+#if($entity.get(1).equals($item.get(1)))
+var $item.get(1)Schema =  new Schema({
+#set($DepthReversal = $item.get(4))
+#set($found = "true")
 #else
-
-#foreach($range in [0..$Depth])	#end#if($first.equals("false")),#else #set($first = "false")#end#if($item.get(3).equals("true"))"$item.get(1)" : "array"#else"$item.get(1)" : "$item.get(2)"#end	
+#if($found.equals("true"))
+#if($item.get(0).equals("Entity") )
+#if($DepthReversal.equals($item.get(4)))
+});
+var ${entity.get(1)}Builder = mongoose.model('${entity.get(1)}',${entity.get(1)}Schema);
+#set($broke = "true")
+#break
+#else
+#set($tempInt = $Parser.parseInt($item.get(4)) - 1)
+#if($Parser.parseInt($DepthReversal).equals($tempInt))
+#if($first.equals("true"))#set($first="false")#else,#end
+"${item.get(1)}":[${item.get(1)}Schema]
 #end
 #end
-#set($oldDepth = $Depth)
+#else
+#if($DepthReversal.equals($item.get(4)))
+#if($first.equals("true"))#set($first="false")#else,#end
+"${item.get(1)}":"${item.get(2)}"	
+#end			
+#if($DepthReversal > $item.get(4))
+});
+var ${entity.get(1)}Builder = mongoose.model('${entity.get(1)}',${entity.get(1)}Schema);
+#set($broke = "true")
+#break
 #end
-#set($distance = $memory.size() - 1)
-#foreach($range in [0..$distance]) 
-#set($lastMemInput = $memory.size() - 1)
-#set($tempRange = $distance - $range)
-#foreach($ran in [0..$tempRange])	#end${memory[$lastMemInput]}
-#set($action = $memory.remove($lastMemInput))
-#set($action = $memoryDepth.remove($lastMemInput))
+#end
+#end
+#end	
+#end
+#end
+#if(!$broke.equals("true") && $Parser.parseInt($entity.get(4)) > 1)
+});
+var ${entity.get(1)}Builder = mongoose.model('${entity.get(1)}',${entity.get(1)}Schema);
+#end
 #end
 
-
-
-
+#end
 
 
 
@@ -146,39 +112,25 @@ var $item.get(1)Schema =  new Schema({
 		#set($ParentName=$item.get(1))
 		#if($depthInt.parseInt($item.get(4))==2)
 		#set($actualParent = $item.get(1))
-		var ${actualParent}Builder = mongoose.model('${item.get(1)}',$item.get(1)Schema);
 		var sample$item.get(1) = new ${actualParent}Builder({});
 		#end
 app.get('/rest/#foreach($url in $parent)${url}/:${url}Id/#end${item.get(1)}', function(req,res)
 		{
-		${actualParent}Builder.find(		#if($parent.size() == 0){#else#foreach($url in $parent)#set($index = $foreach.count)#if($index.equals(1)){id : req.params.${url}Id#else,"#foreach($urlIn in $parent)#set($indexIn = $foreach.count)#set($temp = $index - 1)#if($index > 0 && !$urlIn.equals($parent.get(0)) && ${indexIn} <= $index)${urlIn}.#end#if($indexIn.equals($parent.size()))#set($temp = $index - 1)id" : 	req.params.${parent.get($temp)}Id#end#end#if($index == $parent.size())
-
-		#end
-		#end
-		#end
-		#end}
-		, function(err, doc){
+		${actualParent}Builder.find(#if(!$item.get(1).equals(${actualParent})){id:req.params.${actualParent}Id},#end
+		 function(err, doc){
 		console.log("GET :${item.get(1)} : ");
-		console.log(doc#foreach($url in $parent)#if(!$url.equals($actualParent))[0].${url}#end#end#if(!$item.get(1).equals($actualParent))[0].${item.get(1)}#end);
-		   res.json(doc#foreach($url in $parent)#if(!$url.equals($actualParent))[0].${url}#end#end#if(!$item.get(1).equals($actualParent))[0].${item.get(1)}#end);
-		
+		console.log(doc#if(!$item.get(1).equals(${actualParent}))[0]#end#if(${parent.size()}!=0).#foreach($url in $parent)#if(!$url.equals(${actualParent}))#set($indNiveau = $foreach.count)${url}[req.params.${url}Id].#end#end#if(!$url.equals(${actualParent}))$item.get(1)#end#end);
+		   res.json(doc#if(!$item.get(1).equals(${actualParent}))[0]#end#if(${parent.size()}!=0).#foreach($url in $parent)#if(!$url.equals(${actualParent}))#set($indNiveau = $foreach.count)${url}[req.params.${url}Id].#end#end#if(!$url.equals(${actualParent}))$item.get(1)#end#end);
 		});
 		});
 		#set($getActualParent=0)
                 app.get('/rest/#foreach($url in $parent)#set($zzz=${item.get(1)})${url}/:${url}Id/#end${item.get(1)}/:${item.get(1)}Id', function(req,res)
 		{
-		${actualParent}Builder.find( 
-		#if($parent.size() == 0){id : req.params.${item.get(1)}Id#else#foreach($url in $parent)#set($index = $foreach.count)#if($index.equals(1)){id : req.params.${url}Id#else,"#foreach($urlIn in $parent)#set($indexIn = $foreach.count)#set($temp = $index - 1)#if($index > 0 && !$urlIn.equals($parent.get(0)) && ${indexIn} <= $index)${urlIn}.#end#if($indexIn.equals($parent.size()))#set($temp = $index - 1)id" : 	req.params.${parent.get($temp)}Id#end#end#if($index == $parent.size()),"#foreach($urlIn in $parent)#set($indexIn = $foreach.count)#set($temp = $index - 1)#if($index > 0 && !$urlIn.equals($parent.get(0)) && ${indexIn} <= $index)${urlIn}.#end#if($indexIn.equals($parent.size()))#set($temp = $index - 1)${item.get(1)}.id" :req.params.${item.get(1)}Id#end#end#end#end#end#end}
-		  #if(!$actualParent.equals(${item.get(1)}))
-		  
-		  #end
-    ).sort("id").exec(function(err, doc){
+		${actualParent}Builder.find({id:req.params.${actualParent}Id}).sort("id").exec(function(err, doc){
     console.log("/////////")
               console.log(doc[0])
-            if(!err) {
-         
+            if(!err) {   
          res.json(doc[0]#if(${parent.size()}!=0).#foreach($url in $parent)#if(!$url.equals(${actualParent}))#set($indNiveau = $foreach.count)${url}[req.params.${url}Id].#end#end#if(!$url.equals(${actualParent}))$item.get(1)#end[req.params.${item.get(1)}Id]#end);    
-	
 		 console.log("GET2:");
 		     }
             else
@@ -186,13 +138,12 @@ app.get('/rest/#foreach($url in $parent)${url}/:${url}Id/#end${item.get(1)}', fu
                 console.log(err);
             }
         })
-		
 		});
 
 		#if($parent.size() == 0)
 		app.delete('/rest/#foreach($url in $parent)${url}/:${url}Id/#end${item.get(1)}/:${item.get(1)}Id', function(req, res)
 		{
-		${actualParent}Builder.remove(#if($parent.size() == 0){id : req.params.${item.get(1)}Id#else#foreach($url in $parent)#set($index = $foreach.count)#if($index.equals(1)){id : req.params.${url}Id#else,"#foreach($urlIn in $parent)#set($indexIn = $foreach.count)#set($temp = $index - 1)#if($index > 0 && !$urlIn.equals($parent.get(0)) && ${indexIn} <= $index)${urlIn}.#end#if($indexIn.equals($parent.size()))#set($temp = $index - 1)id" : 	req.params.${parent.get($temp)}Id#end#end#if($index == $parent.size()),"#foreach($urlIn in $parent)#set($indexIn = $foreach.count)#set($temp = $index - 1)#if($index > 0 && !$urlIn.equals($parent.get(0)) && ${indexIn} <= $index)${urlIn}.#end#if($indexIn.equals($parent.size()))#set($temp = $index - 1)${item.get(1)}Id" :req.params.${item.get(1)}Id#end#end#end#end#end#end}
+		${actualParent}Builder.remove({id:req.params.${actualParent}Id}
 		, function(err, doc){
 		        if (!err) {
             console.log('deleted');
@@ -212,13 +163,13 @@ app.get('/rest/#foreach($url in $parent)${url}/:${url}Id/#end${item.get(1)}', fu
 		#else
 				app.delete('/rest/#foreach($url in $parent)${url}/:${url}Id/#end${item.get(1)}/:${item.get(1)}Id', function(req, res)
 		{
-		${actualParent}Builder.find(#foreach($url in $parent)#set($index = $foreach.count)#if($index.equals(1)){id : req.params.${url}Id#else,"#foreach($urlIn in $parent)#set($indexIn = $foreach.count)#set($temp = $index - 1)#if($index > 0 && !$urlIn.equals($parent.get(0)) && ${indexIn} <= $index)${urlIn}.#end#if($indexIn.equals($parent.size()))#set($temp = $index - 1)id":req.params.${parent.get($temp)}Id#end#end#end#end}
+		${actualParent}Builder.find({id:req.params.${actualParent}Id}
 		 , function(err, doc){
                     
-                    doc[0]#if(${parent.size()}!=0).#foreach($url in $parent)#if(!$url.equals(${actualParent}))#set($indNiveau = $foreach.count)${url}[0].#end#end#if(!$url.equals(${actualParent}))$item.get(1)#end#end.splice([req.params.${item.get(1)}Id],1);
-                    for (var i =0; i<doc[0]#if(${parent.size()}!=0).#foreach($url in $parent)#if(!$url.equals(${actualParent}))#set($indNiveau = $foreach.count)${url}[0].#end#end#if(!$url.equals(${actualParent}))$item.get(1)#end#end.length; i++)
+                    doc[0]#if(${parent.size()}!=0).#foreach($url in $parent)#if(!$url.equals(${actualParent}))#set($indNiveau = $foreach.count)${url}[req.params.${url}Id].#end#end#if(!$url.equals(${actualParent}))$item.get(1)#end#end[req.params.${item.get(1)}Id].remove();
+                    for (var i =0; i<doc[0]#if(${parent.size()}!=0).#foreach($url in $parent)#if(!$url.equals(${actualParent}))#set($indNiveau = $foreach.count)${url}[req.params.${url}Id].#end#end#if(!$url.equals(${actualParent}))$item.get(1)#end#end.length; i++)
                     {
-                        doc[0]#if(${parent.size()}!=0).#foreach($url in $parent)#if(!$url.equals(${actualParent}))#set($indNiveau = $foreach.count)${url}[0].#end#end#if(!$url.equals(${actualParent}))$item.get(1)#end#end[i].id = i;
+                        doc[0]#if(${parent.size()}!=0).#foreach($url in $parent)#if(!$url.equals(${actualParent}))#set($indNiveau = $foreach.count)${url}[req.params.${url}Id].#end#end#if(!$url.equals(${actualParent}))$item.get(1)#end#end[i].id = i;
                     }
                     doc[0].save({},
                         function(err, doc)
@@ -236,13 +187,7 @@ app.get('/rest/#foreach($url in $parent)${url}/:${url}Id/#end${item.get(1)}', fu
 		 app.post('/rest/#foreach($url in $parent)#set($indNiveau = $foreach.count)${url}/:${url}Id/#end${item.get(1)}', function(req, res)
   {
    var resulCount;
-  ${actualParent}Builder.find(#if($parent.size() == 0){#else#foreach($url in $parent)#set($index = $foreach.count)#if($index.equals(1)){id : req.params.${url}Id#else,"#foreach($urlIn in $parent)#set($indexIn = $foreach.count)#set($temp = $index - 1)#if($index > 0 && !$urlIn.equals($parent.get(0)) && ${indexIn} <= $index)${urlIn}.#end#if($indexIn.equals($parent.size()))#set($temp = $index - 1)id" : 	req.params.${parent.get($temp)}Id#end#end#if($index == $parent.size())
-
-		#end
-		#end
-		#end
-		#end
-		} , function(err, doc){
+  ${actualParent}Builder.find(#if(!$item.get(1).equals(${actualParent})){id: req.params.${actualParent}Id} , #{end}function(err, doc){
 		
 		if(doc[0])
 			if("${item.get(1)}" != "${actualParent}")
@@ -273,7 +218,7 @@ if(doc[0].#foreach($url in $parent)#if(!$url.equals(${actualParent}))#set($indNi
     #if(!$attribute.get(1).equals($item.get(1)))
      #if(!$first),#else #set($first = false) #end
     	 	#if($attribute.get(1).equals("id"))
-     	 ${attribute.get(1)}:resulCount++
+     	 ${attribute.get(1)}:resulCount
      	#else
      ${attribute.get(1)}:req.body.${attribute.get(1)}
      #end
@@ -290,32 +235,17 @@ if(doc[0].#foreach($url in $parent)#if(!$url.equals(${actualParent}))#set($indNi
   #else
   //$indNiveau
  //Les autres niveaux
-  ${actualParent}Builder.update(
-        #if($parent.size() == 0)
-	        {id : req.params.${item.get(1)}Id
-	        #else
-	        #foreach($url in $parent)
-	        	#set($index = $foreach.count)
-	        	#if($index.equals(1))
-{id : req.params.${url}Id#else,"#foreach($urlIn in $parent)#set($indexIn = $foreach.count)#set($temp = $index - 1)#if($index > 0 && !$urlIn.equals($parent.get(0)) && ${indexIn} <= $index)${urlIn}.#end#if($indexIn.equals($parent.size()))#set($temp = $index - 1)id" : 	req.params.${parent.get($temp)}Id#end#end#end#end
-        #end
-        },
-        {$addToSet:{"#foreach($urlIn in $parent)#if(!$urlIn.equals(${actualParent}))$urlIn.$.#end#end${item.get(1)}":{
-        id:resulCount
-
-		}}},function (err, data) 
-			{
-		if (err){
-			 console.log(err);
-			 	}
-		else 
-				{
-				console.log('Created: $item.get(1)', data);
-				res.send("${item.get(1)} created:"+data);
-				}
-			}
-		  
-		)
+ 	var sample$item.get(1) =new $item.get(1)Builder();
+ 	sample${item.get(1)}.id = resulCount;
+	doc[0]#if(${parent.size()}!=0).#foreach($url in $parent)#if(!$url.equals(${actualParent}))#set($indNiveau = $foreach.count)${url}[req.params.${url}Id].#end#end#if(!$url.equals(${actualParent}))$item.get(1)#end#end.push(sample$item.get(1)) ;
+	doc[0].save({},
+                        function(err, doc)
+                        {
+                            if(!err)
+                            res.json("");
+                            else
+                            res.json(err);
+                        })
 		#end
   });
   });
@@ -324,9 +254,11 @@ if(doc[0].#foreach($url in $parent)#if(!$url.equals(${actualParent}))#set($indNi
 		//
 			app.post('/rest/#foreach($url in $parent)${url}/:${url}Id/#end${item.get(1)}/:${item.get(1)}Id', function(req, res)
 		{
+		#if($parent.size() == 0)
     	${actualParent}Builder.update(#if($parent.size() == 0){id : req.params.${item.get(1)}Id#else#foreach($url in $parent)#set($index = $foreach.count)#if($index.equals(1)){id : req.params.${url}Id#else,"#foreach($urlIn in $parent)#set($indexIn = $foreach.count)#set($temp = $index - 1)#if($index > 0 && !$urlIn.equals($parent.get(0)) && ${indexIn} <= $index)${urlIn}.#end#if($indexIn.equals($parent.size()))#set($temp = $index - 1)id" : 	req.params.${parent.get($temp)}Id#end#end#if($index == $parent.size()),"#foreach($urlIn in $parent)#set($indexIn = $foreach.count)#set($temp = $index - 1)#if($index > 0 && !$urlIn.equals($parent.get(0)) && ${indexIn} <= $index)${urlIn}.#end#if($indexIn.equals($parent.size()))#set($temp = $index - 1)${item.get(1)}Id" :req.params.${item.get(1)}Id#end#end#end#end#end#end}
 		,
         {
+        
 		#set($inside = false)
 		#foreach($attribute in $structure)
 			#if($attribute.get(1).equals($item.get(1)))
@@ -337,7 +269,7 @@ if(doc[0].#foreach($url in $parent)#if(!$url.equals(${actualParent}))#set($indNi
 					#set($inside = false)
 				#end
 			#end
-			#if($inside && $attribute.get(4) == 2 || ($inside && $attribute.get(4) == 3 && $attribute.get(0).equals("Entity")))
+			#if($inside && $attribute.get(4) == 2 )
 				#if(!$attribute.get(1).equals($item.get(1)))
 					#if(!$first),#else #set($first = false) #end
 					#if($attribute.get(1).equals("id"))
@@ -354,7 +286,44 @@ if(doc[0].#foreach($url in $parent)#if(!$url.equals(${actualParent}))#set($indNi
 		{console.log('Updated: $item.get(1)', data);
 		res.send("${item.get(1)} Updated:"+data);
 		}
-		});			
+		});	
+		#else
+			${actualParent}Builder.find(#if(!$item.get(1).equals(${actualParent})){id: req.params.${actualParent}Id} , #{end}function(err, doc){
+			
+			#set($inside = false)
+		#foreach($attribute in $structure)
+			#if($attribute.get(1).equals($item.get(1)))
+				#set($inside = true)
+				#set($first = true)
+			#else
+				#if($attribute.get(0).equals("Entity") && $attribute.get(4) == ($parent.size()+2))
+					#set($inside = false)
+				#end
+			#end
+			#if($inside && $attribute.get(4) == ($parent.size()+2) )
+				#if(!$attribute.get(1).equals($item.get(1)))
+					#if(!$first),#else #set($first = false) #end
+					#if($attribute.get(1).equals("id"))
+					doc[0]#if(${parent.size()}!=0).#foreach($url in $parent)#if(!$url.equals(${actualParent}))#set($indNiveau = $foreach.count)${url}[req.params.${url}Id].#end#end#if(!$url.equals(${actualParent}))${item.get(1)}[req.params.${item.get(1)}Id]#end#end.${attribute.get(1)}=req.params.${item.get(1)}Id
+					#else
+					doc[0]#if(${parent.size()}!=0).#foreach($url in $parent)#if(!$url.equals(${actualParent}))#set($indNiveau = $foreach.count)${url}[req.params.${url}Id].#end#end#if(!$url.equals(${actualParent}))${item.get(1)}[req.params.${item.get(1)}Id]#end#end.${attribute.get(1)}=req.body.${attribute.get(1)}
+					#end
+				#end
+			#end
+		#end
+			
+			
+            doc[0].save({},
+            function(err, doc)
+            {
+                if(!err)
+                res.json("");
+                else
+                res.json(err);
+            })
+			});
+
+		#end		
 		});	
 	#end
 #end

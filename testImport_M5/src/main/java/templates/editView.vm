@@ -1,49 +1,101 @@
 <div ng-controller="${EntityName}Controller as ${EntityName}">
 #set($d = "$")
 <h2>Edit :${EntityName}</h2>
-<h3>aller a: <input type="text" /></h3> 
+<div>
+    <h3>Search for ${EntityName}</h3>
+    <form id="EventSearch" class="form-horizontal">
+        <div class="form-group">
+            <label for="title" class="col-sm-2 control-label">Key Word:</label>
+            <div class="col-sm-10">
+                <input id="title" name="title" class="form-control" type="text" ng-model="search.title" placeholder="Enter the Event Title"/>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-md-offset-2 col-sm-10">
+                <a id="Search" name="Search" class="btn btn-primary" ng-click="performSearch()"><span class="glyphicon glyphicon-search"></span> Search</a>
+            </div>
+        </div>
+    </form>
+
+</div>
 <hr/>
 
 <div>
 </div>
 <h3>Liste d'attributs</h3>
 
-details: <input type="button" id="displayButton" value="Afficher" ng-click="${EntityName}.switch('displayTable','displayButton')">
+    <div class="col-md-offset-2 col-sm-2">
+        <a id="displayButton1" value="Afficher" ng-click="${EntityName}.switch('displayTable','displayButton')">
+            <span class="glyphicon glyphicon-plus-sign"></span> Filter</a>
+    </div>
+    
 <div id="displayTable">
-    <label ng-repeat="attributesSelected in ${EntityName}.selectionAll">
+   <label ng-repeat="attributesSelected in ${EntityName}.selectionAll">
         <input type="checkbox" checklist-model="${EntityName}.selection.selectionAll" checklist-value="attributesSelected" ng-click="${EntityName}.toggleSelection('attributesSelected')" > {{attributesSelected}}
     <br></label>
  <div>
-        <button ng-click="${EntityName}.checkAll()" style="margin-right: 10px">Check all</button>
-        <button ng-click="${EntityName}.uncheckAll()" style="margin-right: 10px">Uncheck all</button>
+     <div class="form-group">
+         <div class="col-md-offset-2 col-sm-2">
+             <a id="Create2" name="Create2" class="btn btn-primary" ng-click="${EntityName}.checkAll()">
+                 <span class="glyphicon glyphicon-plus-sign"></span>Check all</a>
+         </div>
+         <div class="col-sm-2">
+             <a id="Create3" name="Create3" class="btn btn-primary" ng-click="${EntityName}.uncheckAll()">
+                 <span class="glyphicon glyphicon-plus-sign"></span>Uncheck all</a>
+         </div>
+     </div>
 </div>
 </div>
-	<div id="displayEdit">
-	
+
+<hr/>
+
+	 <form id="EventSearch" class="form-horizontal">
+        <div class="form-group">
+        
 	#foreach($att in $Attributes)
 		#if($att.get(0).equals("id"))
-		<div class="itemEdit">${att.get(0)} :<br/>{{${EntityName}.active}}</div>
+		<label for="title" class="col-sm-2 control-label">${att.get(0)} :</label>
+		<div class="col-sm-10">
+		 <input id="title" name="title" class="form-control" type="text" value="{{${EntityName}.active}}" disabled/>
+		</div>
 		#else
 			#if($att && !$att.get(1).equals("Entity"))
 			#set($sub = $att.get(0).length() - 2)
 				#if($sub > 0 && $att.get(0).substring($sub).equals("Id"))
-				<div class="itemEdit" ng-if="${EntityName}.showFrom('${att.get(0)}')">${att.get(0)} : <select class="itemEdit"  ng-model="${EntityName}.${EntityName}Active.${att.get(0)}" ng-options="option.id as option.Nom for option in ${EntityName}.Externe.${att.get(0)}">
-
-					</select></div>	 
+				
+				<label for="title" class="col-sm-2 control-label" ng-if="${EntityName}.showFrom('${att.get(0)}')">${att.get(0)} : </label>
+				<div class="col-sm-10">
+				<select class="form-control" ng-model="${EntityName}.${EntityName}Active.${att.get(0)}" ng-options="option.id as option.Nom for option in ${EntityName}.Externe.${att.get(0)}">
+				</select></div>
 				#else
-					<div class="itemEdit" ng-if="${EntityName}.showFrom('${att.get(0)}')">${att.get(0)} : <input class="itemEdit" type="text"  ng-model="${EntityName}.${EntityName}Active.${att.get(0)}"  value="#if($att.get(1).equals("Entity"))FUTUR SELECT#else {{${EntityName}.${EntityName}Active.${att.get(0)}}}#end"/></div>
+					<label for="title" class="col-sm-2 control-label" ng-if="${EntityName}.showFrom('${att.get(0)}')">${att.get(0)} :</label>
+					 <div class="col-sm-10">
+					 <input class="form-control" type="text" ng-model="${EntityName}.${EntityName}Active.${att.get(0)}"  value="#if($att.get(1).equals("Entity"))FUTUR SELECT#else {{${EntityName}.${EntityName}Active.${att.get(0)}}}#end"/>
+				     </div>
 				#end
 			#else
 				#if($att)
-					<div class="itemEdit" ng-if="${EntityName}.showFrom('${att.get(0)}')">${att.get(0)} : <input class="itemEdit" type="button" ng-click="${EntityName}.goInto('${att.get(0)}/listView')" value="open"/></div>
+				<label for="title" class="col-sm-2 control-label" ng-if="${EntityName}.showFrom('${att.get(0)}')">${att.get(0)} :</label>
+				<div class="col-sm-10">
+		 		<input id="title" name="title" class="form-control" type="button" ng-click="${EntityName}.goInto('${att.get(0)}/listView')" value="open"/>
+			</div>
 				#end
 			#end
 		#end
 		<div class="resetFloat"></div>
 	#end
-	</div>
-
-<input type="button" value="Back" ng-click="${EntityName}.Redirect('listView')"/>
-<input type="button" value="Save" ng-click="${EntityName}.Save()"/>
-
+	<br>
+<div class="form-horizontal">
+    <div class="form-group">
+        <div class="col-md-offset-2 col-sm-2">
+            <a id="Back" name="Back" class="btn btn-primary" ng-click="${EntityName}.Redirect('listView')">
+                <span class="glyphicon glyphicon-plus-sign"></span> Back</a>
+        </div>
+        <div class="col-sm-2">
+            <a id="Save" name="Save" class="btn btn-primary" ng-click="${EntityName}.Save()">
+                <span class="glyphicon glyphicon-plus-sign"></span>Save</a>
+        </div>
+    </div>
+</div>
 </div>

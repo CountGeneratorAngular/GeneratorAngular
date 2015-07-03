@@ -2,12 +2,18 @@
 <html ng-app="${AppName}">
 <head>
     <meta charset="UTF-8">
+    <title>AngularJs Output</title>
+    <link href="styles/bootstrap.css" rel="stylesheet" media="screen">
+    <link href="styles/bootstrap-theme.css" rel="stylesheet" media="screen">
+    <link href="styles/main.css" rel="stylesheet" media="screen">
+</head>
     <!-- Vendors -->
     <link rel="stylesheet" href="Css/style.css">
     <script src="Js/angular.js" ></script>
     <script src="Js/angular-resource.js" ></script>
     <script src="Js/angular-route.js" ></script>
      <script src="Js/checklist-model.js" ></script>
+     
      
 	<script src="Src/app.js" ></script>
 	<script type="text/javascript" src="Src/Route/routing.js"></script>
@@ -16,13 +22,56 @@
 	<script type="text/javascript" src="Src/Controller/${fact}Controller.js"></script>
 	<script type="text/javascript" src="Src/Factory/${fact}Factory.js"></script>
 	#end
+	 <script type="text/javascript" src="Src/Controller/NaviGatController.js"></script>
 
 </head>
 <body>
-<header>
-<a href="#/index"><h1>Home</h1></a>
-<hr/>
-</header>
-<div class="ng-view"></div>
+<div id="wrap">
+<div class="navbar navbar-inverse navbar-fixed-top">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="offcanvas">
+                <span class="sr-only">AngularJs navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="#/index">Home</a>
+        </div>
+    </div>
+</div>
+<div class="container">
+    <div class="row row-offcanvas row-offcanvas-left">
+        <!-- sidebar -->
+        <div class="col-xs-6 col-sm-3 well sidebar-offcanvas">
+            <a href="index.html">
+                <img class="hidden-xs img-responsive" src="Src/img/splash-img.png" alt="VISEO Application"/>
+            </a>
+            <nav class="sidebar-nav" ng-controller="NaviGatController" role="navigation">
+                <div id="sidebar-entries" class="list-group">
+                #foreach($item in $structure)
+       				#if($item.get(0).equals("Entity") && $item.get(4) == 2)	
+                 <a class="list-group-item" ng-class="{active: matchesRoute('${item.get(1)}')}" href="#index/${item.get(1)}/listView" data-toggle="offcanvas">${item.get(1)}</a>
+               		#end
+                #end  
+                 </div>
+            </nav>
+        </div>
+        <!-- main area-->
+        <div class="col-sm-offset-1 col-xs-12 col-sm-8 well mainarea">
+            <div id="main" class="ng-view">
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+
+<div id="footer">
+    <div class="container">
+        <p>Powered by <a href="http://www.viseo.com">VISEO</a></p>
+        <p>Annee: 2015</p>
+    </div>
+</div>
 </body>
+
 </html>
