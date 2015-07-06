@@ -1,0 +1,8 @@
+<div>
+|----
+#foreach($p in $Parent)#set($index = $foreach.count)#if($index != 1) >#else #set($firstParent = $p)#end<a href="#/index/#foreach($pIn in $Parent)#set($indexIn = $foreach.count)#if($indexIn <= $index)$pIn/#if($indexIn == 1)#if($Parent.size() > 1 && $index > 1){{${EntityName}.paramId.${firstParent}Id}}/#end#else#if($indexIn < $index){{${EntityName}.paramId.${pIn}Id}}/#end#end#end#{end}listView">$p</a> #end
+
+----|
+
+
+</div>

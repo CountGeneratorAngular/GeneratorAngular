@@ -7,6 +7,8 @@
         var self = this;
         self.saving="";
         self.hidden = [];
+        self.paramId = $routeParams;
+        console.log(self.paramId.VoitureId);
 		
         
         if($routeParams.${EntityName}Id)
