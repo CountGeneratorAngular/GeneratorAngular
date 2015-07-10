@@ -325,9 +325,14 @@ public class CreateController {
 		Template templateListView = velocityEngine.getTemplate("/templates/listView.vm");
 		Template templateEditView = velocityEngine.getTemplate("/templates/editView.vm");
 		Template templateCreateView = velocityEngine.getTemplate("/templates/createView.vm");
+		Template templateLogin = velocityEngine.getTemplate("/templates/authentification.vm");
+		Template templateLoginController = velocityEngine.getTemplate("/templates/LogsController.vm");
+		Template templateLoginFactory = velocityEngine.getTemplate("/templates/logsFactory.vm");
 		Template TemplateNaviGatController = velocityEngine.getTemplate("/templates/NaviGatController.vm");
 		createFile(TemplateNaviGatController, context, "Src/Controller/NaviGatController", "js");
-		 
+		createFile(templateLoginController, context, "Src/Controller/logsController", "js");
+		createFile(templateLogin, context, "Src/View/logsController", "html");
+		createFile(templateLoginFactory, context, "Src/Factory/logsFactory", "js");
 		Object[] EntityFirstLevelObject;
 		for(int k = 0; k<EntitiesList.size(); k++)
 		{
@@ -341,9 +346,21 @@ public class CreateController {
 			} 
 			context.put("Attributes", EntityFirstLevelObject);
 			context.put("Parent", ParentList.get(k));
-			createFile(templateFactory, context, "Src/Factory/"+listAttribute.get(0)[0]+"Factory", "js");	
+			createFile(templateFactory, context, "Src/Factory/"+listAttribute.get(0)[0]+"Factory", "js");
+			
+			context.put("EditChoice", "Options");
+			context.put("DisplayChoice", "list");
+			
 			createFile(templateListView, context, "Src/View/"+listAttribute.get(0)[0]+"ListView", "html");	
+			
+			
+			
+			
 			createFile(templateEditView, context, "Src/View/"+listAttribute.get(0)[0]+"EditView", "html");	
+			
+			
+			
+			
 			createFile(templateCreateView, context, "Src/View/"+listAttribute.get(0)[0]+"CreateView", "html");
 			factoryList.add(listAttribute.get(0)[0]);
 			Template TemplateController = velocityEngine.getTemplate("/templates/Controller.vm");

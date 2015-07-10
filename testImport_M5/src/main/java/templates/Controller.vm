@@ -5,12 +5,14 @@
 		  app
     .controller('${EntityName}Controller', ['$scope','$http','${EntityName}Factory','$routeParams','sharedData','$location','$route',  function($scope, $http,${EntityName}Factory,$routeParams,sharedData, $location,$route, loaded  ) {
         var self = this;
+        
+        self.logged = sharedData.get('loggedAs');
+        
         self.saving="";
         self.hidden = [];
         self.paramId = $routeParams;
-        console.log(self.paramId.VoitureId);
-		
-        
+		self.selectedEntity = "";
+        self.EditOptionView = false;
         if($routeParams.${EntityName}Id)
         {
         self.active = $routeParams.${EntityName}Id;
@@ -66,8 +68,12 @@
  			};
  			
         self.goInto = function(aim){
+        #if($EditChoice.equals("Options"))
+        var res = ${d}location.path().substr(0,${d}location.path().length-8);
+        #else
         var res = ${d}location.path().substr(0,${d}location.path().length-4);
-         ${d}location.path(res+aim);
+        #end
+        ${d}location.path(res+aim);
         }
         self.Redirect = function(aim){
         ${d}location.path("/index/${EntityName}/"+aim);
@@ -85,12 +91,31 @@
         self.edit = function(aim){
         
          var res = ${d}location.path().substr(0,${d}location.path().length-8);
-         ${d}location.path(res+aim);
+         if("${EditChoice}" == "Options")
+         {
+         	var tempo = sharedData.get('${EntityName}');
+         	self.${EntityName}ActiveOption =  angular.copy(tempo[self.selectedEntityId]);
+         	self.EditOptionView = true;
+         	console.log(self.${EntityName}Active);
+         }
+         else
+         {
+         ${d}location.path(res+aim+"/Edit");
+         }
+         
         }
+        self.select = function(aim){
+        self.selectedEntity = aim;
+        self.selectedEntityId = self.selectedEntity.split("/")[0];
+        console.log(self.selectedEntityId);
+        }
+
+        
+        
        	self.Save = function()
        	{
 			   self.test = new ${EntityName}Factory();
-	           ${EntityName}Factory.get({#foreach($url in $Parent) ${url}Id: $routeParams.${url}Id, #end${EntityName}Id:self.active})
+	           ${EntityName}Factory.get({#foreach($url in $Parent) ${url}Id: $routeParams.${url}Id, #end${EntityName}Id:#if(!$EditChoice.equals("Options"))self.active#else self.${EntityName}ActiveOption.id#end})
                 .${d}promise.then(function(data) {
 			            #foreach($item in $Attributes)
 			            	#if($item)
@@ -111,13 +136,18 @@
 			            		 			data.$item.get(0)= "array";
 			            				#else	
 			            					#set($sub = $item.get(0).length() - 2)
-			            		 				data.$item.get(0)= self.${EntityName}Active.${item.get(0)};
+			            					    #if($EditChoice == "Options")
+			            		 				data.$item.get(0)= self.${EntityName}ActiveOption.${item.get(0)};
+			            		 				#else			            		 				
+			            		 				data.$item.get(0)= self.${EntityName}Active.${item.get(0)};			            		 				
+			            		 				#end
 			            		 		#end
 			            			#end
 			            	#end
 			            #end	
-                        data.${d}save({#foreach($url in $Parent) ${url}Id: $routeParams.${url}Id, #end${EntityName}Id: self.active}).then(function(){self.Redirect('listView')});;
-                        self.Redirect('listView')
+                        data.${d}save({#foreach($url in $Parent) ${url}Id: $routeParams.${url}Id, #end${EntityName}Id: #if(!$EditChoice.equals("Options"))self.active#else self.${EntityName}ActiveOption.id#end}).then(function(){self.Redirect('listView')});
+                        localStorage.setItem("Saved", "true");
+                        $route.reload();
                 }
             );
 	
@@ -168,7 +198,7 @@
 	  else
 	  {
 	  	toSwitch.style.display="none";
-	  		buttonSwitch.value="Afficher";
+	  		
 	  		}
 	  
 	  }
@@ -225,7 +255,7 @@
         };
          self.selectionAll=$nameAttributes;
          self.selection={selectionAll: $nameAttributesRef};
-  
+  		 
                 self.checkAll = function() {
                       self.selection.selectionAll=[];
                       self.selection.selectionAll = angular.copy(self.selectionAll);
@@ -243,6 +273,7 @@
                        else {
                            self.selection.selectionAll.push(qcmName)
                        }
+                       localStorage.setItem($location.url(),self.selection.selectionAll);
                    };
                    self.showFrom = function(variable) {
                        for(var i=0; i<self.selection.selectionAll.length;i++)
@@ -250,12 +281,15 @@
                            if(self.selection.selectionAll[i]==variable)
                            {
                                return true;
+                               alert("ok");
                            }
                        }
                        return false
                    };
                    
+					if(localStorage.getItem($location.url()))
+                   self.selection.selectionAll = angular.copy(localStorage.getItem($location.url()).split(","));
+                   else
                    self.checkAll();
-                    
     }])
     

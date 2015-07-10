@@ -35,6 +35,17 @@ console.log('connection error', err);
 db.once('open', function () {
 console.log('connected.');
 });
+var userSchema = new Schema({
+    Login:String,
+    Password:String
+});
+var userDBB = mongoose.model('user',userSchema);
+
+
+
+
+
+
 #foreach( $entity in $entitiesReversal)
 #set($found = "false")
 #if($entity.get(0).equals("Entity"))
@@ -327,7 +338,50 @@ if(doc[0].#foreach($url in $parent)#if(!$url.equals(${actualParent}))#set($indNi
 		});	
 	#end
 #end
+app.post('/rest/user', function(req,res)
+{
+    userDBB.create(
+        {
+            Login: req.body.Login,
+            Password: req.body.Password,
+        },
+        function (err, doc) {
 
+            if (!err)
+            {
+                console.log("User has been created");
+                res.json(doc);
+
+            }
+            else
+            {
+                console.log(err);
+            }
+        }
+    );
+
+})
+		app.post('/rest/userLogin', function(req,res)
+		{
+		userDBB.find({Login:req.body.Login, Password:req.body.Password},function(err, doc){
+		console.log(doc);
+		   res.json(doc);
+		});
+		});
+		app.get('/rest/user', function(req,res)
+		{
+		userDBB.find(function(err, doc){
+		console.log(doc);
+		   res.json(doc);
+		});
+		});
+		app.get('/rest/user/:userId', function(req,res)
+		{
+		userDBB.find({login:req.params.userId},function(err, doc){
+		console.log(doc);
+		   res.json(doc);
+		});
+		});
 
 console.log("Server Lance sur localhost:9000/");
 //}

@@ -1,0 +1,19 @@
+<div class="form-horizontal">
+    <h3>Actions for ${EntityName}</h3>
+    <div class="form-group">
+        <div class="col-md-offset-18 col-sm-3 action_Button">
+            <a id="Create" name="Create" class="btn btn-primary" ng-click="${EntityName}.create('createView')">
+                <span class="glyphicon glyphicon-plus-sign"></span> Create</a>
+        </div>
+
+        <div class="col-sm-3 action_Button">
+            <a id="Create1" name="Create1" class="btn btn-primary" ng-click="${EntityName}.new()">
+                <span class="glyphicon glyphicon-plus-sign"></span> Create Vide</a>
+        </div>
+        <div class="col-sm-3 action_Button">
+            <a id="Create" name="Edit" class="btn btn-primary" ng-click="${EntityName}.edit(${EntityName}.selectedEntity)">
+                <span class="glyphicon glyphicon-plus-sign"></span>Edit Selected</a>
+        </div>
+    </div>
+    #parse("/templates/entityEdit.vm")
+</div>

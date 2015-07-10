@@ -23,7 +23,8 @@
 	<script type="text/javascript" src="Src/Factory/${fact}Factory.js"></script>
 	#end
 	 <script type="text/javascript" src="Src/Controller/NaviGatController.js"></script>
-
+	 <script type="text/javascript" src="Src/Controller/logsController.js"></script>
+	 <script type="text/javascript" src="Src/Factory/logsFactory.js"></script>
 </head>
 <body>
 <div id="wrap">
@@ -37,9 +38,14 @@
                 <span class="icon-bar"></span>
             </button>
             <a class="navbar-brand" href="#/index">Home</a>
+            <a ng-if="ctrl.logged != ''" class="navbar-brand" href="#/index/login">login</a>
+            
+            
+            <a class="navbar-brand" href="#/index/logout">logout</a>
         </div>
     </div>
 </div>
+
 <div class="container">
     <div class="row row-offcanvas row-offcanvas-left">
         <!-- sidebar -->

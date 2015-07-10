@@ -1,0 +1,43 @@
+<table class="table table-responsive table-bordered table-striped clearfix">
+                <thead>
+                <tr>
+		#foreach($att in $Attributes)
+			#if($att)
+			#set($idAtt = $foreach.count)
+			<th ng-if="${EntityName}.showFrom('${att.get(0)}')">${att.get(0)}</th>
+			#end 
+		#end
+		 <th>Delete</th>
+	</tr>
+	</thead>
+                <tbody id="search-results-body">
+     <tr ng-repeat="item in ${EntityName}.${EntityName}Table | orderBy : 'id'" ng-if="item.id>=0">
+	#foreach($att in $Attributes)
+		#if($att)
+		#set($idAtt = $foreach.count)
+		#set($sub = $att.get(0).length() - 3)
+		#if($sub > 0 && $att.get(0).substring($sub).equals("Agr"))
+		#set($data = $att.get(0).substring(0,$sub))
+		
+		<td ng-click="${EntityName}.edit(item.id+'/${att.get(0)}/listView')" ng-if="${EntityName}.showFrom('${att.get(0)}')">
+			<input type="button" value="show List">
+			</td>
+	#else
+		<td ng-click="${EntityName}.edit(item.id+'/Edit')" ng-if="${EntityName}.showFrom('${att.get(0)}')">
+		#set($sub = $att.get(0).length() - 2)
+				#if($sub > 0 && $att.get(0).substring($sub).equals("Id"))
+				#set($data = $att.get(0).substring(0,$sub))
+				{{${EntityName}.display${data}[item.${data}Id].Nom}}	 
+				#else
+
+				#if($att.get(1).equals("Entity"))ENTITY#else{{item.${att.get(0)}}}#end
+				#end
+				</td>
+		#end
+		
+		#end
+	#end
+	<td class="deleteButton"><input  type="button" value="X" ng-click="${EntityName}.delete(item.id)"/></td>
+	 </tr>
+                </tbody>
+            </table>

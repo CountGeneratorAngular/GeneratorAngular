@@ -3,7 +3,12 @@ app
 	.config(["$routeProvider", function($routeProvider){
 	        $routeProvider
             .when("/index",{
-                templateUrl:"./Src/View/home.html"
+                templateUrl:"./Src/View/home.html",
+                controller:'logsController as ctrl'
+            })
+                        .when("/index/login",{
+                templateUrl:"./Src/View/logsController.html",
+                controller:'logsController as ctrl'
             })
 #set($parent = [])   
 #set($oldDepth = 2) 
