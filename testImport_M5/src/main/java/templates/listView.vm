@@ -1,9 +1,9 @@
+<a ng-if="test" >Logged as : {{test}}</a>
 <div ng-controller="${EntityName}Controller as ${EntityName}">
 #set($d = "$")
 #parse("/templates/entityCreateOptions.vm")
 <hr/>
 <div>
-
 <div>
     <h3>Search for ${EntityName}</h3>
     <form id="EventSearch" class="form-horizontal">

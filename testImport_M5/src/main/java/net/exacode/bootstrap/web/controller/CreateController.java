@@ -318,7 +318,8 @@ public class CreateController {
 
 		Template templateSharedData = velocityEngine.getTemplate("/templates/sharedData.vm");
 		createFile(templateSharedData, context, "Src/Service/sharedData", "js");
-
+		Template templateIndexController = velocityEngine.getTemplate("/templates/indexController.vm");
+		
 		Template templateHome = velocityEngine.getTemplate("/templates/home.vm");
 		createFile(templateHome, context, "Src/View/home", "html");
 		Template templateFactory = velocityEngine.getTemplate("/templates/Factory.vm");
@@ -331,6 +332,7 @@ public class CreateController {
 		Template TemplateNaviGatController = velocityEngine.getTemplate("/templates/NaviGatController.vm");
 		createFile(TemplateNaviGatController, context, "Src/Controller/NaviGatController", "js");
 		createFile(templateLoginController, context, "Src/Controller/logsController", "js");
+		createFile(templateIndexController, context, "Src/Controller/indexController", "js");
 		createFile(templateLogin, context, "Src/View/logsController", "html");
 		createFile(templateLoginFactory, context, "Src/Factory/logsFactory", "js");
 		Object[] EntityFirstLevelObject;

@@ -7,7 +7,8 @@
         var self = this;
         
         self.logged = sharedData.get('loggedAs');
-        
+        console.log(self.logged);
+		$scope.test = self.logged;
         self.saving="";
         self.hidden = [];
         self.paramId = $routeParams;
@@ -51,7 +52,7 @@
             
             
             
-            console.log(self.${EntityName}Table);
+
             sharedData.store('${EntityName}', self.${EntityName}Table);
                 
               self.delete = function(id)                                     // Edition------------------------------
@@ -273,6 +274,9 @@
                        else {
                            self.selection.selectionAll.push(qcmName)
                        }
+                       if(self.logged)
+                       localStorage.setItem($location.url()+self.logged,self.selection.selectionAll);
+                       else
                        localStorage.setItem($location.url(),self.selection.selectionAll);
                    };
                    self.showFrom = function(variable) {
@@ -287,9 +291,13 @@
                        return false
                    };
                    
-					if(localStorage.getItem($location.url()))
-                   self.selection.selectionAll = angular.copy(localStorage.getItem($location.url()).split(","));
+					if(localStorage.getItem($location.url()+self.logged))
+                   self.selection.selectionAll = angular.copy(localStorage.getItem($location.url()+self.logged).split(","));
                    else
+                   if(localStorage.getItem($location.url()))
+                      self.selection.selectionAll = angular.copy(localStorage.getItem($location.url()).split(","));
+                   else
+                   
                    self.checkAll();
     }])
     

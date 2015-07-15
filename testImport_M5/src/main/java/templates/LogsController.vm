@@ -1,12 +1,14 @@
 		  app
     .controller('logsController', ['$scope','$http','$routeParams','logsFactory','sharedData','$location','$route',  function($scope, $http,$routeParams,logsFactory,sharedData, $location,$route, loaded  ) {
+        #set($d = "$")
         var self = this;
  		self.logged = sharedData.get('loggedAs');
  		console.log(self.logged);
+         $scope.test = self.logged;
         self.login = function(){
         var user = {Login : self.userLogin, Password:self.userPassword};
         $http.post("./rest/userLogin",user)
-        .success(function(data, status, headers, config){if(data.length>0) alert("OK");sharedData.store('loggedAs',data[0].Login);});
+        .success(function(data, status, headers, config){if(data.length>0) alert("OK");sharedData.store('loggedAs',data[0].Login);${d}location.path("/index");});
         
         
         }
@@ -19,7 +21,8 @@
         
         }
         self.logout = function(){
-        sharedData.store('loggedAs',"");
+        sharedData.remove('loggedAs');
+        
         }
  
  

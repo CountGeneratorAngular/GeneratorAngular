@@ -1,3 +1,4 @@
+<a ng-if="test" >Logged as : {{test}}</a>
     <h2>
         <span class="glyphicon glyphicon-check"></span> Your application is running.
     </h2>

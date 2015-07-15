@@ -12,9 +12,7 @@
     <script src="Js/angular.js" ></script>
     <script src="Js/angular-resource.js" ></script>
     <script src="Js/angular-route.js" ></script>
-     <script src="Js/checklist-model.js" ></script>
-     
-     
+     <script src="Js/checklist-model.js" ></script> 
 	<script src="Src/app.js" ></script>
 	<script type="text/javascript" src="Src/Route/routing.js"></script>
 	<script type="text/javascript" src="Src/Service/sharedData.js"></script>
@@ -24,10 +22,11 @@
 	#end
 	 <script type="text/javascript" src="Src/Controller/NaviGatController.js"></script>
 	 <script type="text/javascript" src="Src/Controller/logsController.js"></script>
+	 <script type="text/javascript" src="Src/Controller/indexController.js"></script>
 	 <script type="text/javascript" src="Src/Factory/logsFactory.js"></script>
 </head>
 <body>
-<div id="wrap">
+<div id="wrap" ng-controller="logsController as index">
 <div class="navbar navbar-inverse navbar-fixed-top">
     <div class="container">
         <div class="navbar-header">
@@ -38,19 +37,18 @@
                 <span class="icon-bar"></span>
             </button>
             <a class="navbar-brand" href="#/index">Home</a>
-            <a ng-if="ctrl.logged != ''" class="navbar-brand" href="#/index/login">login</a>
-            
-            
-            <a class="navbar-brand" href="#/index/logout">logout</a>
+            <a class="navbar-brand" href="#/index/login">login</a>
+            <a class="navbar-brand" ng-click="index.logout()" href="#/index">logout</a>
         </div>
     </div>
 </div>
 
-<div class="container">
+<div class="container" ng-controller="logsController as index"> 
+
     <div class="row row-offcanvas row-offcanvas-left">
         <!-- sidebar -->
         <div class="col-xs-6 col-sm-3 well sidebar-offcanvas">
-            <a href="index.html">
+            <a href="#/index">
                 <img class="hidden-xs img-responsive" src="Src/img/splash-img.png" alt="VISEO Application"/>
             </a>
             <nav class="sidebar-nav" ng-controller="NaviGatController" role="navigation">

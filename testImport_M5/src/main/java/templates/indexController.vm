@@ -1,0 +1,7 @@
+		  app
+    .controller('indexController', ['$scope','$http','$routeParams','logsFactory','sharedData','$location','$route',  function($scope, $http,$routeParams,logsFactory,sharedData, $location,$route, loaded  ) {
+        var self = this;
+        self.logged = sharedData.get('loggedAs');
+        console.log("Index: Logged as =>"+self.logged);
+        $scope.test = self.logged;
+         }]);
