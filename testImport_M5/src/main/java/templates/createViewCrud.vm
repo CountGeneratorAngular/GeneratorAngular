@@ -1,0 +1,17 @@
+
+<div ng-controller="${EntityName}Controller as ${EntityName}">
+#set($d = "$")
+
+
+<form method="POST" ng-submit="ctrlCrud.new()" name="Creation"  class="CreationLogs">
+    <div ng-if="attr !='_id' && attr != 'id'  && attr != '__v' && attr !='$$hashKey' && !ctrlCrud.isEntity(attr)" ng-repeat="attr in ctrlCrud.actualAttributes" class="entityListLine">
+		<span>{{attr}}</span>
+		<input ng-if="!ctrlCrud.needSelect(attr)" type="text" ng-model = "ctrlCrud.createCrudInput[attr]"></input>
+		<select ng-if="ctrlCrud.needSelect(attr)" ng-model="ctrlCrud.createCrudInput[attr]" ng-options="option.id as option.Nom for option in ctrlCrud.selectNeeded[attr]">
+		</select>
+	</div>
+
+	<input type="submit" class="create" value="Creer"/>	
+	<input type="button" value="Back" ng-click="ctrlCrud.Redirect('listViewCrud')"/>
+</form>
+</div>

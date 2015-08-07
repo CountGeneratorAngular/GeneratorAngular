@@ -28,7 +28,7 @@
 					<label for="title" class="col-sm-2 control-label" ng-if="${EntityName}.showFrom('${att.get(0)}')">${att.get(0)} :</label>
 					<div class="col-sm-10">
 					
-			 		<input id="title" ng-if="${EntityName}.showFrom('${att.get(0)}')" name="title" class="form-control" type="button" ng-click="${EntityName}.goInto(#if($EditChoice.equals("Options"))${EntityName}.selectedEntityId+'/'+#end'${att.get(0)}/listView')" value="open"/>
+			 		<input id="title" ng-if="${EntityName}.showFrom('${att.get(0)}')" name="title" class="form-control" type="button" ng-click="${EntityName}.goInto(#if($EditChoice.equals("entityCreateOptions.vm"))${EntityName}.selectedEntityId+'/'+#end'${att.get(0)}/listView')" value="open"/>
 				</div>
 					#end
 				#end

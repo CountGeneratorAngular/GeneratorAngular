@@ -24,6 +24,11 @@
         sharedData.remove('loggedAs');
         
         }
+        self.redirect = function(entity){
+        sharedData.store("indexName", entity);
+        ${d}location.path("/index/listViewCrud");
+        ${d}route.reload();
+        }
  
  
  }]);

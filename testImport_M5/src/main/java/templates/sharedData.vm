@@ -11,6 +11,10 @@ app
             },
             remove : function(key){
             delete(mem[key]);
+            },
+            getAll : function(){
+            return mem;
+            
             }
         };
     })

@@ -15,9 +15,12 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 import objectsQcm.Attribute;
 import objectsQcm.Entity;
+import objectsQcm.entityVelocity;
 
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
@@ -35,6 +38,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import ObjectsEcran.Ecran;
 import antlr.collections.List;
 
 /**
@@ -48,6 +52,7 @@ public class CreateController {
 
 	@RequestMapping(value = "/create", method = RequestMethod.GET)
 	public String greetRequest(ModelMap model) {
+// definition des variables
 		ArrayList<String> factoryList = new ArrayList<String>();
 		ArrayList<String[]> listAttribute= new ArrayList<String[]>();
 		ArrayList<Entity> EntitiesList = new ArrayList<Entity>();
@@ -58,12 +63,143 @@ public class CreateController {
 		ArrayList<String[]> StructSorted = new ArrayList<String[]>();
 		ArrayList<String> External = new ArrayList<String>();
 		Entity globalDBB = new Entity("DBB",false);
+// definition des entités 
+		EntityDefinition(globalDBB, EntitiesList, ParentList);
+// création des listes pour Velocity a partir des entités
+		getEntitiesAndType(globalDBB, Struct, External,0);
+		Object[] StructObject = new Object[Struct.size()];
+		Object[] StructObjectSorted = new Object[Struct.size()];
+		Object[] ExtObject = new Object[External.size()];
+		Object[] ParentListObject = new Object[ParentList.size()];
+		for(int i =0;i<Struct.size();i++)
+		{
+			StructObject[i]=Struct.get(i);
+		}
+		for(int i =0;i<External.size();i++)
+		{
+			ExtObject[i]=External.get(i);
+		}
+		for(int i =0;i<ParentList.size();i++)
+		{
+			ParentListObject[i]=ParentList.get(i);
+		}
+// initialisation de Velocity
+		VelocityEngine velocityEngine = new VelocityEngine();
+		velocityEngine.setProperty(RuntimeConstants.RESOURCE_LOADER, "classpath");
+		velocityEngine.setProperty("classpath.resource.loader.class", ClasspathResourceLoader.class.getName());
+		velocityEngine.init();
+// Creation des dossiers du programme AngularJs
+		createStruct();
+		VelocityContext context = new VelocityContext();		
+		context.put("AppName", "Test");
+		StructSorted=Struct;
+		Collections.sort(StructSorted, new DepthComparator());
+		for(int i =0;i<StructSorted.size();i++)
+		{
+			StructObjectSorted[i]=StructSorted.get(i);			
+		}
+		context.put("entitiesReversal", StructObjectSorted);
+		context.put("structure", StructObject);
+		context.put("external", ExtObject);
+// mise en place des templates
+		Map<String, Template> mapTemplates = new HashMap<String, Template>();
 		
+		setTemplates(mapTemplates, velocityEngine);		
+		
+		
+// création et mise en place des écrans
+		Ecran EListView = new Ecran();
+		SetEcranListView(EListView);
+		EListView.setEcran("templateView", "entityListCrud.vm");
+		EListView.setEcran("templateMenu", "entityCreateOptionsCrud.vm");
+		EListView.setPage(mapTemplates.get("listView"));
+		
+		
+		
+
+// creation des fichiers angularJs indépendants des entités
+		createFile(mapTemplates.get("app"), context, "Src/app", "js");
+		createFile(mapTemplates.get("server"), context, "Server/server", "js");
+		createFile(mapTemplates.get("routing"), context, "Src/Route/routing", "js");
+		createFile(mapTemplates.get("sharedData"), context, "Src/Service/sharedData", "js");
+		createFile(mapTemplates.get("home"), context, "Src/View/home", "html");
+		createFile(mapTemplates.get("naviGatController"), context, "Src/Controller/NaviGatController", "js");
+		createFile(mapTemplates.get("logsController"), context, "Src/Controller/logsController", "js");
+		createFile(mapTemplates.get("indexController"), context, "Src/Controller/indexController", "js");
+		createFile(mapTemplates.get("logsController"), context, "Src/View/logsController", "html");
+		createFile(mapTemplates.get("logsFactory"), context, "Src/Factory/logsFactory", "js");
+
+// creation des fichiers AngularJs dépendant des entités
+		Object[] EntityFirstLevelObject;
+		EListView.setContext(context);
+		ArrayList<entityVelocity> entitiesVelocity = new ArrayList<entityVelocity>();
+		for(int k = 0; k<EntitiesList.size(); k++)
+		{
+			getEntitiesAttributeFirstLevel(EntitiesList.get(k),listAttribute); 
+			context.put("EntityName", listAttribute.get(0)[0]);
+			EntityFirstLevelObject = new Object[listAttribute.size()];
+			for(int i =1;i<listAttribute.size();i++)
+			{
+				EntityFirstLevelObject[i]=listAttribute.get(i);
+			} 
+			context.put("Attributes", EntityFirstLevelObject);
+			context.put("Parent", ParentList.get(k));
+			entitiesVelocity.add(new entityVelocity(EntityFirstLevelObject, ParentList.get(k), listAttribute.get(0)[0]));
+			createFile(mapTemplates.get("factory"), context, "Src/Factory/"+listAttribute.get(0)[0]+"Factory", "js");
+			createFile(mapTemplates.get("listView"), context, "Src/View/"+listAttribute.get(0)[0]+"ListView", "html");	
+			createFile(mapTemplates.get("editView"), context, "Src/View/"+listAttribute.get(0)[0]+"EditView", "html");	
+			createFile(mapTemplates.get("createView"), context, "Src/View/"+listAttribute.get(0)[0]+"CreateView", "html");
+			factoryList.add(listAttribute.get(0)[0]);
+			createFile(mapTemplates.get("controller"), context, "Src/Controller/"+listAttribute.get(0)[0]+"Controller", "js");
+			listAttribute.clear();
+		}
+		
+		context.put("entitiesVelocity", entitiesVelocity);
+		createFile(mapTemplates.get("controllerCrud"), context, "Src/Controller/controllerCrud", "js");
+		createFile(mapTemplates.get("listViewCrud"), context, "Src/View/listViewCrud", "html");
+		createFile(mapTemplates.get("createViewCrud"), context, "Src/View/createViewCrud", "html");
+		Object[] EntityNameList = new Object[factoryList.size()];
+		for(int i =0;i<factoryList.size();i++)
+		{
+			EntityNameList[i]=factoryList.get(i);
+		}
+		context.put("factoryList",EntityNameList);
+// creation de l'index avec l'appel vers tout les fichiers AngularJs
+		createFile(mapTemplates.get("index"), context, "index", "html");
+
+		return "createObjet";
+	}
+	
+
+	
+	public void setTemplates(Map<String, Template> list, VelocityEngine v){
+		list.put("app",v.getTemplate("/templates/app.vm"));
+		list.put("server",v.getTemplate("/templates/server.vm"));
+		list.put("routing",v.getTemplate("/templates/routing.vm"));
+		list.put("sharedData",v.getTemplate("/templates/sharedData.vm"));
+		list.put("indexController",v.getTemplate("/templates/indexController.vm"));
+		list.put("home",v.getTemplate("/templates/home.vm"));
+		list.put("factory",v.getTemplate("/templates/Factory.vm"));
+		list.put("listViewCrud",v.getTemplate("/templates/listViewCrud.vm"));
+		list.put("listView",v.getTemplate("/templates/listView.vm"));
+		list.put("editView",v.getTemplate("/templates/editView.vm"));
+		list.put("createView",v.getTemplate("/templates/createView.vm"));
+		list.put("createViewCrud",v.getTemplate("/templates/createViewCrud.vm"));
+		list.put("authentification",v.getTemplate("/templates/authentification.vm"));
+		list.put("logsController",v.getTemplate("/templates/LogsController.vm"));
+		list.put("logsFactory", v.getTemplate("/templates/logsFactory.vm"));
+		list.put("naviGatController",v.getTemplate("/templates/NaviGatController.vm"));
+		list.put("controller", v.getTemplate("/templates/Controller.vm"));
+		list.put("controllerCrud", v.getTemplate("/templates/controllerCrud.vm"));
+		list.put("index",v.getTemplate("/templates/index.vm"));
+		
+	}
+	public void EntityDefinition(Entity globalDBB,ArrayList<Entity> EntitiesList, ArrayList<String[]> ParentList){
+
 		Entity qcmTest = new Entity("qcmTest", false);
 		  qcmTest.AddAttribute(new Attribute("id", "Number", false));
 		  qcmTest.AddAttribute(new Attribute("Titre", "String", false));
 		  qcmTest.AddAttribute(new Attribute("Repondu", "Boolean", false));
-		  
 		  
 		  Entity questions = new Entity("questions", false);
 		  questions.AddAttribute(new Attribute("id","Number", false));
@@ -73,9 +209,7 @@ public class CreateController {
 		  reponses.AddAttribute(new Attribute("id", "Number",false));
 		  reponses.AddAttribute(new Attribute("Titre","String",false));
 		  reponses.AddAttribute(new Attribute("isTrue","Boolean",false));
-		  
-		  
-		  
+
 		  questions.AddEntity(reponses);
 		  qcmTest.AddEntity(questions);
 		
@@ -117,12 +251,10 @@ public class CreateController {
 		matiere.AddAttribute(new Attribute("id", "Number",false));
 		matiere.AddAttribute(new Attribute("Nom", "String",false));
 		
-		Entity vitre = new Entity("vitre",false);
+		Entity vitre = new Entity("vitre",false);	
 		vitre.AddAttribute(new Attribute("id", "Number",false));
 		vitre.AddAttribute(new Attribute("limo","Boolean",false));
 		
-		
-		String Path = CreateController.class.getClassLoader().getResource("").toString();
 		
 		Entity smiley = new Entity("smiley", false);
 		smiley.AddAttribute(new Attribute("id","Number",false));
@@ -139,9 +271,6 @@ public class CreateController {
 		
 		Entity renferme = new Entity("renferme",false);
 		renferme.AddAttribute(new Attribute("id","Number",false));
-		
-		
-		
 		
 		jantes.AddEntity(validation);
 		
@@ -164,22 +293,18 @@ public class CreateController {
 		
 		EntitiesList.add(globalDBB);
 		ParentList.add(new String[]{});
-		 EntitiesList.add(qcmTest);
-		 ParentList.add(new String[]{});
-		 EntitiesList.add(questions);
-		 ParentList.add(new String[]{qcmTest.getName()});
-		 EntitiesList.add(reponses);
-		 ParentList.add(new String[]{qcmTest.getName(),questions.getName()});
-		 
-		 
-		 
-		
+		EntitiesList.add(qcmTest);
+		ParentList.add(new String[]{});
+		EntitiesList.add(questions);
+		ParentList.add(new String[]{qcmTest.getName()});
+		EntitiesList.add(reponses);
+		ParentList.add(new String[]{qcmTest.getName(),questions.getName()});
 		EntitiesList.add(voiture);
 		ParentList.add(new String[]{});
 		EntitiesList.add(vitre);
 		ParentList.add(new String[]{voiture.getName()});
 		EntitiesList.add(oculus);
-		ParentList.add(new String[]{voiture.getName()});
+		ParentList.add(new String[]{voiture.getName(),vitre.getName()});
 		EntitiesList.add(matiereAgr);
 		ParentList.add(new String[]{voiture.getName()});
 		EntitiesList.add(roues);
@@ -197,67 +322,11 @@ public class CreateController {
 		EntitiesList.add(matiere);
 		ParentList.add(new String[]{});
 
-		getEntitiesAndType(globalDBB, Struct, External,0);
 		
-		
-		for(int i =0; i<Entities.size();i++)
-		{	
-			for(int j=0;j< Entities.get(i).length;j++)
-			{
-				System.out.print(Entities.get(i)[j]+" ");	
-			}
-			System.out.println();
-		}
-		
-		
-		
-		
-		for(int i =0; i<Struct.size();i++)
-		{	
-			for(int j=0;j< Struct.get(i).length;j++)
-			{
-			System.out.print(Struct.get(i)[j]+" ");
-			}
-			System.out.println();
-		}
-
-		
-		
-		
-		
-		
-		Object[] listFields = new Object[liste.size()];
-		Object[] fieldsName = new Object[liste.size()];
-
-		
-		Object[] StructObject = new Object[Struct.size()];
-		Object[] StructObjectSorted = new Object[Struct.size()];
-		Object[] ExtObject = new Object[External.size()];
-		Object[] ParentListObject = new Object[ParentList.size()];
-		
-		for(int i =0;i<Struct.size();i++)
-		{
-			StructObject[i]=Struct.get(i);
-		}
-		for(int i =0;i<External.size();i++)
-		{
-			ExtObject[i]=External.get(i);
-		}
-		for(int i =0;i<ParentList.size();i++)
-		{
-			ParentListObject[i]=ParentList.get(i);
-		}
-		//********** ecrire un fichier ***********//
-		//System.out.println(new File("").getAbsolutePath());
-		 //STEP 1 :Create a VelocityTemplate Engine Object
-		VelocityEngine velocityEngine = new VelocityEngine();
-		velocityEngine.setProperty(RuntimeConstants.RESOURCE_LOADER, "classpath");
-		System.out.println(ClasspathResourceLoader.class.getName());
-		velocityEngine.setProperty("classpath.resource.loader.class", ClasspathResourceLoader.class.getName());
-		 //STEP 2 :Initialise VelocityTemplate Engine //
-		velocityEngine.init();
-		 //STEP 3: Create the template object by calling getTemplate() method in VE(VelocityEngine)//
-		
+	
+	}
+	public void createStruct()
+	{
 		
 		new File(System.getProperty("user.dir")+"/AngularNew/").mkdir();
 		new File(System.getProperty("user.dir")+"/AngularNew/Src/").mkdir();
@@ -270,124 +339,14 @@ public class CreateController {
 		new File(System.getProperty("user.dir")+"/AngularNew/Js").mkdir();
 		new File(System.getProperty("user.dir")+"/AngularNew/img").mkdir();
 
-		
 		DuplicateFile(System.getProperty("user.dir")+"/angular.js",System.getProperty("user.dir")+"/AngularNew/Js/angular.js");
 		DuplicateFile(System.getProperty("user.dir")+"/angular-route.js",System.getProperty("user.dir")+"/AngularNew/Js/angular-route.js");
 		DuplicateFile(System.getProperty("user.dir")+"/angular-resource.js",System.getProperty("user.dir")+"/AngularNew/Js/angular-resource.js");
 		DuplicateFile(System.getProperty("user.dir")+"/checklist-model.js",System.getProperty("user.dir")+"/AngularNew/Js/checklist-model.js");
 		DuplicateFile(System.getProperty("user.dir")+"/splash-img.png",System.getProperty("user.dir")+"/AngularNew/img/splash-img.png");
 		
-		 //STEP 4: Create VelocityContext //
-		VelocityContext context = new VelocityContext();
-		context.put("controller", "controller");
-		//context.put("EntitiesConstruct", EntitiesObject);
-		context.put("AppName", "Test");
-		System.out.println(Struct.get(0)[4]);
-		StructSorted=Struct;
 		
-		Collections.sort(StructSorted, new DepthComparator());
-
-		for(int i =0;i<StructSorted.size();i++)
-		{
-			StructObjectSorted[i]=StructSorted.get(i);
-			
-		}
-		
-		
-		for(int i=0;i<StructObjectSorted.length;i++)
-		{
-			System.out.println(StructObjectSorted[i]);
-			
-		}
-		
-		
-		
-		
-		
-		context.put("entitiesReversal", StructObjectSorted);
-		context.put("structure", StructObject);
-		context.put("external", ExtObject);
-		
-		Template templateapp = velocityEngine.getTemplate("/templates/app.vm");
-		createFile(templateapp, context, "Src/app", "js");
-		Template templateServer = velocityEngine.getTemplate("/templates/server.vm");
-		createFile(templateServer, context, "Server/server", "js");
-
-		Template templateRouting = velocityEngine.getTemplate("/templates/routing.vm");
-		createFile(templateRouting, context, "Src/Route/routing", "js");
-
-		Template templateSharedData = velocityEngine.getTemplate("/templates/sharedData.vm");
-		createFile(templateSharedData, context, "Src/Service/sharedData", "js");
-		Template templateIndexController = velocityEngine.getTemplate("/templates/indexController.vm");
-		
-		Template templateHome = velocityEngine.getTemplate("/templates/home.vm");
-		createFile(templateHome, context, "Src/View/home", "html");
-		Template templateFactory = velocityEngine.getTemplate("/templates/Factory.vm");
-		Template templateListView = velocityEngine.getTemplate("/templates/listView.vm");
-		Template templateEditView = velocityEngine.getTemplate("/templates/editView.vm");
-		Template templateCreateView = velocityEngine.getTemplate("/templates/createView.vm");
-		Template templateLogin = velocityEngine.getTemplate("/templates/authentification.vm");
-		Template templateLoginController = velocityEngine.getTemplate("/templates/LogsController.vm");
-		Template templateLoginFactory = velocityEngine.getTemplate("/templates/logsFactory.vm");
-		Template TemplateNaviGatController = velocityEngine.getTemplate("/templates/NaviGatController.vm");
-		createFile(TemplateNaviGatController, context, "Src/Controller/NaviGatController", "js");
-		createFile(templateLoginController, context, "Src/Controller/logsController", "js");
-		createFile(templateIndexController, context, "Src/Controller/indexController", "js");
-		createFile(templateLogin, context, "Src/View/logsController", "html");
-		createFile(templateLoginFactory, context, "Src/Factory/logsFactory", "js");
-		Object[] EntityFirstLevelObject;
-		for(int k = 0; k<EntitiesList.size(); k++)
-		{
-			System.out.println(Struct.get(k)[4]);
-			getEntitiesAttributeFirstLevel(EntitiesList.get(k),listAttribute);
-			context.put("EntityName", listAttribute.get(0)[0]);
-			EntityFirstLevelObject = new Object[listAttribute.size()];
-			for(int i =1;i<listAttribute.size();i++)
-			{
-				EntityFirstLevelObject[i]=listAttribute.get(i);
-			} 
-			context.put("Attributes", EntityFirstLevelObject);
-			context.put("Parent", ParentList.get(k));
-			createFile(templateFactory, context, "Src/Factory/"+listAttribute.get(0)[0]+"Factory", "js");
-			
-			context.put("EditChoice", "Options");
-			context.put("DisplayChoice", "list");
-			
-			createFile(templateListView, context, "Src/View/"+listAttribute.get(0)[0]+"ListView", "html");	
-			
-			
-			
-			
-			createFile(templateEditView, context, "Src/View/"+listAttribute.get(0)[0]+"EditView", "html");	
-			
-			
-			
-			
-			createFile(templateCreateView, context, "Src/View/"+listAttribute.get(0)[0]+"CreateView", "html");
-			factoryList.add(listAttribute.get(0)[0]);
-			Template TemplateController = velocityEngine.getTemplate("/templates/Controller.vm");
-			createFile(TemplateController, context, "Src/Controller/"+listAttribute.get(0)[0]+"Controller", "js");
-			listAttribute.clear();
-		}
-
-		Object[] EntityNameList = new Object[factoryList.size()];
-		for(int i =0;i<factoryList.size();i++)
-		{
-			EntityNameList[i]=factoryList.get(i);
-			System.out.println(factoryList.get(i));
-		}
-		context.put("factoryList",EntityNameList);
-		Template templateIndex = velocityEngine.getTemplate("/templates/index.vm");
-		createFile(templateIndex, context, "index", "html");
-		
-		
-		
-		
-
-		  //System.out.println(writer);
-
-		return "createObjet";
-	}
+	};
 	public static void getEntitiesAttribute(Entity e, ArrayList<String[]> listAttribute,ArrayList<String[]> Entities, String parent ){
 		ArrayList<String> EntityConstructor = new ArrayList<String>();
 		EntityConstructor.add(e.getName());
@@ -413,7 +372,6 @@ public class CreateController {
 		}
 		Entities.add(EntityWithAttributes);	
 	}
-
 	public static void getEntitiesAttributeFirstLevel(Entity e, ArrayList<String[]> listAttribute){
 		listAttribute.add(new String[]{e.getName(),e.getClass().getSimpleName(),e.isArray.toString()});
 		ArrayList<Attribute> tempAtt = e.GetAttributes();
@@ -487,6 +445,17 @@ public class CreateController {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		
+	}
+	public void SetEcranListView(Ecran e){
+		
+		ArrayList<String> listOptions = new ArrayList<String>();
+		listOptions.add("templateEdit");
+		listOptions.add("templateView");
+		listOptions.add("templateMenu");
+		listOptions.add("choixData");
+		e.setList(listOptions);
+		
 		
 	}
 	

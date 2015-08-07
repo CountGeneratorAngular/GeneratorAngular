@@ -1,0 +1,389 @@
+#set($d = "$")
+#set($a = "'")
+#set($nameAttributes = [])
+#set($nameAttributesRef = [])
+		  app
+    .controller('controllerCrud', ['$scope','$http',#foreach($obj in $entitiesVelocity)#set($name = $obj.getName())'${name}Factory',#end'$routeParams','sharedData','$location','$route',  function($scope, $http,#foreach($obj in $entitiesVelocity)#set($name = $obj.getName())${name}Factory,#end$routeParams,sharedData, $location,$route, loaded  ) {
+        var self = this;
+        
+        self.logged = sharedData.get('loggedAs');
+
+		$scope.test = self.logged;
+        self.saving="";
+        self.hidden = [];
+        self.paramId = $routeParams;
+		self.selectedEntity = "";
+        self.EditOptionView = false;
+        self.selectNeeded = [];
+        self.createCrudInput = [];
+self.getAttributes = function(name){
+var attributes;
+	switch(name)
+	{
+	#foreach($obj in $entitiesVelocity)
+	#set($name = $obj.getName())   
+	case "${name}" :
+	#set($atts = $obj.getAtt())   
+	attributes = new Array(#foreach($att in $atts)#set($indexAttr = $foreach.count)#if($indexAttr>1)#if($indexAttr>2),'${att[0]}'#else '${att[0]}'#end #end #end);
+	return attributes;
+	break;
+	#end
+	default: 
+	return false;
+	break;
+	}
+} 
+self.needSelect = function(name){
+
+var temp = name.slice(-2);
+if(temp == "Id")
+{
+return true;
+}
+else
+{
+return false;}
+
+}  
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////Gestion des entités /////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        self.actualEntity = sharedData.get("actualEntity");
+        self.actualEntityName = sharedData.get("actualEntityName");
+        self.actualAttributes = self.getAttributes(self.actualEntityName);
+        for(var i =0; i<self.actualAttributes.length;i++){
+        console.log("!!!??!!!"+self.actualAttributes[i]);
+        if(self.needSelect(self.actualAttributes[i]))
+        {
+        self.selectNeeded[self.actualAttributes[i]]=sharedData.get(self.actualAttributes[i].slice(0,-2));
+        console.log("=========>"+sharedData.get(self.actualAttributes[i].slice(0,-2)));
+        }
+        }
+        console.log("Select Needed HERE");
+        console.log(self.selectNeeded);
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+self.getFactory = function(name){
+switch(name)
+{
+#foreach($obj in $entitiesVelocity)
+#set($name = $obj.getName())   
+case "${name}" :
+self.test = new ${name}Factory();
+return ${name}Factory;
+
+break;
+#end
+}
+}   
+        
+self.isEntity = function(name){
+switch(name)
+{
+#foreach($obj in $entitiesVelocity)
+#set($name = $obj.getName())   
+case "${name}" :
+return true;
+break;
+#end
+default: 
+return false;
+break;
+}
+} 
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+#foreach($obj in $entitiesVelocity)
+#set($attributes = $obj.getAtt())
+#set($name = $obj.getName())
+#set($parent = $obj.getParent())
+
+        self.${EntityName}Table = sharedData.get('${name}');
+        var tempClasse = "";
+        self.Externe = {};
+        self.agregation = {};
+        		#set($sub = $EntityName.length() - 3)
+				#if($sub > 0 && $EntityName.substring($sub).equals("Agr"))
+				#set($data = $EntityName.substring(0,$sub))
+				self.agregation.${EntityName} = sharedData.get('${data}');
+				#end
+		self.agregation.data = [];
+        
+
+	#foreach($att in $attributes)
+		
+		
+		
+			#if($att && !$att.get(1).equals("Entity"))
+				#set($sub = $att.get(0).length() - 2)
+				#if($sub > 0 && $att.get(0).substring($sub).equals("Id"))
+				#set($data = $att.get(0).substring(0,$sub))
+				self.Externe.${att.get(0)} = sharedData.get('${data}');
+				self.display${data} = sharedData.get('${data}');
+            
+            
+				#end
+			#end
+		#end
+
+
+            
+            
+            
+
+
+                
+
+ 			
+        self.goInto = function(aim){
+        #if($templateMenu.equals("entityCreateOptions.vm"))
+        var res = ${d}location.path().substr(0,${d}location.path().length-8);
+        #else
+        var res = ${d}location.path().substr(0,${d}location.path().length-4);
+        #end
+        ${d}location.path(res+aim);
+        }
+
+         self.Create = function(aim){
+        
+         var res = ${d}location.path().substr(0,${d}location.path().length-8);
+         ${d}location.path(res+aim);
+        }
+         self.create = function(aim){
+         var res = ${d}location.path().substr(0,${d}location.path().length-8);
+         ${d}location.path(res+aim);
+        
+        }
+        self.edit = function(aim){
+        
+         var res = ${d}location.path().substr(0,${d}location.path().length-8);
+         #if($templateMenu.equals("entityCreateOptions.vm"))
+         	var tempo = sharedData.get('${name}');
+         	var idTemp = aim.split("/");
+
+         	tempo.sort(function(a,b){return a.id > b.id})
+         	self.${name}ActiveOption =  angular.copy(tempo[idTemp[0]]);
+         	
+         	self.EditOptionView = true;
+         
+         #else
+         ${d}location.path(res+aim+"/Edit");
+         
+         #end
+         
+        }
+        self.select = function(aim){
+        sharedData.store("actualEntity",self.actualEntity[aim]);
+        ${d}location.path("/index/listViewCrud");
+        ${d}route.reload();
+        //self.selectedEntity = aim;
+        //self.selectedEntityId = self.selectedEntity.split("/")[0];
+        }
+
+        
+        
+       	self.Save = function()
+       	{
+			   self.test = new ${name}Factory();
+	           ${name}Factory.get({#foreach($url in $parent) ${url}Id: $routeParams.${url}Id, #end${name}Id:#if(!$templateMenu.equals("entityCreateOptions.vm"))self.active#else self.${name}ActiveOption.id#end})
+                .${d}promise.then(function(data) {
+			            #foreach($item in $attributes)
+			            	#if($item)
+			            	
+			            	#set($tt=$a+$item.get(0)+$a)
+			                #set($bar = $nameAttributes.add($tt))
+			                
+			                 #set($sub = $item.get(0).length() - 3)
+ 							 #if(($sub > 0 && $item.get(0).substring($sub).equals("Ref"))||($item.get(0).equals("id")))
+ 							 #set($tar= $nameAttributesRef.add($tt))
+ 							#end 							
+			        	    		#if($item.get(1).equals("Entity"))   
+			           		 			#if($item.get(2).equals("true"))   
+			            		 			data.$item.get(0)= "[]";
+			            	   	 		#end
+			           			 	#else
+			           		 	 		#if($item.get(2).equals("true"))   
+			            		 			data.$item.get(0)= "array";
+			            				#else	
+			            					#set($sub = $item.get(0).length() - 2)
+			            					    #if($templateMenu == "entityCreateOptions.vm")
+			            		 				data.$item.get(0)= self.${name}ActiveOption.${item.get(0)};
+			            		 				#else			            		 				
+			            		 				data.$item.get(0)= self.${name}Active.${item.get(0)};			            		 				
+			            		 				#end
+			            		 		#end
+			            			#end
+			            	#end
+			            #end	
+                        data.${d}save({#foreach($url in $parent) ${url}Id: $routeParams.${url}Id, #end${name}Id: #if(!$templateMenu.equals("entityCreateOptions.vm"))self.active#else self.${name}ActiveOption.id#end}).then(function(){self.Redirect('listView')});
+                        localStorage.setItem("Saved", "true");
+                        $route.reload();
+                }
+            );
+	}
+	   	#set($sub = $obj.name.length() - 3)
+		#if($sub > 0 && $obj.name.substring($sub).equals("Agr"))
+		#set($dataAgr = $obj.name.substring(0,$sub))
+		
+		///////////////////////////////////
+	       	self.SaveAgr = function()
+       	{
+       	for(var i =0;i<self.agregation.data.length; i++)
+       	{
+       		var testAgr = new ${name}Factory();
+			var tempData = sharedData.get("${dataAgr}");
+       		testAgr.Nom = tempData[i].Nom;
+       		testAgr.note = self.agregation.data[i];
+       		testAgr.${d}save({#foreach($url in $parent) ${url}Id: $routeParams.${url}Id, #end$${name}Id: i }).then(function(){self.done++});
+       	}
+			   
+	           ${EntityName}Factory.get({#foreach($url in $parent) ${url}Id: $routeParams.${url}Id, #end$${name}Id: self.agregation.data.length-1 })
+                .${d}promise.then(function(data) {	
+                        
+                    self.Redirect('listView');
+                
+                
+           });
+         
+	
+	
+	}
+	  #end
+	  self.switch = function(classToSwitch, buttonSwitchId)
+	  {
+	  var toSwitch = document.getElementById(classToSwitch);
+	  var buttonSwitch = document.getElementById(buttonSwitchId);
+	  if (toSwitch.style.display != "block")
+	  {
+	  	toSwitch.style.display="block";
+	  	//buttonSwitch.value="Cacher";
+	  	}
+	  else
+	  {
+	  	toSwitch.style.display="none";
+	  		
+	  		}
+	  
+	  }
+       
+        #end            
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+         self.new = function()                                          
+        {
+	
+
+	
+   			self.getFactory(self.actualEntityName);
+            if(self.test) {
+		        for(var i=0;i<self.actualAttributes.length;i++)
+		        {
+		        
+		        	if(self.actualAttributes[i] != "id")
+		        	{
+		        	console.log("not Id");
+		        	if(self.isEntity(self.actualAttributes[i]))
+			        	{
+			        	self.test[self.actualAttributes[i]]=[];
+			        	}
+		        	else
+			        	{
+			        	if(self.actualAttributes[i]].slice(0,-2)=="Id")
+			        	{self.test[self.actualAttributes[i]]=0;}
+			        	else
+			        	{self.test[self.actualAttributes[i]]="";}
+			        	
+			        	if(self.createCrudInput[self.actualAttributes[i]] && self.createCrudInput[self.actualAttributes[i]]!="")
+			        	{
+			        		self.test[self.actualAttributes[i]]=self.createCrudInput[self.actualAttributes[i]];
+			        	}
+
+			        	}
+		        	}
+		        
+		        
+
+		        }
+		   
+			console.log("=>save");
+		   self.test.${d}save().then(function () {
+		   	console.log("in save");
+		   	$location.path("/index/listViewCrud");
+     		$route.reload();
+     		});
+     		}
+
+        };
+               self.delete = function(id_Entity)                                     // Edition------------------------------
+           {
+           self.toDelete = [];	
+           self.toDelete[self.actualEntityName+"Id"]=id_Entity;
+            self.getFactory(self.actualEntityName)
+            .delete(self.toDelete)
+            .$promise
+            .then(function() {
+            $route.reload();  
+             },
+                function (err) {
+                    console.error(err);
+                });
+ 			};        
+         
+        self.redirect = function(aim){
+        ${d}location.path("/index/"+aim);
+        }
+         
+         
+         
+         
+         self.checkArray= function(value)
+         {
+         	return angular.isArray(value);
+         }
+         self.selectionAll=$nameAttributes;
+         self.selection={selectionAll: $nameAttributesRef};
+  		 
+                self.checkAll = function() {
+                      self.selection.selectionAll=[];
+                      self.selection.selectionAll = angular.copy(self.selectionAll);
+
+                  };
+                  self.uncheckAll = function() {
+                      self.selection.selectionAll = $nameAttributesRef;
+                       };
+                   self.toggleSelection = function toggleSelection(qcmName) {
+
+                       var idx = self.selection.selectionAll.indexOf(qcmName);
+                       if (idx > -1) {
+                           self.selection.selectionAll.splice(idx, 1);
+                       }
+                       else {
+                           self.selection.selectionAll.push(qcmName)
+                       }
+                       if(self.logged)
+                       localStorage.setItem($location.url()+self.logged,self.selection.selectionAll);
+                       else
+                       localStorage.setItem($location.url(),self.selection.selectionAll);
+                   };
+                   self.showFrom = function(variable) {
+                       for(var i=0; i<self.selection.selectionAll.length;i++)
+                       {
+                           if(self.selection.selectionAll[i]==variable)
+                           {
+                               return true;
+                           }
+                       }
+                       return false
+                   };
+                   
+					if(localStorage.getItem($location.url()+self.logged))
+                   self.selection.selectionAll = angular.copy(localStorage.getItem($location.url()+self.logged).split(","));
+                   else
+                   if(localStorage.getItem($location.url()))
+                      self.selection.selectionAll = angular.copy(localStorage.getItem($location.url()).split(","));
+                   else
+                   
+                   self.checkAll();
+                   
+    }])
+    

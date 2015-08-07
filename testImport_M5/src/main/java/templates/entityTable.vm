@@ -19,11 +19,11 @@
 		#if($sub > 0 && $att.get(0).substring($sub).equals("Agr"))
 		#set($data = $att.get(0).substring(0,$sub))
 		
-		<td ng-click="${EntityName}.edit(item.id+'/${att.get(0)}/listView')" ng-if="${EntityName}.showFrom('${att.get(0)}')">
+		<td ng-click="${EntityName}.goInto(item.id+'/${att.get(0)}/listView')" ng-if="${EntityName}.showFrom('${att.get(0)}')">
 			<input type="button" value="show List">
 			</td>
 	#else
-		<td ng-click="${EntityName}.edit(item.id+'/Edit')" ng-if="${EntityName}.showFrom('${att.get(0)}')">
+		<td ng-click="${EntityName}.select(item.id+'/Edit')" ng-if="${EntityName}.showFrom('${att.get(0)}')">
 		#set($sub = $att.get(0).length() - 2)
 				#if($sub > 0 && $att.get(0).substring($sub).equals("Id"))
 				#set($data = $att.get(0).substring(0,$sub))

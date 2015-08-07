@@ -77,7 +77,7 @@ var ${entity.get(1)}Builder = mongoose.model('${entity.get(1)}',${entity.get(1)}
 #if($first.equals("true"))#set($first="false")#else,#end
 "${item.get(1)}":"${item.get(2)}"	
 #end			
-#if($DepthReversal > $item.get(4))
+#if($Parser.parseInt($DepthReversal) > $Parser.parseInt($item.get(4)))
 });
 var ${entity.get(1)}Builder = mongoose.model('${entity.get(1)}',${entity.get(1)}Schema);
 #set($broke = "true")
@@ -100,15 +100,15 @@ var ${entity.get(1)}Builder = mongoose.model('${entity.get(1)}',${entity.get(1)}
 
 #set($oldDepth = 2) 
 #foreach($item in $structure)
-	#if($item.get(0).equals("Entity") && $depthInt.parseInt($item.get(4))>=2)
+	#if($item.get(0).equals("Entity") && $depthInt.parseInt($item.get(4))>1)
 		#if($item.get(4)==2)
 	#set($parent=[])
 	#set($ParentName = "")
 	#end
-		#if($oldDepthInt.parseInt($oldDepth)<$depthInt.parseInt($item.get(4)))
+		#if($oldDepthInt.parseInt($oldDepth) && $oldDepthInt.parseInt($oldDepth)<$depthInt.parseInt($item.get(4)))
 		#set($xxx = $parent.add($ParentName))
 	#end
-	#if($oldDepthInt.parseInt($oldDepth)>$depthInt.parseInt($item.get(4)))
+	#if($oldDepthInt.parseInt($oldDepth) && $oldDepthInt.parseInt($oldDepth)>$depthInt.parseInt($item.get(4)))
 	#set($tempmax = $oldDepthInt.parseInt($oldDepth) - 1)
 	#set($range = [$depthInt.parseInt($item.get(4))..$tempmax])
 	#foreach($i in $range)
@@ -266,7 +266,7 @@ if(doc[0].#foreach($url in $parent)#if(!$url.equals(${actualParent}))#set($indNi
 			app.post('/rest/#foreach($url in $parent)${url}/:${url}Id/#end${item.get(1)}/:${item.get(1)}Id', function(req, res)
 		{
 		#if($parent.size() == 0)
-    	${actualParent}Builder.update(#if($parent.size() == 0){id : req.params.${item.get(1)}Id#else#foreach($url in $parent)#set($index = $foreach.count)#if($index.equals(1)){id : req.params.${url}Id#else,"#foreach($urlIn in $parent)#set($indexIn = $foreach.count)#set($temp = $index - 1)#if($index > 0 && !$urlIn.equals($parent.get(0)) && ${indexIn} <= $index)${urlIn}.#end#if($indexIn.equals($parent.size()))#set($temp = $index - 1)id" : 	req.params.${parent.get($temp)}Id#end#end#if($index == $parent.size()),"#foreach($urlIn in $parent)#set($indexIn = $foreach.count)#set($temp = $index - 1)#if($index > 0 && !$urlIn.equals($parent.get(0)) && ${indexIn} <= $index)${urlIn}.#end#if($indexIn.equals($parent.size()))#set($temp = $index - 1)${item.get(1)}Id" :req.params.${item.get(1)}Id#end#end#end#end#end#end}
+    	${actualParent}Builder.update(#if($parent.size() == 0){id : req.params.${item.get(1)}Id#else#foreach($url in $parent)#set($index = $foreach.count)#if($index.equals(1)){id : req.params.${url}Id#else,"#foreach($urlIn in $parent)#set($indexIn = $foreach.count)#set($temp = $index - 1)#if($Parser.parseInt($index) > 0 && !$urlIn.equals($parent.get(0)) && ${indexIn} <= $index)${urlIn}.#end#if($indexIn.equals($parent.size()))#set($temp = $index - 1)id" : 	req.params.${parent.get($temp)}Id#end#end#if($index == $parent.size()),"#foreach($urlIn in $parent)#set($indexIn = $foreach.count)#set($temp = $index - 1)#if($Parser.parseInt($index) > 0 && !$urlIn.equals($parent.get(0)) && ${indexIn} <= $index)${urlIn}.#end#if($indexIn.equals($parent.size()))#set($temp = $index - 1)${item.get(1)}Id" :req.params.${item.get(1)}Id#end#end#end#end#end#end}
 		,
         {
         

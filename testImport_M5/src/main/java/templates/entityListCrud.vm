@@ -1,0 +1,17 @@
+<div>
+
+    <div class="entityListLine">
+		<span  ng-repeat="attr in ctrlCrud.actualAttributes">{{attr}}</span>
+		 <span>Delete</span>
+	</div>
+
+
+     <div class="entityListLine" ng-repeat="item in ctrlCrud.actualEntity | orderBy : 'id'" ng-if="item.id>=0">
+     <span ng-repeat="attr in ctrlCrud.actualAttributes" ng-click="ctrlCrud.select(item.id)"  ng-if=" !ctrlCrud.checkArray(item[attr])">{{item[attr]}}</span>
+	 <span ng-repeat="attr in ctrlCrud.actualAttributes" ng-click="ctrlCrud.select(item.id)"  ng-if=" ctrlCrud.checkArray(item[attr])">Entite</span>
+	
+	<span class="deleteButton"><input  type="button" value="X" ng-click="ctrlCrud.delete(item.id)"/></span>
+	 </div>
+
+</div>
+<hr>

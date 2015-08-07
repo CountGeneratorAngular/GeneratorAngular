@@ -1,0 +1,11 @@
+<div class="form-horizontal">
+    <h3>Actions for ${EntityName}</h3>
+    <div class="form-group">
+        <div class="col-md-offset-18 col-sm-3 action_Button">
+            <a id="Create" name="Create" class="btn btn-primary" ng-click="${EntityName}.SaveAgr('createView')">
+                <span class="glyphicon glyphicon-plus-sign"></span> Save</a>
+        </div>
+
+    </div>
+    #parse("/templates/entityEdit.vm")
+</div>

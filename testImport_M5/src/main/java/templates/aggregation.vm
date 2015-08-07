@@ -1,0 +1,11 @@
+Aggregation:
+
+<div ng-repeat="item in ${EntityName}.agregation.${EntityName}">
+<div ">{{item.Nom}} :{{${d}index}} 
+<input type="text" ng-model = "${EntityName}.agregation.data[${d}index]"/>
+</div>
+</div>
+<div>
+<input type="button" ng-click="${EntityName}.SaveAgr()" value = "save"/>
+{{$EntityName.saving}}
+</div>

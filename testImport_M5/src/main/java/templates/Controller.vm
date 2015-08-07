@@ -69,7 +69,7 @@
  			};
  			
         self.goInto = function(aim){
-        #if($EditChoice.equals("Options"))
+        #if($templateMenu.equals("entityCreateOptions.vm"))
         var res = ${d}location.path().substr(0,${d}location.path().length-8);
         #else
         var res = ${d}location.path().substr(0,${d}location.path().length-4);
@@ -92,17 +92,22 @@
         self.edit = function(aim){
         
          var res = ${d}location.path().substr(0,${d}location.path().length-8);
-         if("${EditChoice}" == "Options")
-         {
+         #if($templateMenu.equals("entityCreateOptions.vm"))
          	var tempo = sharedData.get('${EntityName}');
-         	self.${EntityName}ActiveOption =  angular.copy(tempo[self.selectedEntityId]);
+         	var idTemp = aim.split("/");
+         	console.log(tempo);
+         	tempo.sort(function(a,b){return a.id > b.id})
+         	console.log(tempo);
+         	self.${EntityName}ActiveOption =  angular.copy(tempo[idTemp[0]]);
+         	
          	self.EditOptionView = true;
          	console.log(self.${EntityName}Active);
-         }
-         else
-         {
+         
+         #else
+         console.log(res+aim+"/Edit");
          ${d}location.path(res+aim+"/Edit");
-         }
+         
+         #end
          
         }
         self.select = function(aim){
@@ -116,7 +121,7 @@
        	self.Save = function()
        	{
 			   self.test = new ${EntityName}Factory();
-	           ${EntityName}Factory.get({#foreach($url in $Parent) ${url}Id: $routeParams.${url}Id, #end${EntityName}Id:#if(!$EditChoice.equals("Options"))self.active#else self.${EntityName}ActiveOption.id#end})
+	           ${EntityName}Factory.get({#foreach($url in $Parent) ${url}Id: $routeParams.${url}Id, #end${EntityName}Id:#if(!$templateMenu.equals("entityCreateOptions.vm"))self.active#else self.${EntityName}ActiveOption.id#end})
                 .${d}promise.then(function(data) {
 			            #foreach($item in $Attributes)
 			            	#if($item)
@@ -137,7 +142,7 @@
 			            		 			data.$item.get(0)= "array";
 			            				#else	
 			            					#set($sub = $item.get(0).length() - 2)
-			            					    #if($EditChoice == "Options")
+			            					    #if($templateMenu == "entityCreateOptions.vm")
 			            		 				data.$item.get(0)= self.${EntityName}ActiveOption.${item.get(0)};
 			            		 				#else			            		 				
 			            		 				data.$item.get(0)= self.${EntityName}Active.${item.get(0)};			            		 				
@@ -146,36 +151,30 @@
 			            			#end
 			            	#end
 			            #end	
-                        data.${d}save({#foreach($url in $Parent) ${url}Id: $routeParams.${url}Id, #end${EntityName}Id: #if(!$EditChoice.equals("Options"))self.active#else self.${EntityName}ActiveOption.id#end}).then(function(){self.Redirect('listView')});
+                        data.${d}save({#foreach($url in $Parent) ${url}Id: $routeParams.${url}Id, #end${EntityName}Id: #if(!$templateMenu.equals("entityCreateOptions.vm"))self.active#else self.${EntityName}ActiveOption.id#end}).then(function(){self.Redirect('listView')});
                         localStorage.setItem("Saved", "true");
                         $route.reload();
                 }
             );
-	
-	
 	}
 	   	#set($sub = $EntityName.length() - 3)
 		#if($sub > 0 && $EntityName.substring($sub).equals("Agr"))
 		#set($dataAgr = $EntityName.substring(0,$sub))
+		
+		///////////////////////////////////
 	       	self.SaveAgr = function()
        	{
-
-       	self.done = 0;
        	for(var i =0;i<self.agregation.data.length; i++)
        	{
-       		self.test = new ${EntityName}Factory();
-
-				
-       		self.test.Nom = self.Externe.${dataAgr}[i].Nom;
-       		self.test.note = self.agregation.data[i];
-       		self.${d}save({${EntityName}Id: self.active}).then(function(){self.done++});
+       		var testAgr = new ${EntityName}Factory();
+			var tempData = sharedData.get("${dataAgr}");
+       		testAgr.Nom = tempData[i].Nom;
+       		testAgr.note = self.agregation.data[i];
+       		console.log(testAgr.Nom+" "+testAgr.Note);
+       		testAgr.${d}save({#foreach($url in $Parent) ${url}Id: $routeParams.${url}Id, #end$${EntityName}Id: i }).then(function(){self.done++});
        	}
 			   
-			   while(self.done!=self.agregation.data.length)
-			   {
-			   self.saving = self.done + "/" + self.agregation.data.length +" done";
-			   }
-	           ${EntityName}Factory.get({${EntityName}Id:self.active})
+	           ${EntityName}Factory.get({#foreach($url in $Parent) ${url}Id: $routeParams.${url}Id, #end$${EntityName}Id: self.agregation.data.length-1 })
                 .${d}promise.then(function(data) {	
                         
                     self.Redirect('listView');
@@ -239,7 +238,7 @@
             		#end
             	#end
             #end	 		 
-            self.test.$save(#if($Parent.size() > 0){#foreach($p in $Parent)#set($indexVirgule = $foreach.count)#if($indexVirgule > 1),#end${p}Id : ${d}routeParams.${p}Id#end}#end).then(function () {
+            self.test.${d}save(#if($Parent.size() > 0){#foreach($p in $Parent)#set($indexVirgule = $foreach.count)#if($indexVirgule > 1),#end${p}Id : ${d}routeParams.${p}Id#end}#end).then(function () {
             if(self.create${EntityName}Input)
             self.Redirect('listView');
      		$route.reload();
@@ -251,8 +250,6 @@
                 {
                      alert("error");
                 }
-            
-
         };
          self.selectionAll=$nameAttributes;
          self.selection={selectionAll: $nameAttributesRef};
@@ -285,7 +282,6 @@
                            if(self.selection.selectionAll[i]==variable)
                            {
                                return true;
-                               alert("ok");
                            }
                        }
                        return false
