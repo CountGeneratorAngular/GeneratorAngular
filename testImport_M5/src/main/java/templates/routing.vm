@@ -19,20 +19,51 @@ app
                     loaded: ['${V}http','sharedData','${V}route', '${V}location', function(${V}http, sharedData, ${V}route,${V}location){
 	                    if(sharedData.get("indexName"))
 	                    {
+	                    
 	                    var name = sharedData.get("indexName");
                         return ${V}http.get("./rest/"+sharedData.get("indexName")).then(function(response){
                             
                             sharedData.store('actualEntity',response.data);
                             sharedData.store('actualEntityName',name);
                             sharedData.remove("indexName");
+                                                    #foreach($item in $external)
+                                return ${V}http.get("./rest/$item").then(function(response){
+                                console.log('$item'+" : "+response.data);
+								sharedData.store("$item",response.data);
+								console.log(sharedData.get('$item'));
+                           #end
+                           
+                           #set($tempSize = $external.size() - 1)
+                           console.log(sharedData.getAll());
+                           return sharedData.get('$external.get($tempSize)');
+                            #foreach($item in $external)
+                            });
+                            #end 
                            
                         })
                                                     }
                         else
                         {
+                        
                         if(!sharedData.get("actualEntity"))
                         {
                         	${V}location.path('/index');
+                        }
+                        else
+                        {
+                        #foreach($item in $external)
+                                return ${V}http.get("./rest/$item").then(function(response){
+                                console.log('$item'+" : "+response.data);
+								sharedData.store("$item",response.data);
+								console.log(sharedData.get('$item'));
+                           #end
+                           
+                           #set($tempSize = $external.size() - 1)
+                           console.log(sharedData.getAll());
+                           return sharedData.get('$external.get($tempSize)');
+                            #foreach($item in $external)
+                            });
+                            #end
                         }
                         }
                     }]

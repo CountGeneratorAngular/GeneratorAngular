@@ -1,4 +1,4 @@
-<div ng-if="${EntityName}.EditOptionView">
+<div ng-if="ctrlCrud.EditOptionView">
 		 <form id="EventSearch" class="form-horizontal">
 	        <div class="form-group">
 	        

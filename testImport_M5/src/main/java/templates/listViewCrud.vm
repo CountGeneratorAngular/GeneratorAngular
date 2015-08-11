@@ -1,5 +1,4 @@
 <a ng-if="test" >Logged as : {{test}}</a>
-<div ng-controller="${EntityName}Controller as ${EntityName}">
 #set($d = "$")
 #set($sub = $EntityName.length() - 3)
 #if($sub > 0 && !$EntityName.substring($sub).equals("Agr"))
@@ -53,4 +52,4 @@
     </div>
 #end
 
-</div></div>
+</div>

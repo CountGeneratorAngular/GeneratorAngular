@@ -11,9 +11,9 @@
                 <span class="glyphicon glyphicon-plus-sign"></span> Create Vide</a>
         </div>
         <div class="col-sm-3 action_Button">
-            <a id="Create" name="Edit" class="btn btn-primary" ng-click="${EntityName}.edit(${EntityName}.selectedEntityId)">
+            <a id="Create" name="Edit" class="btn btn-primary" ng-click="ctrlCrud.edit()">
                 <span class="glyphicon glyphicon-plus-sign"></span>Edit Selected</a>
         </div>
     </div>
-    #parse("/templates/entityEdit.vm")
+    #parse("/templates/entityEditCrud.vm")
 </div>

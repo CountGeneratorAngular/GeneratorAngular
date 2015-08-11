@@ -1,0 +1,55 @@
+#set($d = "$")
+
+#parse("/templates/filter.vm")
+
+<hr/>
+
+	 <form id="EventSearch" class="form-horizontal">
+        <div class="form-group">
+        
+	#foreach($att in $Attributes)
+		#if($att.get(0).equals("id"))
+		<label for="title" class="col-sm-2 control-label">${att.get(0)} :</label>
+		<div class="col-sm-10">
+		 <input id="title" name="title" class="form-control" type="text" value="{{${EntityName}.active}}" disabled/>
+		</div>
+		#else
+			#if($att && !$att.get(1).equals("Entity"))
+			#set($sub = $att.get(0).length() - 2)
+				#if($sub > 0 && $att.get(0).substring($sub).equals("Id"))
+				
+				<label for="title" class="col-sm-2 control-label" ng-if="${EntityName}.showFrom('${att.get(0)}')">${att.get(0)} : </label>
+				<div class="col-sm-10">
+				<select class="form-control" ng-model="${EntityName}.${EntityName}Active.${att.get(0)}" ng-options="option.id as option.Nom for option in ${EntityName}.Externe.${att.get(0)}">
+				</select></div>
+				#else
+					<label for="title" class="col-sm-2 control-label" ng-if="${EntityName}.showFrom('${att.get(0)}')">${att.get(0)} :</label>
+					 <div class="col-sm-10">
+					 <input class="form-control" type="text" ng-model="${EntityName}.${EntityName}Active.${att.get(0)}"  value="#if($att.get(1).equals("Entity"))FUTUR SELECT#else {{${EntityName}.${EntityName}Active.${att.get(0)}}}#end"/>
+				     </div>
+				#end
+			#else
+				#if($att)
+				<label for="title" class="col-sm-2 control-label" ng-if="${EntityName}.showFrom('${att.get(0)}')">${att.get(0)} :</label>
+				<div class="col-sm-10">
+		 		<input id="title" name="title" class="form-control" type="button" ng-click="${EntityName}.goInto('${att.get(0)}/listView')" value="open"/>
+			</div>
+				#end
+			#end
+		#end
+		<div class="resetFloat"></div>
+	#end
+	<br>
+<div class="form-horizontal">
+    <div class="form-group">
+        <div class="col-md-offset-2 col-sm-2">
+            <a id="Back" name="Back" class="btn btn-primary" ng-click="${EntityName}.Redirect('listView')">
+                <span class="glyphicon glyphicon-plus-sign"></span> Back</a>
+        </div>
+        <div class="col-sm-2">
+            <a id="Save" name="Save" class="btn btn-primary" ng-click="${EntityName}.Save()">
+                <span class="glyphicon glyphicon-plus-sign"></span>Save</a>
+        </div>
+    </div>
+</div>
+</div>
