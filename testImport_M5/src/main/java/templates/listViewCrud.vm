@@ -1,15 +1,9 @@
 <a ng-if="test" >Logged as : {{test}}</a>
 #set($d = "$")
 #set($sub = $EntityName.length() - 3)
-#if($sub > 0 && !$EntityName.substring($sub).equals("Agr"))
-#parse("/templates/${templateMenu}")
-#else
-#parse("/templates/aggregationEdit.vm")
-#end
-<hr/>
 <div>
-<div>
-    <h3>Search for ${EntityName}</h3>
+<div style="display:none">
+    <h3>Search</h3>
     <form id="EventSearch" class="form-horizontal">
         <div class="form-group">
             <label for="title" class="col-sm-2 control-label">Key Word:</label>
@@ -26,21 +20,13 @@
     </form>
 
 </div>
-<hr/>
 #parse("/templates/arborescence.vm")
 
 
 
 #if($sub > 0 && $EntityName.substring($sub).equals("Agr"))
-
-<h3> Aggregation: </h3>
-
 #parse("/templates/aggregation.vm")
-
-
 #else
-<h3>Liste d'attributs</h3>
-#parse("/templates/filter.vm")
 <br>
 <hr/>
     <div id="search-results">
@@ -51,5 +37,9 @@
 
     </div>
 #end
-
+#if($sub > 0 && !$EntityName.substring($sub).equals("Agr"))
+#parse("/templates/${templateMenu}")
+#else
+#parse("/templates/aggregationEdit.vm")
+#end
 </div>

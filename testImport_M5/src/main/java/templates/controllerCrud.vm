@@ -5,7 +5,13 @@
 		  app
     .controller('controllerCrud', ['$scope','$http',#foreach($obj in $entitiesVelocity)#set($name = $obj.getName())'${name}Factory',#end'$routeParams','sharedData','$location','$route',  function($scope, $http,#foreach($obj in $entitiesVelocity)#set($name = $obj.getName())${name}Factory,#end$routeParams,sharedData, $location,$route, loaded  ) {
         var self = this;
-        console.log("CONTROLLERCRUD");
+        self.parent = sharedData.get("parent");
+        console.log(self.parent);
+        if(!self.parent)
+        {
+        self.parent = [];
+        }
+        console.log("ControllerCrud Created");
         
         
         
@@ -55,22 +61,15 @@ return false;}
 /////////////////////////////////////////////////////////Gestion des entités /////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         self.actualEntity = sharedData.get("actualEntity");
-        console.log(self.actualEntity);
         self.actualEntityName = sharedData.get("actualEntityName");
-         console.log(self.actualEntityName);
         self.actualAttributes = self.getAttributes(self.actualEntityName);
         for(var i =0; i<self.actualAttributes.length;i++){
         if(self.needSelect(self.actualAttributes[i]))
         {
-        console.log("IN");
-        console.log(self.actualAttributes[i].slice(0,-2));
-        console.log(sharedData.get(self.actualAttributes[i].slice(0,-2)));
         self.selectNeeded[self.actualAttributes[i]]=sharedData.get(self.actualAttributes[i].slice(0,-2));
         
         }
         }
-        console.log("CREATED => ");
-        console.log(self.selectNeeded);
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 self.getFactory = function(name){
 switch(name)
@@ -130,26 +129,27 @@ break;
         }
         
                 self.select = function(aim){
-        
-        console.log("ID : "+aim);
-        console.log(self.actualEntity);
-        console.log(self.actualEntity[aim]);
         sharedData.store("EntityToEdit",self.actualEntity[aim]);
         self.selectedEntity=angular.copy(self.actualEntity[aim]);
+        
+        var lines =document.getElementsByClassName("entityListLine");
+
+        for(var i = 1; i <= lines.length-1; i++) {
+   			if( (i-1) == self.selectedEntity["id"])
+  			  lines[i].className+=" selected";
+  			else
+  			  lines[i].className="entityListLine";
+  			  
+		}
         }
         
         
                	self.Save = function()
        	{
-       			console.log("SAVE => ID :");
-       			console.log(self.selectedEntity);
-			  console.log("SAVE => ID :"+self.selectedEntity["id"]);
-			  
 			  var getParameters = {};
 			  getParameters[self.actualEntityName+"Id"] = self.selectedEntity["id"];
 			    self.getFactory(self.actualEntityName).get(getParameters)
                 .${d}promise.then(function(data) {
-                			console.log(data);
                 		        for(var i=0;i<self.actualAttributes.length;i++)
 		        {
 		        
@@ -178,8 +178,6 @@ break;
 		        
 
 		        }
-		        console.log("SAVE STATE =================");
-		        console.log(data);
                         data.${d}save(getParameters).then(function()
                         {
                         localStorage.setItem("Saved", "true");
@@ -196,7 +194,15 @@ break;
         {
 	
 
-	
+	 		var tempParent = sharedData.get("parent");
+            var urlSave = {};
+            for(var i = 0; i<tempParent.length;i++)
+            {
+            	urlSave[tempParent[i].split("#")[0]+"Id"]=tempParent[i].split("#")[1];
+            }
+           
+            
+            
    			self.getFactory(self.actualEntityName);
             if(self.test) {
 		        for(var i=0;i<self.actualAttributes.length;i++)
@@ -227,7 +233,8 @@ break;
 		        }
 		        
 		        
-		   self.test.${d}save().then(function () {
+		   self.test.${d}save(urlSave).then(function () {
+		   	self.redirect("listViewCrud");
      		$route.reload();
      		});
      		}
@@ -241,7 +248,6 @@ break;
             .delete(self.toDelete)
             .$promise
             .then(function() {
-            
             $route.reload();  
              },
                 function (err) {
@@ -250,8 +256,29 @@ break;
  			};        
          
         self.redirect = function(aim){
+        self.EditOptionView = false;
         ${d}location.path("/index/"+aim);
         }
+         
+         
+         self.getChild = function(childName)
+         {
+         
+         var existed = false;
+         for(var i =0; i<self.parent.length;i++){
+
+         	if(self.parent[i].split("#")[0] == self.actualEntityName){
+         		existed = true;
+         	}
+         	if(existed)
+				self.parent.splice(i,1);
+         	
+         }
+         self.parent[self.parent.length]=self.actualEntityName+"#"+self.selectedEntity["id"];
+         sharedData.store("parent",self.parent);
+         sharedData.store("actualEntityName",childName);
+         $route.reload();
+         }
          
          
          
@@ -260,6 +287,9 @@ break;
          {
          	return angular.isArray(value);
          }
+         
+         
+         
          self.selectionAll=$nameAttributes;
          self.selection={selectionAll: $nameAttributesRef};
   		 

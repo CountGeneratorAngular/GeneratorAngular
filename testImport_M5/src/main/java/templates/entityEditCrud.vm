@@ -1,17 +1,12 @@
-<div ng-if="ctrlCrud.EditOptionView">
-	        
-	        
-	        
-	        
-	        
-	        
+<div ng-if="ctrlCrud.EditOptionView">	        
 <form method="POST" ng-submit="ctrlCrud.save()" name="Edit"  class="EditLogs">
-    <div ng-if="attr !='_id' && attr != 'id'  && attr != '__v' && attr !='$$hashKey' && !ctrlCrud.isEntity(attr)" ng-repeat="attr in ctrlCrud.actualAttributes" class="entityListLine">
+    <div ng-if="attr !='_id' && attr != 'id'  && attr != '__v' && attr !='$$hashKey' " ng-repeat="attr in ctrlCrud.actualAttributes" class="entityListLine">
 		<span>{{attr}}</span>
 		<span>{{ctrlCrud.actualEntity[attr]}}</span>
-		<input ng-if="!ctrlCrud.needSelect(attr)" type="text" ng-model = "ctrlCrud.selectedEntity[attr]"></input>
-		<select ng-if="ctrlCrud.needSelect(attr)" ng-model="ctrlCrud.selectedEntity[attr]" ng-options="option.id as option.Nom for option in ctrlCrud.selectNeeded[attr]">
+		<input ng-if="!ctrlCrud.needSelect(attr) && !ctrlCrud.isEntity(attr)" type="text" ng-model = "ctrlCrud.selectedEntity[attr]"></input>
+		<select ng-if="ctrlCrud.needSelect(attr) && !ctrlCrud.isEntity(attr)" ng-model="ctrlCrud.selectedEntity[attr]" ng-options="option.id as option.Nom for option in ctrlCrud.selectNeeded[attr]">
 		</select>
+		<a ng-if="ctrlCrud.isEntity(attr)" ng-click="ctrlCrud.getChild(attr)">Entity</a>
 		
 	</div>
 		</br>
@@ -19,7 +14,7 @@
 	<div class="form-horizontal">
 	    <div class="form-group">
 	        <div class="col-md-offset-2 col-sm-2">
-	            <a id="Back" name="Back" class="btn btn-primary" ng-click="ctrlCrud.Redirect('listView')">
+	            <a id="Back" name="Back" class="btn btn-primary" ng-click="ctrlCrud.redirect('listViewCrud')">
 	                <span class="glyphicon glyphicon-plus-sign"></span> Back</a>
 	        </div>
 	        <div class="col-sm-2">
