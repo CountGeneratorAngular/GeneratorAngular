@@ -6,7 +6,6 @@
     .controller('controllerCrud', ['$scope','$http',#foreach($obj in $entitiesVelocity)#set($name = $obj.getName())'${name}Factory',#end'$routeParams','sharedData','$location','$route',  function($scope, $http,#foreach($obj in $entitiesVelocity)#set($name = $obj.getName())${name}Factory,#end$routeParams,sharedData, $location,$route, loaded  ) {
         var self = this;
         self.parent = sharedData.get("parent");
-        console.log(self.parent);
         if(!self.parent)
         {
         self.parent = [];
@@ -133,7 +132,6 @@ break;
         self.selectedEntity=angular.copy(self.actualEntity[aim]);
         
         var lines =document.getElementsByClassName("entityListLine");
-
         for(var i = 1; i <= lines.length-1; i++) {
    			if( (i-1) == self.selectedEntity["id"])
   			  lines[i].className+=" selected";
@@ -146,9 +144,14 @@ break;
         
                	self.Save = function()
        	{
-			  var getParameters = {};
-			  getParameters[self.actualEntityName+"Id"] = self.selectedEntity["id"];
-			    self.getFactory(self.actualEntityName).get(getParameters)
+       		var tempParent = sharedData.get("parent");
+       	    var urlSave = {};
+            for(var i = 0; i<tempParent.length;i++)
+            {
+            	urlSave[tempParent[i].split("#")[0]+"Id"]=tempParent[i].split("#")[1];
+            } 
+			  urlSave[self.actualEntityName+"Id"] = self.selectedEntity["id"];
+			    self.getFactory(self.actualEntityName).get(urlSave)
                 .${d}promise.then(function(data) {
                 		        for(var i=0;i<self.actualAttributes.length;i++)
 		        {
@@ -178,7 +181,7 @@ break;
 		        
 
 		        }
-                        data.${d}save(getParameters).then(function()
+                        data.${d}save(urlSave).then(function()
                         {
                         localStorage.setItem("Saved", "true");
                         $route.reload();
@@ -205,6 +208,7 @@ break;
             
    			self.getFactory(self.actualEntityName);
             if(self.test) {
+            
 		        for(var i=0;i<self.actualAttributes.length;i++)
 		        {
 		        
@@ -225,8 +229,10 @@ break;
 			        	{
 			        		self.test[self.actualAttributes[i]]=self.createCrudInput[self.actualAttributes[i]];
 			        	}
+			        	
 			        	}
 		        	}
+		        	console.log(self.test[self.actualAttributes[i]]);
 		        
 		        
 
