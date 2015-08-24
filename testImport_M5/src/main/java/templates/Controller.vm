@@ -3,7 +3,7 @@
 #set($nameAttributes = [])
 #set($nameAttributesRef = [])
 		  app
-    .controller('${EntityName}Controller', ['$scope','$http','${EntityName}Factory','$routeParams','sharedData','$location','$route',  function($scope, $http,${EntityName}Factory,$routeParams,sharedData, $location,$route, loaded  ) {
+    .controller('${EntityName}Controller', ['$scope','$http','${EntityName}Factory','$routeParams','sharedData','$location','$route','$cookieStore',  function($scope, $http,${EntityName}Factory,$routeParams,sharedData, $location,$route, $cookieStore, loaded  ) {
         var self = this;
         self.saving="";
         self.hidden = [];
@@ -27,9 +27,7 @@
 		self.agregation.data = [];
         
         
-		#foreach($att in $Attributes)
-		
-		
+		#foreach($att in $Attributes)	
 		
 			#if($att && !$att.get(1).equals("Entity"))
 				#set($sub = $att.get(0).length() - 2)
@@ -37,20 +35,16 @@
 				#set($data = $att.get(0).substring(0,$sub))
 				self.Externe.${att.get(0)} = sharedData.get('${data}');
 				self.display${data} = sharedData.get('${data}');
-            
-            
+                        
 				#end
 			#end
 		#end
 
-
-            
-            
-            
             console.log(self.${EntityName}Table);
             sharedData.store('${EntityName}', self.${EntityName}Table);
-                
-              self.delete = function(id)                                     // Edition------------------------------
+        #if($delete==true)
+ 		//delete function is validated to be add in the controller	        
+        self.delete = function(id)                                     // Edition------------------------------
            {	
             ${EntityName}Factory
             .delete({#if($Parent.size() > 0)#foreach($p in $Parent)#set($indexVirgule = $foreach.count)#if($indexVirgule > 1),#end${p}Id : ${d}routeParams.${p}Id#end,#end${EntityName}Id:id})
@@ -62,29 +56,45 @@
                     console.error(err);
                 });
  			};
- 			
+ 		#end
+ 		#if($goInto==true)
+ 		//goInto function is validated to be add in the controller	
         self.goInto = function(aim){
         var res = ${d}location.path().substr(0,${d}location.path().length-4);
          ${d}location.path(res+aim);
         }
+        #end
+        
+        #if($Redirect==true)
+        //Redirect function is validated to be add in the controller
         self.Redirect = function(aim){
         ${d}location.path("/index/${EntityName}/"+aim);
         }
-         self.Create = function(aim){
-        
+        #end
+        #if($Create==true)
+        //Create function is validated to be add in the controller
+         self.Create = function(aim){        
          var res = ${d}location.path().substr(0,${d}location.path().length-8);
          ${d}location.path(res+aim);
         }
+        #end
+        #if($create==true)
+        //create function is validated to be add in the controller
          self.create = function(aim){
          var res = ${d}location.path().substr(0,${d}location.path().length-8);
-         ${d}location.path(res+aim);
-        
+         ${d}location.path(res+aim);        
         }
-        self.edit = function(aim){
-        
+        #end
+        #if($edit== true)
+        //Edit function is validated to be add in the controller
+        self.edit = function(aim){        
          var res = ${d}location.path().substr(0,${d}location.path().length-8);
          ${d}location.path(res+aim);
         }
+        #end
+        
+        #if($Save== true)
+        //Save function is validated to add in the controller
        	self.Save = function()
        	{
 			   self.test = new ${EntityName}Factory();
@@ -118,9 +128,8 @@
                         self.Redirect('listView')
                 }
             );
-	
-	
 	}
+	#end
 	   	#set($sub = $EntityName.length() - 3)
 		#if($sub > 0 && $EntityName.substring($sub).equals("Agr"))
 		#set($dataAgr = $EntityName.substring(0,$sub))
@@ -131,8 +140,6 @@
        	for(var i =0;i<self.agregation.data.length; i++)
        	{
        		self.test = new ${EntityName}Factory();
-
-				
        		self.test.Nom = self.Externe.${dataAgr}[i].Nom;
        		self.test.note = self.agregation.data[i];
        		self.${d}save({${EntityName}Id: self.active}).then(function(){self.done++});
@@ -146,14 +153,12 @@
                 .${d}promise.then(function(data) {	
                         
                     self.Redirect('listView');
-                
-                
            });
-         
-	
-	
 	}
 	  #end
+	   #if($switch== true)
+       //switch function is validated to add in the controller
+       
 	  self.switch = function(classToSwitch, buttonSwitchId)
 	  {
 	  var toSwitch = document.getElementById(classToSwitch);
@@ -167,16 +172,16 @@
 	  {
 	  	toSwitch.style.display="none";
 	  		buttonSwitch.value="Afficher";
-	  		}
-	  
+	  		}	  
 	  }
+	  #end
+	  
+	   #if($new== true)
+       //new function is validated to add in the controller
+       
        self.new = function()                                          
         {
-	
-
-	
-	
-   self.test = new ${EntityName}Factory();
+	   self.test = new ${EntityName}Factory();
             if(self.test) {
   
                 self.test = new ${EntityName}Factory();
@@ -221,39 +226,270 @@
             
 
         };
-         self.selectionAll=$nameAttributes;
-         self.selection={selectionAll: $nameAttributesRef};
-  
-                self.checkAll = function() {
-                      self.selection.selectionAll=[];
-                      self.selection.selectionAll = angular.copy(self.selectionAll);
+        #end
+         self.selectionAllGlobal=$nameAttributes;
+         self.CountVoitureListFilter=false;
+         self.CountVoitureEditFilter=false;
+         self.CountVoitureListFilterShow=$cookieStore.get('resVoitureListFilter');
+         self.CountVoitureEditFilterShow=$cookieStore.get('resVoitureEditFilter');
+          if((self.CountVoitureListFilterShow==false)||(self.CountVoitureListFilterShow==undefined))
+                  {
+                      $cookieStore
+                      .put('selectionVoitureListAllStore',self.selectionAllGlobal);
+                      self.selectionVoitureListAll=$cookieStore.get('selectionVoitureListAllStore');
+                      console.log("self.selectionVoitureListAll"+self.selectionVoitureListAll);
+                      console.log("resultat= false");
+                  }
+
+                  else if(self.CountVoitureListFilterShow==true)
+                  {
+                      self.selectionVoitureListAll =$cookieStore.get("selectionVoitureListAllStore");
+                      console.log("self.selectionVoitureListAll:********"+self.selectionVoitureListAll);
+                      console.log("resultat= True")
+                  }
+
+                  if((self.CountVoitureEditFilterShow==false)||(self.CountVoitureEditFilterShow==undefined))
+                  {
+                      $cookieStore
+                      .put('selectionVoitureEditAllStore',self.selectionAllGlobal);
+                      self.selectionVoitureEditAll=$cookieStore.get('selectionVoitureEditAllStore');
+                      console.log("self.selectionVoitureEditAll"+self.selectionVoitureEditAll);
+                      console.log("resultat= false");
+                  }
+
+                  else if(self.CountVoitureEditFilterShow==true)
+                  {
+                      self.selectionVoitureEditAll =$cookieStore.get("selectionVoitureEditAllStore");
+                      console.log("self.selectionVoitureEditAll:********"+self.selectionVoitureEditAll);
+                      console.log("resultat= True")
+                  }
+                  self.selectionVoitureList={selectionVoitureListAll: ['id']};
+                  self.selectionVoitureEdit={selectionVoitureEditAll: ['id']};
+                 self.checkAll = function() {
+                      self.selectionVoitureList.selectionVoitureListAll=[];
+                      self.selectionVoitureList.selectionVoitureListAll = angular.copy(self.selectionVoitureListAll);
+                      $cookieStore
+                      .put('FilterVoitureList',  self.selectionVoitureList.selectionVoitureListAll);
+
+                      self.selectionVoitureEdit.selectionVoitureEditAll=[];
+                      self.selectionVoitureEdit.selectionVoitureEditAll = angular.copy(self.selectionVoitureEditAll);
+                      $cookieStore
+                      .put('FilterVoitureEdit',  self.selectionVoitureEdit.selectionVoitureEditAll);
 
                   };
                   self.uncheckAll = function() {
-                      self.selection.selectionAll = $nameAttributesRef;
+                      self.selectionVoitureList.selectionVoitureListAll = ['id'];
+                      $cookieStore
+                      .put('FilterVoitureList',  self.selectionVoitureList.selectionVoitureListAll);
+
+                      self.selectionVoitureList.selectionVoitureEditAll = ['id'];
+                      $cookieStore
+                      .put('FilterVoitureEdit',  self.selectionVoitureEdit.selectionVoitureEditAll);
                        };
+
                    self.toggleSelection = function toggleSelection(qcmName) {
 
-                       var idx = self.selection.selectionAll.indexOf(qcmName);
-                       if (idx > -1) {
-                           self.selection.selectionAll.splice(idx, 1);
+                       var idxList = self.selectionVoitureList.selectionVoitureListAll.indexOf(qcmName);
+                       if (idxList > -1) {
+                           self.selectionVoitureList.selectionVoitureListAll.splice(idxList, 1);
+                           $cookieStore
+                           .put('FilterVoitureList',  self.selectionVoitureList.selectionVoitureListAll);
                        }
                        else {
-                           self.selection.selectionAll.push(qcmName)
+                           self.selectionVoitureList.selectionVoitureListAll.push(qcmName);
+                           $cookieStore
+                           .put('FilterVoitureList',  self.selectionVoitureList.selectionVoitureListAll);
                        }
                    };
+ 				#if($toggleSelectionEdit== true)
+      			 //toggleSelectionEdit function is validated to add in the controller
+       
+                  self.toggleSelectionEdit = function toggleSelection(qcmName) {
+
+                      var idxEdit = self.selectionVoitureEdit.selectionVoitureEditAll.indexOf(qcmName);
+                      if (idxEdit > -1) {
+                          self.selectionVoitureEdit.selectionVoitureEditAll.splice(idxEdit, 1);
+                          $cookieStore
+                          .put('FilterVoitureEdit',  self.selectionVoitureEdit.selectionVoitureEditAll);
+                      }
+                      else {
+                          self.selectionVoitureEdit.selectionVoitureEditAll.push(qcmName);
+                          $cookieStore
+                          .put('FilterVoitureEdit',  self.selectionVoitureEdit.selectionVoitureEditAll);
+                      }
+                  };
+                  #end
+                  var kk=0;
+                  #if($restoreArrayData== true)
+      			 //restoreArrayData function is validated to add in the controller
+       
+                  self.restoreArrayData= function()
+                  {
+                      for(var i= 0; i<self.selectionVoitureList.selectionVoitureListAll.length;i++)
+                      {
+
+                          if(self.selectionVoitureList.selectionVoitureListAll[i]=="attributesSelected")
+                          {
+                              i=i+1;
+                              self.resultFilterList[kk] = self.selectionVoitureList.selectionVoitureListAll[i];
+                              kk++;
+                          }
+                          else
+                          {
+                              self.resultFilterList[kk] = self.selectionVoitureList.selectionVoitureListAll[i];
+                              kk++;
+                          }
+
+
+                      }
+
+                      for(var i= 0; i<self.resultFilterList.length;i++) {
+                          if(self.resultFilterList[i]==undefined)
+                          {
+                              //self.resultFilter.shift();
+                              self.resultFilterList.splice(self.resultFilterList.length-1, 1);
+                          }
+                      }
+
+                      console.log("-----resultFilter-----"+self.resultFilterList);
+                      //console.log(self.resultFilterEdit.length);
+                      $cookieStore
+                      .put('FilterVoitureList', self.resultFilterList);
+                      $cookieStore
+                      .put('selectionVoitureListAllStore',self.resultFilterList);
+
+                      self.CountVoitureListFilter=true;
+
+                      $cookieStore
+                      .put('resVoitureListFilter',self.CountVoitureListFilter);
+                      console.log("bbbb"+self.CountVoitureListFilter)
+
+                      self.selectionVoitureListAll =  $cookieStore.get("selectionVoitureListAllStore");
+                      console.log("self.selectionVoitureListAll"+self.selectionVoitureListAll);
+                      $route.reload();
+
+                  }
+					#end
+                  var PP=0;
+                  #if($restoreArrayDataEdit== true)
+      			 //restoreArrayDataEdit function is validated to add in the controller
+       
+                  self.restoreArrayDataEdit= function()
+                  {
+                      for(var i= 0; i<self.selectionVoitureEdit.selectionVoitureEditAll.length;i++)
+                      {
+
+                          if(self.selectionVoitureEdit.selectionVoitureEditAll[i]=="attributesSelect")
+                          {
+                              i=i+1;
+                              self.resultFilterEdit[PP] = self.selectionVoitureEdit.selectionVoitureEditAll[i];
+                              PP++;
+                          }
+                          else
+                          {
+                              self.resultFilterEdit[PP] = self.selectionVoitureEdit.selectionVoitureEditAll[i];
+                              PP++;
+                          }
+
+
+                      }
+
+                      for(var i= 0; i<self.resultFilterEdit.length;i++) {
+                          if(self.resultFilterEdit[i]==undefined)
+                          {
+                              //self.resultFilter.shift();
+                              self.resultFilterEdit.splice(self.resultFilterEdit.length-1, 1);
+                          }
+                      }
+
+                      console.log("-----resultFilter-----"+self.resultFilterEdit);
+                      //console.log(self.resultFilterEdit.length);
+                      $cookieStore
+                      .put('FilterVoitureEdit', self.resultFilterEdit);
+                      $cookieStore
+                      .put('selectionVoitureEditAllStore',self.resultFilterEdit);
+
+                      self.CountVoitureEditFilter=true;
+
+                      $cookieStore
+                      .put('resVoitureEditFilter',self.CountVoitureEditFilter);
+                      console.log("bbbb"+self.CountVoitureEditFilter)
+
+                      self.selectionVoitureEditAll =  $cookieStore.get("selectionVoitureEditAllStore");
+                      console.log("self.selectionVoitureEditAll"+self.selectionVoitureEditAll);
+                      $route.reload();
+
+                  }
+                  #end
+
+                  self.resultFilterList=[];
+                  self.resultFilterEdit=[];
+                  self.CountVoitureListFilter=0;
+                  self.CountVoitureEditFilter=0;
+  				
+  					#if($showFrom== true)
+      			    //showFrom function is validated to add in the controller
+       
                    self.showFrom = function(variable) {
-                       for(var i=0; i<self.selection.selectionAll.length;i++)
+                       self.getCookiesVoitureList = $cookieStore.get('FilterVoitureList');
+                       if(self.getCookiesVoitureList==undefined)
                        {
-                           if(self.selection.selectionAll[i]==variable)
+                           self.getCookiesVoitureList='id';
+                       }
+                       if(self.getCookiesVoitureList!=undefined)
+                       {
+                          // console.log(self.getCookies.length);
+                           for(var i=0; i<self.getCookiesVoitureList.length;i++)
                            {
-                               return true;
+                               // console.log("dans cookies:////////"+ self.getCookies)
+                               if((self.getCookiesVoitureList[i]==variable)||(self.getCookiesVoitureList==variable))
+                               {
+                                   return true;
+                               }
                            }
+                       }
+
+                       else
+                       {
+                           return false
                        }
                        return false
                    };
+                   #end
                    
-                   self.checkAll();
-                    
-    }])
+                   #if($showFromEdit== true)
+      			    //showFromEdit function is validated to add in the controller
+       
+                  self.showFromEdit = function(variable) {
+                      self.getCookiesVoitureEdit = $cookieStore.get('FilterVoitureEdit');
+
+                      if(self.getCookiesVoitureEdit==undefined)
+                      {
+                          self.getCookiesVoitureEdit='id';
+                      }
+                      if(self.getCookiesVoitureEdit!=undefined)
+                      {
+                          // console.log(self.getCookies.length);
+                          for(var i=0; i<self.getCookiesVoitureEdit.length;i++)
+                          {
+                              // console.log("dans cookies:////////"+ self.getCookies)
+                              if((self.getCookiesVoitureEdit[i]==variable)||(self.getCookiesVoitureEdit==variable))
+                              {
+                                  return true;
+                              }
+                          }
+                      }
+                      else
+                      {
+                          return false
+                      }
+                      return false
+                  };
+				#end
+                  //self.checkAll();
+
+
+                  
+
+              }])
     

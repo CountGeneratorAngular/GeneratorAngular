@@ -1,0 +1,33 @@
+         self.selectionAll=$nameAttributes;
+         self.selection={selectionAll: $nameAttributesRef};
+  
+                self.checkAll = function() {
+                      self.selection.selectionAll=[];
+                      self.selection.selectionAll = angular.copy(self.selectionAll);
+
+                  };
+                  self.uncheckAll = function() {
+                      self.selection.selectionAll = $nameAttributesRef;
+                       };
+                   self.toggleSelection = function toggleSelection(qcmName) {
+
+                       var idx = self.selection.selectionAll.indexOf(qcmName);
+                       if (idx > -1) {
+                           self.selection.selectionAll.splice(idx, 1);
+                       }
+                       else {
+                           self.selection.selectionAll.push(qcmName)
+                       }
+                   };
+                   self.showFrom = function(variable) {
+                       for(var i=0; i<self.selection.selectionAll.length;i++)
+                       {
+                           if(self.selection.selectionAll[i]==variable)
+                           {
+                               return true;
+                           }
+                       }
+                       return false
+                   };
+                   
+                   self.checkAll();

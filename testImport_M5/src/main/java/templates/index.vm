@@ -12,8 +12,8 @@
     <script src="Js/angular.js" ></script>
     <script src="Js/angular-resource.js" ></script>
     <script src="Js/angular-route.js" ></script>
-     <script src="Js/checklist-model.js" ></script>
-     
+    <script src="Js/checklist-model.js" ></script>
+    <script src="http://code.angularjs.org/1.0.0rc10/angular-cookies-1.0.0rc10.js"></script>
      
 	<script src="Src/app.js" ></script>
 	<script type="text/javascript" src="Src/Route/routing.js"></script>
