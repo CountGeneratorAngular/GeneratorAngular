@@ -12,44 +12,48 @@ public class Ecran {
 	Map<String, String> EcransValue = new HashMap<String, String>();
 	Map<Integer, String> EcransTitle = new HashMap<Integer, String>();	
 	Template pageTemplate ;
+	String EcranName;
 	public Ecran()
 	{
 
 	}
+	public Ecran(String EcranName)
+	{
+		this.EcranName=EcranName;
+	}
 	
-	public void setList(ArrayList<String> ecrans)
+	public String getEcranName() {
+		return EcranName;
+	}
+	public void setEcranName(String ecranName) {
+		EcranName = ecranName;
+	}
+	public void setList(ArrayList<String> ListOptionsTemplates)
 	{
 		
-		for(int i = 0; i<ecrans.size();i++)
+		for(int i = 0; i<ListOptionsTemplates.size();i++)
 		{
-			this.setEcran(ecrans.get(i), "default");
+			this.setEcran(ListOptionsTemplates.get(i), "default");
 		}
 		
 		
 	}
-	public void setEcran(String Ecran, String Value)
+	public void setEcran(String Template, String Value)
 	{
-		EcransValue.put(Ecran, Value);
-		EcransTitle.put(EcransTitle.size(),Ecran);
-		
+		EcransValue.put(Template, Value);
+		EcransTitle.put(EcransTitle.size(),Template);
 	}
 	public String getEcran(String Ecran)
 	{
-		
-		
-		
 		return EcransValue.get(Ecran);
-		
 	}
 	
 	public void setPage(Template t)
 	{
-		pageTemplate = t;
-		
+		pageTemplate = t;		
 	}
 	public Template getPage()
-	{
-		
+	{		
 		return pageTemplate;
 	}
 	
@@ -69,9 +73,7 @@ public class Ecran {
 		{
 			c.put(EcransTitle.get(i),EcransValue.get(EcransTitle.get(i)));
 			System.out.println(EcransTitle.get(i));
-		}
-		
-		
+		}				
 	}
 	
 }

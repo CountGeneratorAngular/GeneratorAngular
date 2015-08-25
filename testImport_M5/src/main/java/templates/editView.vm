@@ -1,4 +1,3 @@
-<a ng-if="test" >Logged as : {{test}}</a>
 <div ng-controller="${EntityName}Controller as ${EntityName}">
 #set($d = "$")
 <h2>Edit :${EntityName}</h2>
@@ -25,10 +24,7 @@
 <div>
 </div>
 <h3>Liste d'attributs</h3>
-
-#parse("/templates/filter.vm")
-
-<hr/>
+ #parse("/templates/filterEdit.vm")
 
 	 <form id="EventSearch" class="form-horizontal">
         <div class="form-group">
@@ -44,21 +40,21 @@
 			#set($sub = $att.get(0).length() - 2)
 				#if($sub > 0 && $att.get(0).substring($sub).equals("Id"))
 				
-				<label for="title" class="col-sm-2 control-label" ng-if="${EntityName}.showFrom('${att.get(0)}')">${att.get(0)} : </label>
+				<label for="title" class="col-sm-2 control-label" ng-if="${EntityName}.showFromEdit('${att.get(0)}')">${att.get(0)} : </label>
 				<div class="col-sm-10">
-				<select class="form-control" ng-model="${EntityName}.${EntityName}Active.${att.get(0)}" ng-options="option.id as option.Nom for option in ${EntityName}.Externe.${att.get(0)}">
+				<select class="form-control"  ng-if="${EntityName}.showFromEdit('${att.get(0)}')" ng-model="${EntityName}.${EntityName}Active.${att.get(0)}" ng-options="option.id as option.Nom for option in ${EntityName}.Externe.${att.get(0)}">
 				</select></div>
 				#else
-					<label for="title" class="col-sm-2 control-label" ng-if="${EntityName}.showFrom('${att.get(0)}')">${att.get(0)} :</label>
+					<label for="title" class="col-sm-2 control-label" ng-if="${EntityName}.showFromEdit('${att.get(0)}')">${att.get(0)} :</label>
 					 <div class="col-sm-10">
-					 <input class="form-control" type="text" ng-model="${EntityName}.${EntityName}Active.${att.get(0)}"  value="#if($att.get(1).equals("Entity"))FUTUR SELECT#else {{${EntityName}.${EntityName}Active.${att.get(0)}}}#end"/>
+					 <input class="form-control" type="text" ng-if="${EntityName}.showFromEdit('${att.get(0)}')" ng-model="${EntityName}.${EntityName}Active.${att.get(0)}"  value="#if($att.get(1).equals("Entity"))FUTUR SELECT#else {{${EntityName}.${EntityName}Active.${att.get(0)}}}#end"/>
 				     </div>
 				#end
 			#else
 				#if($att)
-				<label for="title" class="col-sm-2 control-label" ng-if="${EntityName}.showFrom('${att.get(0)}')">${att.get(0)} :</label>
-				<div class="col-sm-10">
-		 		<input id="title" name="title" class="form-control" type="button" ng-click="${EntityName}.goInto('${att.get(0)}/listView')" value="open"/>
+				<label for="title" class="col-sm-2 control-label" ng-if="${EntityName}.showFromEdit('${att.get(0)}')">${att.get(0)} :</label>
+				<div class="col-sm-10" >
+		 		<input id="title" name="title" class="form-control" type="button" ng-if="${EntityName}.showFromEdit('${att.get(0)}')" ng-click="${EntityName}.goInto('${att.get(0)}/listView')" value="open"/>
 			</div>
 				#end
 			#end

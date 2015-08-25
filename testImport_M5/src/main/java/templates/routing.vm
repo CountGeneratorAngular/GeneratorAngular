@@ -6,120 +6,10 @@ app
                 templateUrl:"./Src/View/home.html",
                 controller:'logsController as ctrl'
             })
-            			
                         .when("/index/login",{
                 templateUrl:"./Src/View/logsController.html",
                 controller:'logsController as ctrl'
             })
-            
-                        .when('/index/listViewCrud',{
-                templateUrl:'./Src/View/listViewCrud.html',
-                controller:'controllerCrud as ctrlCrud',
-                resolve: {
-                    loaded: ['${V}http','sharedData','${V}route', '${V}location', function(${V}http, sharedData, ${V}route,${V}location){
-	                    if(sharedData.get("indexName"))
-	                    {
-	                    
-	                    var name = sharedData.get("indexName");
-	                    sharedData.store("parent",[]);
-                        return ${V}http.get("./rest/"+sharedData.get("indexName")).then(function(response){
-                            sharedData.store('parents',[]);
-                            sharedData.store('actualEntity',response.data);
-                            sharedData.store('actualEntityName',name);
-                            sharedData.remove("indexName");
-                                                    #foreach($item in $external)
-                                return ${V}http.get("./rest/$item").then(function(response){
-								sharedData.store("$item",response.data);
-                           #end
-                           
-                           #set($tempSize = $external.size() - 1)
-                           return sharedData.get('$external.get($tempSize)');
-                            #foreach($item in $external)
-                            });
-                            #end 
-                           
-                        })
-                                                    }
-                        else
-                        {
-                        
-                        if(!sharedData.get("actualEntity"))
-                        {
-                        	${V}location.path('/index');
-                        }
-                        else
-                        {
-                        var tempParent = sharedData.get("parent");
-                        var url = "";
-                        for(var i = 0; i<tempParent.length;i++)
-                        {
-                        	url+=tempParent[i].split("#")[0]+"/"+tempParent[i].split("#")[1]+"/";
-                        }
-                        url+=sharedData.get("actualEntityName");
-                        return ${V}http.get("./rest/"+url).then(function(response){
-                            
-                            sharedData.store('actualEntity',response.data);
-                                                    #foreach($item in $external)
-                                return ${V}http.get("./rest/$item").then(function(response){
-								sharedData.store("$item",response.data);
-                           #end
-                           
-                           #set($tempSize = $external.size() - 1)
-                           return sharedData.get('$external.get($tempSize)');
-                            #foreach($item in $external)
-                            });
-                            #end 
-                           
-                        })
-                        }
-                        }
-                    }]
-                }
-            })	
-                                    .when('/index/createViewCrud',{
-                templateUrl:'./Src/View/createViewCrud.html',
-                controller:'controllerCrud as ctrlCrud',
-                resolve: {
-                    loaded: ['${V}http','sharedData','${V}route', '${V}location', function(${V}http, sharedData, ${V}route,${V}location){
-	                    if(sharedData.get("indexName"))
-	                    {
-	                    
-	                    var name = sharedData.get("indexName");
-                        return ${V}http.get("./rest/"+sharedData.get("indexName")).then(function(response){
-                            
-                            sharedData.store('actualEntity',response.data);
-                            sharedData.store('actualEntityName',name);
-                            sharedData.remove("indexName");
-                             
-                           
-                        })
-                                                    }
-                        else
-                        {
-                        
-                        if(!sharedData.get("actualEntity"))
-                        {
-                        	${V}location.path('/index');
-                        }
-                        else
-                        {
-                        #foreach($item in $external)
-                                return ${V}http.get("./rest/$item").then(function(response){
-								sharedData.store("$item",response.data);
-                           #end
-                           
-                           #set($tempSize = $external.size() - 1)
-                           return sharedData.get('$external.get($tempSize)');
-                            #foreach($item in $external)
-                            });
-                            #end
-                        }
-                        }
-                    }]
-                }
-            })
-            
-            
 #set($parent = [])   
 #set($oldDepth = 2) 
 #set($ParentName = "")  
@@ -150,7 +40,8 @@ app
 	#end
 	#end
 		#set($oldDepth=$item.get(4))
-		#set($ParentName=$item.get(1))		
+		#set($ParentName=$item.get(1))
+			
             .when('/index/#foreach($url in $parent)${url}/:${url}Id/#end${item.get(1)}/listView',{
                 templateUrl:'./Src/View/${item.get(1)}ListView.html',
                 controller:'${item.get(1)}Controller as ${item.get(1)}',

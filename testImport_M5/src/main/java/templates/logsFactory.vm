@@ -1,7 +1,0 @@
-app
-.factory('logsFactory',['$resource',function($resource){
-        return $resource('../rest/user',
-            {}
-        );
-		
-    }])

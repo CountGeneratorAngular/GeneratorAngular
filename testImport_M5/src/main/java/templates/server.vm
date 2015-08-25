@@ -127,7 +127,7 @@ var ${entity.get(1)}Builder = mongoose.model('${entity.get(1)}',${entity.get(1)}
 		#end
 app.get('/rest/#foreach($url in $parent)${url}/:${url}Id/#end${item.get(1)}', function(req,res)
 		{
-		${actualParent}Builder.find(#if(!$item.get(1).equals(${actualParent})){id:req.params.${actualParent}Id}#end).sort("id").exec(
+		${actualParent}Builder.find(#if(!$item.get(1).equals(${actualParent})){id:req.params.${actualParent}Id},#end
 		 function(err, doc){
 		console.log("GET :${item.get(1)} : ");
 		console.log(doc#if(!$item.get(1).equals(${actualParent}))[0]#end#if(${parent.size()}!=0).#foreach($url in $parent)#if(!$url.equals(${actualParent}))#set($indNiveau = $foreach.count)${url}[req.params.${url}Id].#end#end#if(!$url.equals(${actualParent}))$item.get(1)#end#end);
@@ -174,8 +174,8 @@ app.get('/rest/#foreach($url in $parent)${url}/:${url}Id/#end${item.get(1)}', fu
 		#else
 				app.delete('/rest/#foreach($url in $parent)${url}/:${url}Id/#end${item.get(1)}/:${item.get(1)}Id', function(req, res)
 		{
-		${actualParent}Builder.find({id:req.params.${actualParent}Id}).sort("id").exec(
-		  function(err, doc){
+		${actualParent}Builder.find({id:req.params.${actualParent}Id}
+		 , function(err, doc){
                     
                     doc[0]#if(${parent.size()}!=0).#foreach($url in $parent)#if(!$url.equals(${actualParent}))#set($indNiveau = $foreach.count)${url}[req.params.${url}Id].#end#end#if(!$url.equals(${actualParent}))$item.get(1)#end#end[req.params.${item.get(1)}Id].remove();
                     for (var i =0; i<doc[0]#if(${parent.size()}!=0).#foreach($url in $parent)#if(!$url.equals(${actualParent}))#set($indNiveau = $foreach.count)${url}[req.params.${url}Id].#end#end#if(!$url.equals(${actualParent}))$item.get(1)#end#end.length; i++)
@@ -198,7 +198,7 @@ app.get('/rest/#foreach($url in $parent)${url}/:${url}Id/#end${item.get(1)}', fu
 		 app.post('/rest/#foreach($url in $parent)#set($indNiveau = $foreach.count)${url}/:${url}Id/#end${item.get(1)}', function(req, res)
   {
    var resulCount;
-  ${actualParent}Builder.find(#if(!$item.get(1).equals(${actualParent})){id: req.params.${actualParent}Id}).sort("id").exec(#{end}function(err, doc){
+  ${actualParent}Builder.find(#if(!$item.get(1).equals(${actualParent})){id: req.params.${actualParent}Id} , #{end}function(err, doc){
 		
 		if(doc[0])
 			if("${item.get(1)}" != "${actualParent}")
@@ -299,7 +299,7 @@ if(doc[0].#foreach($url in $parent)#if(!$url.equals(${actualParent}))#set($indNi
 		}
 		});	
 		#else
-			${actualParent}Builder.find(#if(!$item.get(1).equals(${actualParent})){id: req.params.${actualParent}Id}).sort("id").exec(#{end}function(err, doc){
+			${actualParent}Builder.find(#if(!$item.get(1).equals(${actualParent})){id: req.params.${actualParent}Id} , #{end}function(err, doc){
 			
 			#set($inside = false)
 		#foreach($attribute in $structure)
@@ -363,7 +363,7 @@ app.post('/rest/user', function(req,res)
 })
 		app.post('/rest/userLogin', function(req,res)
 		{
-		userDBB.find({Login:req.body.Login, Password:req.body.Password}).sort("id").exec(function(err, doc){
+		userDBB.find({Login:req.body.Login, Password:req.body.Password},function(err, doc){
 		console.log(doc);
 		   res.json(doc);
 		});
@@ -377,7 +377,7 @@ app.post('/rest/user', function(req,res)
 		});
 		app.get('/rest/user/:userId', function(req,res)
 		{
-		userDBB.find({login:req.params.userId}).sort("id").exec(function(err, doc){
+		userDBB.find({login:req.params.userId},function(err, doc){
 		console.log(doc);
 		   res.json(doc);
 		});

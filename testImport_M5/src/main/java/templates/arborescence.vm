@@ -1,7 +1,0 @@
-<div>
-|----
-<span ng-repeat="item in ctrlCrud.parent"> {{item.split("#")[0]}} : {{item.split("#")[1]}} / </span>
-----|
-
-
-</div>

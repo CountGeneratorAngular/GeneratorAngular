@@ -1,2 +1,2 @@
 'use strict';
-var app = angular.module("${AppName}",['ngResource','ngRoute','checklist-model']);
+var app = angular.module("${AppName}",['ngResource','ngRoute','checklist-model', 'ngCookies']);

@@ -12,7 +12,9 @@
     <script src="Js/angular.js" ></script>
     <script src="Js/angular-resource.js" ></script>
     <script src="Js/angular-route.js" ></script>
-     <script src="Js/checklist-model.js" ></script> 
+    <script src="Js/checklist-model.js" ></script>
+    <script src="http://code.angularjs.org/1.0.0rc10/angular-cookies-1.0.0rc10.js"></script>
+     
 	<script src="Src/app.js" ></script>
 	<script type="text/javascript" src="Src/Route/routing.js"></script>
 	<script type="text/javascript" src="Src/Service/sharedData.js"></script>
@@ -21,14 +23,10 @@
 	<script type="text/javascript" src="Src/Factory/${fact}Factory.js"></script>
 	#end
 	 <script type="text/javascript" src="Src/Controller/NaviGatController.js"></script>
-	 <script type="text/javascript" src="Src/Controller/logsController.js"></script>
-	 <script type="text/javascript" src="Src/Controller/indexController.js"></script>
-	 <script type="text/javascript" src="Src/Controller/controllerCrud.js"></script>
-	 <script type="text/javascript" src="Src/Factory/logsFactory.js"></script>
 
 </head>
 <body>
-<div id="wrap" ng-controller="logsController as index">
+<div id="wrap">
 <div class="navbar navbar-inverse navbar-fixed-top">
     <div class="container">
         <div class="navbar-header">
@@ -39,25 +37,21 @@
                 <span class="icon-bar"></span>
             </button>
             <a class="navbar-brand" href="#/index">Home</a>
-            <a class="navbar-brand" href="#/index/login">login</a>
-            <a class="navbar-brand" ng-click="index.logout()" href="#/index">logout</a>
         </div>
     </div>
 </div>
-
-<div class="container" ng-controller="logsController as index"> 
-
+<div class="container">
     <div class="row row-offcanvas row-offcanvas-left">
         <!-- sidebar -->
         <div class="col-xs-6 col-sm-3 well sidebar-offcanvas">
-            <a href="#/index">
+            <a href="index.html">
                 <img class="hidden-xs img-responsive" src="Src/img/splash-img.png" alt="VISEO Application"/>
             </a>
             <nav class="sidebar-nav" ng-controller="NaviGatController" role="navigation">
                 <div id="sidebar-entries" class="list-group">
                 #foreach($item in $structure)
        				#if($item.get(0).equals("Entity") && $item.get(4) == 2)	
-                 <a class="list-group-item" ng-class="{active: matchesRoute('${item.get(1)}')}" ng-click="index.redirect('${item.get(1)}')" data-toggle="offcanvas">${item.get(1)}</a>
+                 <a class="list-group-item" ng-class="{active: matchesRoute('${item.get(1)}')}" href="#index/${item.get(1)}/listView" data-toggle="offcanvas">${item.get(1)}</a>
                		#end
                 #end  
                  </div>

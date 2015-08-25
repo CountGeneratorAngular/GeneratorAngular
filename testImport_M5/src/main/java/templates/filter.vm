@@ -1,22 +1,33 @@
-    <div class="col-md-offset-2 col-sm-2">
-        <a id="displayButton1" value="Afficher" ng-click="${EntityName}.switch('displayTable','displayButton')">
-            <span class="glyphicon glyphicon-plus-sign"></span> Filter</a>
-    </div>
-    
-<div id="displayTable">
-   <label ng-repeat="attributesSelected in ${EntityName}.selectionAll">
-        <input type="checkbox" checklist-model="${EntityName}.selection.selectionAll" checklist-value="attributesSelected" ng-click="${EntityName}.toggleSelection('attributesSelected')" > {{attributesSelected}}
-    <br></label>
- 	 <div>
-     	 <div class="form-group">
-	         <div class="col-md-offset-2 col-sm-2">
-	             <a id="Create2" name="Create2" class="btn btn-primary" ng-click="${EntityName}.checkAll()">
-	                 <span class="glyphicon glyphicon-plus-sign"></span>Check all</a>
-	         </div>
-	         <div class="col-sm-2">
-	             <a id="Create3" name="Create3" class="btn btn-primary" ng-click="${EntityName}.uncheckAll()">
-	                 <span class="glyphicon glyphicon-plus-sign"></span>Uncheck all</a>
-	         </div>
-     	</div>
-	</div>
-</div>
+         self.selectionAll=$nameAttributes;
+         self.selection={selectionAll: $nameAttributesRef};
+  
+                self.checkAll = function() {
+                      self.selection.selectionAll=[];
+                      self.selection.selectionAll = angular.copy(self.selectionAll);
+
+                  };
+                  self.uncheckAll = function() {
+                      self.selection.selectionAll = $nameAttributesRef;
+                       };
+                   self.toggleSelection = function toggleSelection(qcmName) {
+
+                       var idx = self.selection.selectionAll.indexOf(qcmName);
+                       if (idx > -1) {
+                           self.selection.selectionAll.splice(idx, 1);
+                       }
+                       else {
+                           self.selection.selectionAll.push(qcmName)
+                       }
+                   };
+                   self.showFrom = function(variable) {
+                       for(var i=0; i<self.selection.selectionAll.length;i++)
+                       {
+                           if(self.selection.selectionAll[i]==variable)
+                           {
+                               return true;
+                           }
+                       }
+                       return false
+                   };
+                   
+                   self.checkAll();

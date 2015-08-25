@@ -1,0 +1,4 @@
+        self.goInto = function(aim){
+        var res = ${d}location.path().substr(0,${d}location.path().length-4);
+         ${d}location.path(res+aim);
+        }

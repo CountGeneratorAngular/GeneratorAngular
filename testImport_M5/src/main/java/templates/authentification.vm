@@ -1,9 +1,0 @@
-
-<div id="logs">
-<span>Login : <input type="text" ng-model="ctrl.userLogin"></span><br/>
-<span>Password : <input type="password" ng-model="ctrl.userPassword"></span>
-<br/>
-<input type="button" value="Register" ng-click="ctrl.register()"/><br/>
-<input type="button" value="connect" ng-click="ctrl.login()"/><br/>
-<input type="button" value="logout" ng-click="ctrl.logout()"/>
-</div>
