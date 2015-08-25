@@ -117,22 +117,25 @@ public class CreateController {
 		Ecran e =new Ecran("QCM");
 		/*Create Page*/
 		Page QcmPage= new Page();
+		Page VoiturePage= new Page();
 		/*Create Entity*/
 		  Entity qcmTest = new Entity("qcmTest", false);
 		  qcmTest.AddAttribute(new Attribute("id", "Number", false));
 		  qcmTest.AddAttribute(new Attribute("Titre", "String", false));
 		  qcmTest.AddAttribute(new Attribute("Repondu", "Boolean", false));
+		  	  
 		  /* 
 		   * declaration des attributs à afficher
 		   * Ajouter une list
 		   * Replace Attributes
 		   * self.selectionAllGlobal=['id', 'moteur', 'ClasseId', 'SmileyId', 'MatiereAgr', 'Roues', 'vitre'];
 		   * */
-		  
-		QcmPage.SetAttributs("id");
-		QcmPage.SetAttributs("moteur");
-		QcmPage.SetAttributs("ClasseId");
-		
+		  /*
+		   * A remplacer par QcmPage.SetAttributs("qcmTest","id","Titre"...);
+		   */
+		QcmPage.SetAttributs("qcmTest","id");
+		QcmPage.SetAttributs("qcmTest","Titre");
+		VoiturePage.SetAttributs("Voiture", "id");
 		/*
 		 * ajouter une seule fonction
 		 */		
@@ -159,13 +162,13 @@ public class CreateController {
 		 * tester
 		 */
 		
-		Map<String, Object> ListFunctions = new HashMap<String, Object>();
+		Map<String, String> ListFunctions = new HashMap<String, String>();
 		ListFunctions= QcmPage.GetListFunction();
 		
 		/*for(int i=0; i<ListFunctions.size();i++)
 		{
 			*/
-			for (final Map.Entry<String, Object> entry : ListFunctions.entrySet())
+			for (final Map.Entry<String, String> entry : ListFunctions.entrySet())
 			{
 				System.out.println("*************************Bigin: ListFunctions*****************************");
 				System.out.println(entry.getKey());
@@ -196,35 +199,50 @@ public class CreateController {
 	
 		//EListView.setContext(context);
 		ArrayList<entityVelocity> entitiesVelocity = new ArrayList<entityVelocity>();
+		ArrayList<String> ListEntities= QcmPage.GetListEntity();
+
 		for(int k = 0; k<EntitiesList.size(); k++)
 		{
 			getEntitiesAttributeFirstLevel(EntitiesList.get(k),listAttribute); 
 			context.put("EntityName", listAttribute.get(0)[0]);
 			 String[] str = (String[]) ListAttributsObject.keySet().toArray(new String[ListAttributsObject.size()]);
 			 EntityFirstLevelObject = new Object[listAttribute.size()];
-				 
-			for(int k1 = 0; k1<EntitiesList.size(); k1++)
-			{
-				getEntitiesAttributeFirstLevel(EntitiesList.get(k1),listAttribute); 
-				context.put("EntityName", listAttribute.get(0)[0]);
-				EntityFirstLevelObject = new Object[listAttribute.size()];
 				
-				
-					for(int i1=0; i1<str.length;i1++) 
+				if(ListEntities.size()!=0)
+				{
+					for(int P=0; P<ListEntities.size();P++)
 					{
-						for(int i =1;i<listAttribute.size();i++)
+						System.out.println("zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz");
+						System.out.println(ListEntities.get(P));
+						System.out.println("zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz");
+						System.out.println(listAttribute.get(0)[0]);
+						if(ListEntities.get(P).equals(listAttribute.get(0)[0]))
 						{
-							System.out.println("-----------------------------------------------------");
-			            System.out.println(str[i1]);
-			            if(str[i1].equals(listAttribute.get(i)[0]))
-			            {
-			            	EntityFirstLevelObject[i]=listAttribute.get(i);		
-			            	break;
-			            }
-							        
-			        }
-				} 
-			}
+							
+							for(int i1=0; i1<str.length;i1++) 
+							{
+								for(int i =1;i<listAttribute.size();i++)
+								{
+						            if((str[i1].equals(listAttribute.get(i)[0])))
+						            {
+						            	EntityFirstLevelObject[i]=listAttribute.get(i);		
+						            	break;
+						            }							        
+								}
+							} 
+						}
+						else
+						{
+							 for(int i =1;i<listAttribute.size();i++)
+								{
+									EntityFirstLevelObject[i]=listAttribute.get(i);
+								} 
+						}
+					}
+					
+				}
+			
+			
 			/*
 			 * enlever les doublant
 			 */

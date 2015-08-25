@@ -15,8 +15,10 @@ import ObjectsEcran.Ecran;
  */
 public class Page {
 	String PageName;
-	Map<String, Object> ListFunctions = new HashMap<String, Object>();
+	Map<String, String> ListFunctions = new HashMap<String, String>();
 	Map<String, String>  ListAttributs = new HashMap<String, String>();
+	public ArrayList<String> ListEntities = new ArrayList<String>();
+	
 	public String getPageName() {
 		return PageName;
 	}
@@ -30,11 +32,19 @@ public class Page {
 	 * @param ListAttributs
 	 */
 	
-	public void SetAttributs(String Attribut) {
+	public void SetAttributs(String Entity,String Attribut) {
 		
-		ListAttributs.put(Attribut,Attribut);
+		ListAttributs.put(Attribut,Entity);
+		if(!ListEntities.contains(Entity))
+		{
+			ListEntities.add(Entity);
+		}
+		
 	}
-	
+	public ArrayList<String> GetListEntity()
+	{
+		return ListEntities;
+	}
 	/**
 	 * @param e
 	 * @param ListAttributs
@@ -62,7 +72,7 @@ public class Page {
 	{
 		return ListFunctions.get(Function);
 	}
-	public Map<String, Object> GetListFunction()
+	public Map<String, String> GetListFunction()
 	{
 		return ListFunctions;
 	}
