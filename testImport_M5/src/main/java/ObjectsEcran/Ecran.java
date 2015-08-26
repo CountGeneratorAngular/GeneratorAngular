@@ -1,16 +1,25 @@
 package ObjectsEcran;
 
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
+import org.apache.velocity.context.Context;
+
+import ObjectsPage.Page;
 
 public class Ecran {
 
 	Map<String, String> EcransValue = new HashMap<String, String>();
-	Map<Integer, String> EcransTitle = new HashMap<Integer, String>();	
+	Map<Integer, String> EcransTitle = new HashMap<Integer, String>();
+	List<String> listFunctions = new ArrayList<String>();
+	List<Page> listPages = new ArrayList<Page>();
 	Template pageTemplate ;
 	String EcranName;
 	public Ecran()
@@ -56,7 +65,27 @@ public class Ecran {
 	{		
 		return pageTemplate;
 	}
-	
+	public void updateFunctions(){
+		
+		for(Page p:listPages)
+		{
+			List<String> tempList = p.GetListFunction();
+			for(String str:tempList)
+			{
+				this.addFunction(str);
+			}
+			
+		}
+		
+		
+	}
+	public void addFunction(String function){
+		if(!this.listFunctions.contains(function))
+		{
+			this.listFunctions.add(function);
+		}
+		
+	}
 	public String getListEcran(){
 		String test = "";
 		for(int i = 0; i<EcransTitle.size();i++)
@@ -67,6 +96,40 @@ public class Ecran {
 		
 	
 	}
+	
+	public void printFunctions(){
+		System.out.println(this.listFunctions);
+	}
+	public void generateGlobal(Context context, Template tCtrl, Template tFact){
+		try{
+		StringWriter writer = new StringWriter();
+		FileWriter fw;
+		context.put("listFunction",this.listFunctions);
+		tCtrl.merge(context, writer);
+		fw = new FileWriter(System.getProperty("user.dir")+"/AngularNew/Src/Controller/"+this.EcranName+"Controller.js");
+		fw.write(writer.toString());
+		fw.close();
+		writer = new StringWriter();
+		tFact.merge(context, writer);
+		fw = new FileWriter(System.getProperty("user.dir")+"/AngularNew/Src/Factory/"+this.EcranName+"Factory.js");
+		fw.write(writer.toString());
+		fw.close();
+			
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+	
+}
+	public void addPage(Page p){
+		if(!this.listPages.contains(p))
+		{
+			this.listPages.add(p);
+		}
+	}
+	
+	
 	public void setContext(VelocityContext c)
 	{
 		for(int i = 0; i<EcransTitle.size();i++)

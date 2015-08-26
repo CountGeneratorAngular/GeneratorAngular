@@ -86,7 +86,7 @@ public class Page {
 	 * @param Function
 	 * @return
 	 */
-	public Object GetListFunction(String Function)
+	public List<String> GetListFunction()
 	{
 		
 		
@@ -101,45 +101,19 @@ public class Page {
 	{
 		
 	}
-	public void generateCtrlFact(Context context, Template templaceController, Template templaceFactory){
-		Template tempTemplate = this.PageTemplate;
-		String tempName = this.PageName;
-		this.setTemplate(templaceController);
-		this.setPageName("Controller");
-		this.generate(context);
-		this.setTemplate(templaceFactory);
-		this.setPageName("Factory");
-		this.generate(context);
-		this.setTemplate(tempTemplate);
-		this.setPageName(tempName);
-
-		
-	}
-	
 	public void selectFrom(List<String> selection,String entity,List<Entity> entitiesList   )
 	{
 		
 		
 	}
-	public void generate(Context context){
-		
+	public void generate(VelocityContext context){
+
 		StringWriter writer = new StringWriter();
-		PageTemplate.merge(context, writer);
-		String ext = "";
-		if(this.PageName =="Factory" || this.PageName == "Controller")
-			{
-			ext = "js";
-			this.PageName="Src/"+this.PageName+"/QcmTest"+this.PageName;
-			}
-		else
-			{
-			ext = "html";
-			this.PageName="Src/View/"+this.PageName;
-			}
-		
+		this.PageTemplate.merge(context, writer);
+		String ext = "";		
 		try {
 			FileWriter fw;
-			fw = new FileWriter(System.getProperty("user.dir")+"/AngularNew/"+this.PageName+"."+ext);
+			fw = new FileWriter(System.getProperty("user.dir")+"/AngularNew/Src/View/"+this.PageName+".html");
 			fw.write(writer.toString());
 			fw.close();
 		} catch (IOException e) {

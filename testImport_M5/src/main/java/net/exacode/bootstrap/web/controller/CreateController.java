@@ -115,31 +115,45 @@ public class CreateController {
 		*/		
 //Meta-Modeling
 		/*Create Ecran*/
-		Ecran e =new Ecran("QCM");
+		Ecran e =new Ecran("qcmTest");
+		context.put("EntityName", "qcmTest");
+		factoryList.add(e.getEcranName());
 		/*Create Page*/
-		Page QcmPage= new Page("QcmView");
-		/*Create Entity*/
-		QcmPage.setTemplate(mapTemplates.get("controller"));
-		QcmPage.setEntity("qcmTest");
-		/* 
-		 * declaration des attributs à afficher
-		 * Ajouter une list
-		 * Replace Attributes
-		 * */
-		QcmPage.SetAttribute("id");
-		QcmPage.SetAttribute("Titre");
-		/*
-		 * ajouter une seule fonction
-		 */		
-		QcmPage.SetFunction("create");
-		QcmPage.SetFunction("delete");
-		QcmPage.SetFunction("goInto");
-		QcmPage.SetFunction("new");			
-		QcmPage.SetFunction("redirect");	
-		QcmPage.SetFunction("save");		
-		QcmPage.SetFunction("switch");			
-		QcmPage.SendFunctions(context);
-// creation des fichiers angularJs independants des entites
+		Page QcmPageL= new Page("qcmTestListView");
+		e.addPage(QcmPageL);
+		
+		QcmPageL.setTemplate(mapTemplates.get("listView"));
+		QcmPageL.setEntity("qcmTest");
+		
+		QcmPageL.SetAttribute("id");
+		QcmPageL.SetAttribute("Titre");
+		
+
+		QcmPageL.SetFunction("delete");
+		QcmPageL.SetFunction("goInto");			
+		QcmPageL.SetFunction("redirect");			
+		QcmPageL.SetFunction("switch");					
+		
+		
+		Page QcmPageC= new Page("qcmTestCreateView");
+		e.addPage(QcmPageC);
+		QcmPageC.setTemplate(mapTemplates.get("createView"));
+		QcmPageC.setEntity("qcmTest");
+		QcmPageC.SetAttribute("id");
+		QcmPageC.SetAttribute("Titre");
+		QcmPageC.SetAttribute("Repondu");
+		
+
+		QcmPageC.SetFunction("new");
+		QcmPageC.SetFunction("goInto");			
+		QcmPageC.SetFunction("redirect");					
+		
+		
+		
+		
+		
+		e.updateFunctions();
+		// creation des fichiers angularJs independants des entites
 		createFile(mapTemplates.get("app"), context, "Src/app", "js");
 		createFile(mapTemplates.get("server"), context, "Server/server", "js");
 		createFile(mapTemplates.get("routing"), context, "Src/Route/routing", "js");
@@ -152,37 +166,13 @@ public class CreateController {
 		//createFile(mapTemplates.get("logsFactory"), context, "Src/Factory/logsFactory", "js");
 
 // creation des fichiers AngularJs dependant des entites
-		Object[] EntityFirstLevelObject;
-		/*
-		 * Get list Attributs choisis par l'utilisateur
-		 */
-		List<String>  ListAttributeSelected = QcmPage.GetListAttributs();
-		ArrayList<entityVelocity> entitiesVelocity = new ArrayList<entityVelocity>();
-		for(int k = 0; k<EntitiesList.size(); k++)
-		{
-			if(EntitiesList.get(k).Name == QcmPage.getEntity())
-			{
-			context.put("Parent", ParentList.get(k));
-			getEntitiesAttributeFirstLevel(EntitiesList.get(k),listAttribute); 
-			context.put("EntityName", listAttribute.get(0)[0]);
-			EntityFirstLevelObject = new Object[listAttribute.size()];
-			
-			for(int i=0; i<listAttribute.size();i++) 
-			{
-				if(ListAttributeSelected.contains(listAttribute.get(i)[0])) 	
-				{
-					EntityFirstLevelObject[i]=listAttribute.get(i);	
-					System.out.println(listAttribute.get(i)[0]);
-				}
-			}
-			context.put("Attributes", EntityFirstLevelObject);
-			}
-			
-		}
-		listAttribute.clear();
-		factoryList.add(QcmPage.getPageName());
-		QcmPage.generateCtrlFact(context, mapTemplates.get("controller"), mapTemplates.get("factory"));
-	
+		setAttributes(EntitiesList, QcmPageL, context, ParentList, listAttribute);
+		QcmPageL.generate(context);
+		setAttributes(EntitiesList, QcmPageC, context, ParentList, listAttribute);
+		QcmPageC.generate(context);
+		e.generateGlobal(context, mapTemplates.get("controller"), mapTemplates.get("factory"));
+
+		
 		Object[] EntityNameList = new Object[factoryList.size()];
 		for(int i =0;i<factoryList.size();i++)
 		{
@@ -197,7 +187,38 @@ public class CreateController {
 	}
 	
 
-	
+	public void setAttributes(List<Entity> EntitiesList, Page page, VelocityContext c, List<String[]> ParentList, List<String[]> listAttribute){
+		Object[] EntityFirstLevelObject;
+		/*
+		 * Get list Attributs choisis par l'utilisateur
+		 */
+		List<String>  ListAttributeSelected = page.GetListAttributs();
+		ArrayList<entityVelocity> entitiesVelocity = new ArrayList<entityVelocity>();
+		for(int k = 0; k<EntitiesList.size(); k++)
+		{
+			if(EntitiesList.get(k).Name == page.getEntity())
+			{
+			c.put("Parent", ParentList.get(k));
+			getEntitiesAttributeFirstLevel(EntitiesList.get(k),listAttribute); 
+			c.put("EntityName", listAttribute.get(0)[0]);
+			EntityFirstLevelObject = new Object[listAttribute.size()];
+			
+			for(int i=0; i<listAttribute.size();i++) 
+			{
+				if(ListAttributeSelected.contains(listAttribute.get(i)[0])) 	
+				{
+					EntityFirstLevelObject[i]=listAttribute.get(i);	
+					System.out.println(listAttribute.get(i)[0]);
+				}
+			}
+			System.out.println(EntityFirstLevelObject);
+			c.put("Attributes", EntityFirstLevelObject);
+			}
+			
+		}
+		
+		listAttribute.clear();
+	}
 	public void setTemplates(Map<String, Template> mapTemplates, VelocityEngine v){
 		mapTemplates.put("app",v.getTemplate("/templates/app.vm"));
 		mapTemplates.put("server",v.getTemplate("/templates/server.vm"));
