@@ -205,7 +205,7 @@ public class CreateController {
 	for(int k = 0; k<EntitiesList.size(); k++)
 	{
 		
-		if(ecran.getListEntities().contains(EntitiesList.get(k).Name))
+		if(listEntities.contains(EntitiesList.get(k).Name))
 		{
 		System.out.println(ecran.getListEntities());
 		c.put("Parent", ParentList.get(k));
@@ -217,8 +217,7 @@ public class CreateController {
 		{
 			if(ListAttributeSelected.contains(listAttribute.get(i)[0])) 	
 			{
-				EntityFirstLevelObject[i]=listAttribute.get(i)[0];	
-				System.out.println(listAttribute.get(i)[0]);
+				EntityFirstLevelObject[i]=listAttribute.get(i);	
 			}
 		}
 		System.out.println(EntityFirstLevelObject);

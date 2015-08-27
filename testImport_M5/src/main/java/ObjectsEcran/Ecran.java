@@ -24,6 +24,7 @@ public class Ecran {
 	List<Page> listPages = new ArrayList<Page>();
 	Template pageTemplate ;
 	String EcranName;
+	String Entityctrl;
 	public Ecran()
 	{
 
@@ -31,8 +32,15 @@ public class Ecran {
 	public Ecran(String EcranName)
 	{
 		this.EcranName=EcranName;
+		
 	}
-	
+	public void setEntity(String ent)
+	{
+		this.Entityctrl=ent;
+	}
+	public String getEntity(){
+		return this.Entityctrl;
+	}
 	public String getEcranName() {
 		return EcranName;
 	}
