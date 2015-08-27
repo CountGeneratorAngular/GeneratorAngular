@@ -127,12 +127,13 @@ public class CreateController {
 		
 		QcmPageL.SetAttribute("id");
 		QcmPageL.SetAttribute("Titre");
-		
+		QcmPageL.SetAttribute("Repondu");
 
 		QcmPageL.SetFunction("delete");
 		QcmPageL.SetFunction("goInto");			
-		QcmPageL.SetFunction("redirect");			
-		QcmPageL.SetFunction("switch");					
+		QcmPageL.SetFunction("redirect");	
+		QcmPageL.SetFunction("switch");		
+		QcmPageL.SetFunction("new");	
 		
 		
 		Page QcmPageC= new Page("qcmTestCreateView");
@@ -141,7 +142,7 @@ public class CreateController {
 		QcmPageC.setEntity("qcmTest");
 		QcmPageC.SetAttribute("id");
 		QcmPageC.SetAttribute("Titre");
-		QcmPageC.SetAttribute("Repondu");
+
 		
 
 		QcmPageC.SetFunction("new");
@@ -166,10 +167,14 @@ public class CreateController {
 		//createFile(mapTemplates.get("logsFactory"), context, "Src/Factory/logsFactory", "js");
 
 // creation des fichiers AngularJs dependant des entites
-		setAttributes(EntitiesList, QcmPageL, context, ParentList, listAttribute);
+		setAttributesPage(EntitiesList, QcmPageL, context, ParentList, listAttribute);
+		QcmPageL.SendFunctions(context);
 		QcmPageL.generate(context);
-		setAttributes(EntitiesList, QcmPageC, context, ParentList, listAttribute);
+		setAttributesPage(EntitiesList, QcmPageC, context, ParentList, listAttribute);
+		QcmPageC.SendFunctions(context);
 		QcmPageC.generate(context);
+		System.out.println("_________________________controller________________________");
+		setAttributesEcran(EntitiesList, e, context, ParentList, listAttribute);
 		e.generateGlobal(context, mapTemplates.get("controller"), mapTemplates.get("factory"));
 
 		
@@ -186,13 +191,51 @@ public class CreateController {
 		return "createObjet";
 	}
 	
-
-	public void setAttributes(List<Entity> EntitiesList, Page page, VelocityContext c, List<String[]> ParentList, List<String[]> listAttribute){
+	public void setAttributesEcran(List<Entity> EntitiesList, Ecran  ecran, VelocityContext c, List<String[]> ParentList, List<String[]> listAttribute)
+	{		Object[] EntityFirstLevelObject;
+	/*
+	 * Get list Attributs choisis par l'utilisateur
+	 */
+	
+	ecran.updateAttributes();
+	ecran.updateEntities();
+	List<String> listEntities = ecran.getListEntities();
+	List<String>  ListAttributeSelected = ecran.getListAttributes();
+	ArrayList<entityVelocity> entitiesVelocity = new ArrayList<entityVelocity>();
+	for(int k = 0; k<EntitiesList.size(); k++)
+	{
+		
+		if(ecran.getListEntities().contains(EntitiesList.get(k).Name))
+		{
+		System.out.println(ecran.getListEntities());
+		c.put("Parent", ParentList.get(k));
+		getEntitiesAttributeFirstLevel(EntitiesList.get(k),listAttribute); 
+		c.put("EntityName", listAttribute.get(0)[0]);
+		EntityFirstLevelObject = new Object[listAttribute.size()];
+		
+		for(int i=0; i<listAttribute.size();i++) 
+		{
+			if(ListAttributeSelected.contains(listAttribute.get(i)[0])) 	
+			{
+				EntityFirstLevelObject[i]=listAttribute.get(i)[0];	
+				System.out.println(listAttribute.get(i)[0]);
+			}
+		}
+		System.out.println(EntityFirstLevelObject);
+		
+		c.put("Attributes", EntityFirstLevelObject);
+		c.put("EcranEntities",listEntities);
+		}
+		
+	}
+	
+	listAttribute.clear();}
+	public void setAttributesPage(List<Entity> EntitiesList, Page page, VelocityContext c, List<String[]> ParentList, List<String[]> listAttribute){
 		Object[] EntityFirstLevelObject;
 		/*
 		 * Get list Attributs choisis par l'utilisateur
 		 */
-		List<String>  ListAttributeSelected = page.GetListAttributs();
+		List<String>  ListAttributeSelected = page.getListAttributes();
 		ArrayList<entityVelocity> entitiesVelocity = new ArrayList<entityVelocity>();
 		for(int k = 0; k<EntitiesList.size(); k++)
 		{

@@ -50,7 +50,8 @@
             <nav class="sidebar-nav" ng-controller="NaviGatController" role="navigation">
                 <div id="sidebar-entries" class="list-group">
                 #foreach($item in $structure)
-       				#if($item.get(0).equals("Entity") && $item.get(4) == 2)	
+       				#if($item.get(0).equals("Entity") && $item.get(4) == 2 && $EcranEntities.contains($item.get(1)))
+       					
                  <a class="list-group-item" ng-class="{active: matchesRoute('${item.get(1)}')}" href="#index/${item.get(1)}/listView" data-toggle="offcanvas">${item.get(1)}</a>
                		#end
                 #end  
@@ -72,6 +73,7 @@
         <p>Annee: 2015</p>
     </div>
 </div>
+
 </body>
 
 </html>

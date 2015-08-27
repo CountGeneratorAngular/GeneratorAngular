@@ -65,7 +65,7 @@ public class Page {
 	 * @param e
 	 * @param ListAttributs
 	 */
-	public List<String> GetListAttributs() {
+	public List<String> getListAttributes() {
 		return ListAttributs;
 	}
 	

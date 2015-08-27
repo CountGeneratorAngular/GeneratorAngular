@@ -19,6 +19,8 @@ public class Ecran {
 	Map<String, String> EcransValue = new HashMap<String, String>();
 	Map<Integer, String> EcransTitle = new HashMap<Integer, String>();
 	List<String> listFunctions = new ArrayList<String>();
+	List<String> listAttributes = new ArrayList<String>();
+	List<String> listEntities = new ArrayList<String>();
 	List<Page> listPages = new ArrayList<Page>();
 	Template pageTemplate ;
 	String EcranName;
@@ -79,12 +81,51 @@ public class Ecran {
 		
 		
 	}
+	public void updateEntities(){
+		
+		for(Page p:listPages)
+		{
+			String tempString = p.getEntity();
+			if(!this.listEntities.contains(tempString))
+				this.listEntities.add(tempString);
+			
+		}
+		
+		
+	}
+	public void updateAttributes(){
+		
+		for(Page p:listPages)
+		{
+			List<String> tempList = p.getListAttributes();
+			for(String str:tempList)
+			{
+				this.addAttributes(str);
+			}
+			
+		}
+		
+		
+	}
 	public void addFunction(String function){
 		if(!this.listFunctions.contains(function))
 		{
 			this.listFunctions.add(function);
 		}
 		
+	}
+	public void addAttributes(String attr){
+		if(!this.listAttributes.contains(attr))
+		{
+			this.listAttributes.add(attr);
+		}
+		
+	}
+	public List<String> getListAttributes(){
+		return this.listAttributes;
+	}
+	public List<String> getListEntities(){
+		return this.listEntities;
 	}
 	public String getListEcran(){
 		String test = "";
