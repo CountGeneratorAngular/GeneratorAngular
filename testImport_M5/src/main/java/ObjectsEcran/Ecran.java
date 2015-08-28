@@ -178,6 +178,10 @@ public class Ecran {
 		}
 	}
 	
+	public void setPageList(VelocityContext c){
+		c.put("Pages",this.listPages);
+		
+	}
 	
 	public void setContext(VelocityContext c)
 	{

@@ -116,13 +116,16 @@ public class CreateController {
 //Meta-Modeling
 		/*Create Ecran*/
 		Ecran e =new Ecran("qcmTest");
+		String templateName, pageName;
 		context.put("EntityName", "qcmTest");
 		factoryList.add(e.getEcranName());
 		/*Create Page*/
-		Page QcmPageL= new Page("qcmTestListView");
+		pageName = "qcmTestListView";
+		templateName = "listView";
+		Page QcmPageL= new Page(pageName);
 		e.addPage(QcmPageL);
 		
-		QcmPageL.setTemplate(mapTemplates.get("listView"));
+		QcmPageL.setTemplate(mapTemplates.get(templateName), templateName);
 		QcmPageL.setEntity("qcmTest");
 		
 		QcmPageL.SetAttribute("id");
@@ -135,25 +138,21 @@ public class CreateController {
 		QcmPageL.SetFunction("switch");		
 		QcmPageL.SetFunction("new");	
 		
-		
-		Page QcmPageC= new Page("qcmTestCreateView");
+		pageName = "qcmTestCreateView";
+		templateName = "createView";
+		Page QcmPageC= new Page(pageName);
 		e.addPage(QcmPageC);
-		QcmPageC.setTemplate(mapTemplates.get("createView"));
+		QcmPageC.setTemplate(mapTemplates.get(templateName), templateName);
 		QcmPageC.setEntity("qcmTest");
 		QcmPageC.SetAttribute("id");
 		QcmPageC.SetAttribute("Titre");
-
-		
 
 		QcmPageC.SetFunction("new");
 		QcmPageC.SetFunction("goInto");			
 		QcmPageC.SetFunction("redirect");					
 		
-		
-		
-		
-		
 		e.updateFunctions();
+		e.setPageList(context);
 		// creation des fichiers angularJs independants des entites
 		createFile(mapTemplates.get("app"), context, "Src/app", "js");
 		createFile(mapTemplates.get("server"), context, "Server/server", "js");
@@ -177,7 +176,6 @@ public class CreateController {
 		setAttributesEcran(EntitiesList, e, context, ParentList, listAttribute);
 		e.generateGlobal(context, mapTemplates.get("controller"), mapTemplates.get("factory"));
 
-		
 		Object[] EntityNameList = new Object[factoryList.size()];
 		for(int i =0;i<factoryList.size();i++)
 		{

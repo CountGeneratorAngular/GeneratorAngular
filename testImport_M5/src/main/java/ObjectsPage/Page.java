@@ -23,6 +23,7 @@ import ObjectsEcran.Ecran;
 public class Page {
 	String PageName;
 	Template PageTemplate;
+	String TemplateName;
 	List<String> ListFunctions = new ArrayList<String>();
 	List<String>  ListAttributs = new ArrayList<String>();
 	String PageEntity;
@@ -32,12 +33,16 @@ public class Page {
 		this.PageName=pageName;
 		
 	}
-	public void setTemplate(Template temp){
+	public void setTemplate(Template temp, String tName){
 		this.PageTemplate=temp;
+		this.TemplateName=tName;
 		
 	}
 	public String getPageName() {
 		return PageName;
+	}
+	public String getTemplateName() {
+		return TemplateName;
 	}
 
 	public void setPageName(String pageName) {
