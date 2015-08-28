@@ -153,11 +153,7 @@ public class CreateController {
 		QcmPageC.SetFunction("new");
 		QcmPageC.SetFunction("goInto");			
 		QcmPageC.SetFunction("redirect");					
-		
-		
-		
-		
-		
+
 		e.updateFunctions();
 		
 		//List<Page> listPage=e.getListPage();
@@ -165,13 +161,11 @@ public class CreateController {
 		for(int i =0;i<listNamePageACtion.size();i++)
 		{
 			ListPageObjectSorted[i]=listNamePageACtion.get(i);	
-			System.out.println("%%%%%%%%%");
-			System.out.println(listNamePageACtion.get(i));
 		}
 		
 		for(int P=0;P<Struct.size();P++)
 		{
-			if(((e.getListEntity()).contains(Struct.get(P)[1])))
+			if((Struct.get(P)[0].equals("Entity"))&&((e.getListEntity()).contains(Struct.get(P)[1])))
 			{ 
 				StructObjectRouting[P]=Struct.get(P);
 			}
