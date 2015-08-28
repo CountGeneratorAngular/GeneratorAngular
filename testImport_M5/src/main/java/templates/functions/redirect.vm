@@ -1,0 +1,5 @@
+        self.Redirect = function(aim){
+        ${d}location.path("/index/${EntityName}/"+aim);
+        }
+        
+        

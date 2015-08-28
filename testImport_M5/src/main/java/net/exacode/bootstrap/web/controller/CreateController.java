@@ -12,13 +12,11 @@ import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import objectsQcm.Attribute;
 import objectsQcm.Entity;
-import objectsQcm.entityVelocity;
 
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
@@ -48,15 +46,16 @@ public class CreateController {
 	public String greetRequest(ModelMap model) {
 		
 // definition des variables
-		ArrayList<String> factoryList = new ArrayList<String>();//factory=usine
-		ArrayList<String[]> listAttribute= new ArrayList<String[]>();
-		ArrayList<Entity> EntitiesList = new ArrayList<Entity>();
-		ArrayList<String[]> ParentList = new ArrayList<String[]>();
+		List<String> factoryList = new ArrayList<String>();//factory=usine
+		List<String[]> listAttribute= new ArrayList<String[]>();
+		List<Entity> EntitiesList = new ArrayList<Entity>();
+		List<String[]> ParentList = new ArrayList<String[]>();
+		List<String[]> listNamePageACtion = new ArrayList<String[]>();
 		//ArrayList<String[]> liste = new ArrayList<String[]>();
 		//ArrayList<String[]> Entities = new ArrayList<String[]>();
-		ArrayList<String[]> Struct = new ArrayList<String[]>();
-		ArrayList<String[]> StructSorted = new ArrayList<String[]>(); //Sorted=trié
-		ArrayList<String> External = new ArrayList<String>();
+		List<String[]> Struct = new ArrayList<String[]>();
+		List<String[]> StructSorted = new ArrayList<String[]>(); //Sorted=trié
+		List<String> External = new ArrayList<String>();
 		Entity globalDBB = new Entity("DBB",false);
 		
 // definition des entites 
@@ -65,7 +64,9 @@ public class CreateController {
 // creation des listes pour Velocity a partir des entites
 		getEntitiesAndType(globalDBB, Struct, External,0);
 		Object[] StructObject = new Object[Struct.size()];
+		Object[] StructObjectRouting = new Object[Struct.size()];
 		Object[] StructObjectSorted = new Object[Struct.size()];
+		
 		Object[] ExtObject = new Object[External.size()];
 		Object[] ParentListObject = new Object[ParentList.size()];
 		for(int i =0;i<Struct.size();i++)
@@ -99,6 +100,7 @@ public class CreateController {
 		}
 		context.put("entitiesReversal", StructObjectSorted); // Reversal=renversement
 		context.put("structure", StructObject);
+		
 		context.put("external", ExtObject);
 		
 // mise en place des templates
@@ -113,72 +115,71 @@ public class CreateController {
 		EListView.setPage(mapTemplates.get("listView"));	
 		*/		
 //Meta-Modeling
+	
 		/*Create Ecran*/
-		Ecran e =new Ecran("QCM");
+		Ecran e =new Ecran("qcmTest");
+		context.put("EntityName", "qcmTest");
+		factoryList.add(e.getEcranName());
 		/*Create Page*/
-		Page QcmPage= new Page();
-		Page VoiturePage= new Page();
-		/*Create Entity*/
-		  Entity qcmTest = new Entity("qcmTest", false);
-		  qcmTest.AddAttribute(new Attribute("id", "Number", false));
-		  qcmTest.AddAttribute(new Attribute("Titre", "String", false));
-		  qcmTest.AddAttribute(new Attribute("Repondu", "Boolean", false));
-		  	  
-		  /* 
-		   * declaration des attributs à afficher
-		   * Ajouter une list
-		   * Replace Attributes
-		   * self.selectionAllGlobal=['id', 'moteur', 'ClasseId', 'SmileyId', 'MatiereAgr', 'Roues', 'vitre'];
-		   * */
-		  /*
-		   * A remplacer par QcmPage.SetAttributs("qcmTest","id","Titre"...);
-		   */
-		QcmPage.SetAttributs("qcmTest","id");
-		QcmPage.SetAttributs("qcmTest","Titre");
-		VoiturePage.SetAttributs("Voiture", "id");
-		/*
-		 * ajouter une seule fonction
-		 */		
 		
-		QcmPage.SetFunction("edit");
-		QcmPage.SetFunction("Save");
-		QcmPage.SetFunction("create");
-		QcmPage.SetFunction("Create");
-		QcmPage.SetFunction("Redirect");			
-		QcmPage.SetFunction("goInto");	
-		QcmPage.SetFunction("delete");		
-		QcmPage.SetFunction("switch");			
-		QcmPage.SetFunction("new");
-		QcmPage.SetFunction("restoreArrayData");
-		QcmPage.SetFunction("restoreArrayDataEdit");
-		QcmPage.SetFunction("showFrom");
-		QcmPage.SetFunction("showFromEdit");
+		Page QcmPageL= new Page("qcmTestListView");
+		e.addPage(QcmPageL);
+		
+		QcmPageL.setTemplate(mapTemplates.get("listView"));
+		listNamePageACtion.add(new String[]{"qcmTestListView", "listView"});
+		QcmPageL.setEntity("qcmTest");
+		
+		QcmPageL.SetAttribute("id");
+		QcmPageL.SetAttribute("Titre");
+		
+
+		QcmPageL.SetFunction("delete");
+		QcmPageL.SetFunction("goInto");			
+		QcmPageL.SetFunction("redirect");			
+		QcmPageL.SetFunction("switch");					
+		
+		
+		Page QcmPageC= new Page("qcmTestCreateView");
+		e.addPage(QcmPageC);
+		QcmPageC.setTemplate(mapTemplates.get("createView"));
+		
+		listNamePageACtion.add(new String[]{"qcmTestCreateView", "createView"});
+		QcmPageC.setEntity("qcmTest");
+		QcmPageC.SetAttribute("id");
+		QcmPageC.SetAttribute("Titre");
+		QcmPageC.SetAttribute("Repondu");
+		
+
+		QcmPageC.SetFunction("new");
+		QcmPageC.SetFunction("goInto");			
+		QcmPageC.SetFunction("redirect");					
 		
 		
 		
-		/*
-		 * Recuperer la list de s function à ajouter
-		 * faire contrxt.put des functions choisis par l'user
-		 * tester
-		 */
 		
-		Map<String, String> ListFunctions = new HashMap<String, String>();
-		ListFunctions= QcmPage.GetListFunction();
 		
-		/*for(int i=0; i<ListFunctions.size();i++)
+		e.updateFunctions();
+		
+		//List<Page> listPage=e.getListPage();
+		Object[] ListPageObjectSorted = new Object[listNamePageACtion.size()];
+		for(int i =0;i<listNamePageACtion.size();i++)
 		{
-			*/
-			for (final Map.Entry<String, String> entry : ListFunctions.entrySet())
-			{
-				System.out.println("*************************Bigin: ListFunctions*****************************");
-				System.out.println(entry.getKey());
-				System.out.println(entry.getValue());
-				System.out.println("*************************End: ListFunctions*****************************");
-				context.put(entry.getKey(), String.valueOf(entry.getValue()));
+			ListPageObjectSorted[i]=listNamePageACtion.get(i);	
+			System.out.println("%%%%%%%%%");
+			System.out.println(listNamePageACtion.get(i));
+		}
+		
+		for(int P=0;P<Struct.size();P++)
+		{
+			if(((e.getListEntity()).contains(Struct.get(P)[1])))
+			{ 
+				StructObjectRouting[P]=Struct.get(P);
 			}
-		//}
-			
-// creation des fichiers angularJs independants des entites
+		
+		}
+		context.put("structureRouting", StructObjectRouting);
+		context.put("listPage", ListPageObjectSorted);
+		// creation des fichiers angularJs independants des entites
 		createFile(mapTemplates.get("app"), context, "Src/app", "js");
 		createFile(mapTemplates.get("server"), context, "Server/server", "js");
 		createFile(mapTemplates.get("routing"), context, "Src/Route/routing", "js");
@@ -191,89 +192,13 @@ public class CreateController {
 		//createFile(mapTemplates.get("logsFactory"), context, "Src/Factory/logsFactory", "js");
 
 // creation des fichiers AngularJs dependant des entites
-		Object[] EntityFirstLevelObject;
-		/*
-		 * Get list Attributs choisis par l'utilisateur
-		 */
-		Map<String, String>  ListAttributsObject = QcmPage.GetListAttributs();
-	
-		//EListView.setContext(context);
-		ArrayList<entityVelocity> entitiesVelocity = new ArrayList<entityVelocity>();
-		ArrayList<String> ListEntities= QcmPage.GetListEntity();
+		setAttributes(EntitiesList, QcmPageL, context, ParentList, listAttribute);
+		QcmPageL.generate(context);
+		setAttributes(EntitiesList, QcmPageC, context, ParentList, listAttribute);
+		QcmPageC.generate(context);
+		e.generateGlobal(context, mapTemplates.get("controller"), mapTemplates.get("factory"));
 
-		for(int k = 0; k<EntitiesList.size(); k++)
-		{
-			getEntitiesAttributeFirstLevel(EntitiesList.get(k),listAttribute); 
-			context.put("EntityName", listAttribute.get(0)[0]);
-			 String[] str = (String[]) ListAttributsObject.keySet().toArray(new String[ListAttributsObject.size()]);
-			 EntityFirstLevelObject = new Object[listAttribute.size()];
-				
-				if(ListEntities.size()!=0)
-				{
-					for(int P=0; P<ListEntities.size();P++)
-					{
-						System.out.println("zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz");
-						System.out.println(ListEntities.get(P));
-						System.out.println("zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz");
-						System.out.println(listAttribute.get(0)[0]);
-						if(ListEntities.get(P).equals(listAttribute.get(0)[0]))
-						{
-							
-							for(int i1=0; i1<str.length;i1++) 
-							{
-								for(int i =1;i<listAttribute.size();i++)
-								{
-						            if((str[i1].equals(listAttribute.get(i)[0])))
-						            {
-						            	EntityFirstLevelObject[i]=listAttribute.get(i);		
-						            	break;
-						            }							        
-								}
-							} 
-						}
-						else
-						{
-							 for(int i =1;i<listAttribute.size();i++)
-								{
-									EntityFirstLevelObject[i]=listAttribute.get(i);
-								} 
-						}
-					}
-					
-				}
-			
-			
-			/*
-			 * enlever les doublant
-			 */
-	
-			/*
-			 * attribuer les attributs 
-			 */
-			//context.put("Attributes", EntityFirstLevelObject);
-			
-			
-			/*
-			 * add list attributs to the velocity
-			 */
-			context.put("Attributes", EntityFirstLevelObject);
-			context.put("Parent", ParentList.get(k));
-			entitiesVelocity.add(new entityVelocity(EntityFirstLevelObject, ParentList.get(k), listAttribute.get(0)[0]));
-			createFile(mapTemplates.get("factory"), context, "Src/Factory/"+listAttribute.get(0)[0]+"Factory", "js");
-			createFile(mapTemplates.get("listView"), context, "Src/View/"+listAttribute.get(0)[0]+"ListView", "html");	
-			createFile(mapTemplates.get("editView"), context, "Src/View/"+listAttribute.get(0)[0]+"EditView", "html");	
-			createFile(mapTemplates.get("createView"), context, "Src/View/"+listAttribute.get(0)[0]+"CreateView", "html");
-			factoryList.add(listAttribute.get(0)[0]);
-			createFile(mapTemplates.get("controller"), context, "Src/Controller/"+listAttribute.get(0)[0]+"Controller", "js");
-			listAttribute.clear();
-		}
 		
-		context.put("entitiesVelocity", entitiesVelocity);
-		/*
-		createFile(mapTemplates.get("controllerCrud"), context, "Src/Controller/controllerCrud", "js");
-		createFile(mapTemplates.get("listViewCrud"), context, "Src/View/listViewCrud", "html");
-		createFile(mapTemplates.get("createViewCrud"), context, "Src/View/createViewCrud", "html");
-		*/
 		Object[] EntityNameList = new Object[factoryList.size()];
 		for(int i =0;i<factoryList.size();i++)
 		{
@@ -288,7 +213,37 @@ public class CreateController {
 	}
 	
 
-	
+	public void setAttributes(List<Entity> EntitiesList, Page page, VelocityContext c, List<String[]> ParentList, List<String[]> listAttribute){
+		Object[] EntityFirstLevelObject;
+		/*
+		 * Get list Attributs choisis par l'utilisateur
+		 */
+		List<String>  ListAttributeSelected = page.GetListAttributs();
+		for(int k = 0; k<EntitiesList.size(); k++)
+		{
+			if(EntitiesList.get(k).Name == page.getEntity())
+			{
+			c.put("Parent", ParentList.get(k));
+			getEntitiesAttributeFirstLevel(EntitiesList.get(k),listAttribute); 
+			c.put("EntityName", listAttribute.get(0)[0]);
+			EntityFirstLevelObject = new Object[listAttribute.size()];
+			
+			for(int i=0; i<listAttribute.size();i++) 
+			{
+				if(ListAttributeSelected.contains(listAttribute.get(i)[0])) 	
+				{
+					EntityFirstLevelObject[i]=listAttribute.get(i);	
+					System.out.println(listAttribute.get(i)[0]);
+				}
+			}
+			System.out.println(EntityFirstLevelObject);
+			c.put("Attributes", EntityFirstLevelObject);
+			}
+			
+		}
+		
+		listAttribute.clear();
+	}
 	public void setTemplates(Map<String, Template> mapTemplates, VelocityEngine v){
 		mapTemplates.put("app",v.getTemplate("/templates/app.vm"));
 		mapTemplates.put("server",v.getTemplate("/templates/server.vm"));
@@ -311,7 +266,7 @@ public class CreateController {
 		mapTemplates.put("index",v.getTemplate("/templates/index.vm"));
 		
 	}
-	public void EntityDefinition(Entity globalDBB,ArrayList<Entity> EntitiesList, ArrayList<String[]> ParentList){
+	public void EntityDefinition(Entity globalDBB,List<Entity> entitiesList, List<String[]> parentList){
 
 		Entity qcmTest = new Entity("qcmTest", false);
 		  qcmTest.AddAttribute(new Attribute("id", "Number", false));
@@ -408,36 +363,36 @@ public class CreateController {
 		globalDBB.AddEntity(matiere);
 		
 		
-		EntitiesList.add(globalDBB);
-		ParentList.add(new String[]{});
-		EntitiesList.add(qcmTest);
-		ParentList.add(new String[]{});
-		EntitiesList.add(questions);
-		ParentList.add(new String[]{qcmTest.getName()});
-		EntitiesList.add(reponses);
-		ParentList.add(new String[]{qcmTest.getName(),questions.getName()});
-		EntitiesList.add(voiture);
-		ParentList.add(new String[]{});
-		EntitiesList.add(vitre);
-		ParentList.add(new String[]{voiture.getName()});
-		EntitiesList.add(oculus);
-		ParentList.add(new String[]{voiture.getName(),vitre.getName()});
-		EntitiesList.add(matiereAgr);
-		ParentList.add(new String[]{voiture.getName()});
-		EntitiesList.add(roues);
-		ParentList.add(new String[]{voiture.getName()});
-		EntitiesList.add(renferme);
-		ParentList.add(new String[]{voiture.getName(),roues.getName()});
-		EntitiesList.add(jantes);
-		ParentList.add(new String[]{voiture.getName(),roues.getName()});
-		EntitiesList.add(validation);
-		ParentList.add(new String[]{voiture.getName(),roues.getName(),jantes.getName()});
-		EntitiesList.add(smiley);
-		ParentList.add(new String[]{});
-		EntitiesList.add(classes);
-		ParentList.add(new String[]{});
-		EntitiesList.add(matiere);
-		ParentList.add(new String[]{});
+		entitiesList.add(globalDBB);
+		parentList.add(new String[]{});
+		entitiesList.add(qcmTest);
+		parentList.add(new String[]{});
+		entitiesList.add(questions);
+		parentList.add(new String[]{qcmTest.getName()});
+		entitiesList.add(reponses);
+		parentList.add(new String[]{qcmTest.getName(),questions.getName()});
+		entitiesList.add(voiture);
+		parentList.add(new String[]{});
+		entitiesList.add(vitre);
+		parentList.add(new String[]{voiture.getName()});
+		entitiesList.add(oculus);
+		parentList.add(new String[]{voiture.getName(),vitre.getName()});
+		entitiesList.add(matiereAgr);
+		parentList.add(new String[]{voiture.getName()});
+		entitiesList.add(roues);
+		parentList.add(new String[]{voiture.getName()});
+		entitiesList.add(renferme);
+		parentList.add(new String[]{voiture.getName(),roues.getName()});
+		entitiesList.add(jantes);
+		parentList.add(new String[]{voiture.getName(),roues.getName()});
+		entitiesList.add(validation);
+		parentList.add(new String[]{voiture.getName(),roues.getName(),jantes.getName()});
+		entitiesList.add(smiley);
+		parentList.add(new String[]{});
+		entitiesList.add(classes);
+		parentList.add(new String[]{});
+		entitiesList.add(matiere);
+		parentList.add(new String[]{});
 
 		
 	
@@ -454,6 +409,7 @@ public class CreateController {
 		new File(System.getProperty("user.dir")+"/AngularNew/Src/View/").mkdir();
 		new File(System.getProperty("user.dir")+"/AngularNew/Src/Controller/").mkdir();
 		new File(System.getProperty("user.dir")+"/AngularNew/Js").mkdir();
+		
 		new File(System.getProperty("user.dir")+"/AngularNew/img").mkdir();
 
 		DuplicateFile(System.getProperty("user.dir")+"/angular.js",System.getProperty("user.dir")+"/AngularNew/Js/angular.js");
@@ -464,7 +420,7 @@ public class CreateController {
 		
 		
 	};
-	public static void getEntitiesAttribute(Entity e, ArrayList<String[]> listAttribute,ArrayList<String[]> Entities, String parent ){
+	public static void getEntitiesAttribute(Entity e, List<String[]> listAttribute,List<String[]> Entities, String parent ){
 		ArrayList<String> EntityConstructor = new ArrayList<String>();
 		EntityConstructor.add(e.getName());
 		listAttribute.add(new String[]{parent+e.getName(),e.getClass().getSimpleName()});
@@ -489,7 +445,7 @@ public class CreateController {
 		}
 		Entities.add(EntityWithAttributes);	
 	}
-	public static void getEntitiesAttributeFirstLevel(Entity e, ArrayList<String[]> listAttribute){
+	public static void getEntitiesAttributeFirstLevel(Entity e, List<String[]> listAttribute){
 		listAttribute.add(new String[]{e.getName(),e.getClass().getSimpleName(),e.isArray.toString()});
 		ArrayList<Attribute> tempAtt = e.GetAttributes();
 		for(int i =0; i<tempAtt.size();i++)
@@ -501,7 +457,7 @@ public class CreateController {
 			listAttribute.add(new String[]{tempEnt.get(j).getName(),tempEnt.get(j).getClass().getSimpleName(),tempEnt.get(j).isArray.toString()});
 		}
 	}
-	public static void getEntitiesAndType(Entity e, ArrayList<String[]> Struct,ArrayList<String> External, int depth){
+	public static void getEntitiesAndType(Entity e, List<String[]> Struct,List<String> External, int depth){
 		depth++;		
 		Struct.add(new String[]{"Entity",e.getName(),"entity", e.isArray.toString(), Integer.toString(depth)});
 		
@@ -520,9 +476,16 @@ public class CreateController {
 				
 			}
 		}
-		ArrayList<Entity> tempEnt = e.GetEntities();
+		/*
+		 * Remplacer GetEntities global par les entite utiliser actuellemnet
+		 * ArrayList<Entity> tempEnt = e.GetEntities();
+		 */
+		List<Entity> tempEnt = e.GetEntities();
+		System.out.println(tempEnt.size());
 		for(int j = 0; j<tempEnt.size(); j++){
-			
+			System.out.println("%%%%%%%%%---------%%%%%%%%%%%%%%%%");
+			System.out.println(tempEnt.get(j));
+			System.out.println("%%%%%%%%%%%----------%%%%%%%%%%%%%%");
 			getEntitiesAndType(tempEnt.get(j), Struct,External, depth);
 		}
 	}

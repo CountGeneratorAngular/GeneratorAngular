@@ -5,7 +5,7 @@ import java.util.ArrayList;
 public class Entity {
 	public String Name;
 	public ArrayList<Attribute> attributes = new ArrayList<Attribute>();
-	public ArrayList<Entity> entities = new ArrayList<Entity>();;
+	public ArrayList<Entity> entities = new ArrayList<Entity>();
 	public Boolean isArray = false;
 	
 	public String getName() {
@@ -39,6 +39,7 @@ public class Entity {
 		this.entities.add(ent);
 		
 	}
+	
 	public void RemoveEntity(Entity ent){
 		this.entities.remove(ent);	
 	}

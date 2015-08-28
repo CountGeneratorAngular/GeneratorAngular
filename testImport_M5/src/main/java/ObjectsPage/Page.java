@@ -1,13 +1,15 @@
 package ObjectsPage;
 
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.StringWriter;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+
+import org.apache.velocity.Template;
+import org.apache.velocity.VelocityContext;
 
 import objectsQcm.Entity;
-import ObjectsEcran.Ecran;
 
 /**
  * @author djerbienne
@@ -15,10 +17,19 @@ import ObjectsEcran.Ecran;
  */
 public class Page {
 	String PageName;
-	Map<String, String> ListFunctions = new HashMap<String, String>();
-	Map<String, String>  ListAttributs = new HashMap<String, String>();
-	public ArrayList<String> ListEntities = new ArrayList<String>();
+	Template PageTemplate;
+	List<String> ListFunctions = new ArrayList<String>();
+	List<String>  ListAttributs = new ArrayList<String>();
 	
+	String PageEntity;
+	
+
+	public Page(String PageName) {
+		this.PageName=PageName;
+	}
+	public void setTemplate(Template temp){
+		this.PageTemplate=temp;
+	}
 	public String getPageName() {
 		return PageName;
 	}
@@ -26,30 +37,29 @@ public class Page {
 	public void setPageName(String pageName) {
 		PageName = pageName;
 	}
+	public String getEntity() {
+		return PageEntity;
+	}
+
+	public void setEntity(String Entity) {
+		PageEntity = Entity;
+	}
 
 	/**
 	 * @param e
 	 * @param ListAttributs
 	 */
 	
-	public void SetAttributs(String Entity,String Attribut) {
+	public void SetAttribute(String Attribut) {
 		
-		ListAttributs.put(Attribut,Entity);
-		if(!ListEntities.contains(Entity))
-		{
-			ListEntities.add(Entity);
-		}
-		
+		ListAttributs.add(Attribut);
 	}
-	public ArrayList<String> GetListEntity()
-	{
-		return ListEntities;
-	}
+	
 	/**
 	 * @param e
 	 * @param ListAttributs
 	 */
-	public Map<String, String> GetListAttributs() {
+	public List<String> GetListAttributs() {
 		return ListAttributs;
 	}
 	
@@ -58,24 +68,25 @@ public class Page {
 	 * add simple function 
 	 * @param Function
 	 */
-	
+	public void SendFunctions(VelocityContext c){
+			c.put("listFunction", ListFunctions);
+	}
 	public void SetFunction(String Function)
 	{
-		ListFunctions.put(Function, "true");		
+		ListFunctions.add(Function);		
 	}
 	
 	/**
 	 * @param Function
 	 * @return
 	 */
-	public Object GetFunction(String Function)
+	public List<String> GetListFunction()
 	{
-		return ListFunctions.get(Function);
-	}
-	public Map<String, String> GetListFunction()
-	{
+		
+		
 		return ListFunctions;
 	}
+
 	/**
 	 * add liste function 
 	 * @param Function
@@ -84,5 +95,27 @@ public class Page {
 	{
 		
 	}
+	public void selectFrom(List<String> selection,String entity,List<Entity> entitiesList   )
+	{
+		
+		
+	}
+	public void generate(VelocityContext context){
+
+		StringWriter writer = new StringWriter();
+		this.PageTemplate.merge(context, writer);
+			
+		try {
+			FileWriter fw;
+			fw = new FileWriter(System.getProperty("user.dir")+"/AngularNew/Src/View/"+getPageName()+".html");
+			fw.write(writer.toString());
+			fw.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+	
+}
 	// End Classe
 }

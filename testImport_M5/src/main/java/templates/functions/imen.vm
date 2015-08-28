@@ -1,0 +1,260 @@
+self.selectionAllGlobal=$nameAttributes;
+         self.CountVoitureListFilter=false;
+         self.CountVoitureEditFilter=false;
+         self.CountVoitureListFilterShow=$cookieStore.get('resVoitureListFilter');
+         self.CountVoitureEditFilterShow=$cookieStore.get('resVoitureEditFilter');
+          if((self.CountVoitureListFilterShow==false)||(self.CountVoitureListFilterShow==undefined))
+                  {
+                      $cookieStore
+                      .put('selectionVoitureListAllStore',self.selectionAllGlobal);
+                      self.selectionVoitureListAll=$cookieStore.get('selectionVoitureListAllStore');
+                      console.log("self.selectionVoitureListAll"+self.selectionVoitureListAll);
+                      console.log("resultat= false");
+                  }
+
+                  else if(self.CountVoitureListFilterShow==true)
+                  {
+                      self.selectionVoitureListAll =$cookieStore.get("selectionVoitureListAllStore");
+                      console.log("self.selectionVoitureListAll:********"+self.selectionVoitureListAll);
+                      console.log("resultat= True")
+                  }
+
+                  if((self.CountVoitureEditFilterShow==false)||(self.CountVoitureEditFilterShow==undefined))
+                  {
+                      $cookieStore
+                      .put('selectionVoitureEditAllStore',self.selectionAllGlobal);
+                      self.selectionVoitureEditAll=$cookieStore.get('selectionVoitureEditAllStore');
+                      console.log("self.selectionVoitureEditAll"+self.selectionVoitureEditAll);
+                      console.log("resultat= false");
+                  }
+
+                  else if(self.CountVoitureEditFilterShow==true)
+                  {
+                      self.selectionVoitureEditAll =$cookieStore.get("selectionVoitureEditAllStore");
+                      console.log("self.selectionVoitureEditAll:********"+self.selectionVoitureEditAll);
+                      console.log("resultat= True")
+                  }
+                  self.selectionVoitureList={selectionVoitureListAll: ['id']};
+                  self.selectionVoitureEdit={selectionVoitureEditAll: ['id']};
+                 self.checkAll = function() {
+                      self.selectionVoitureList.selectionVoitureListAll=[];
+                      self.selectionVoitureList.selectionVoitureListAll = angular.copy(self.selectionVoitureListAll);
+                      $cookieStore
+                      .put('FilterVoitureList',  self.selectionVoitureList.selectionVoitureListAll);
+
+                      self.selectionVoitureEdit.selectionVoitureEditAll=[];
+                      self.selectionVoitureEdit.selectionVoitureEditAll = angular.copy(self.selectionVoitureEditAll);
+                      $cookieStore
+                      .put('FilterVoitureEdit',  self.selectionVoitureEdit.selectionVoitureEditAll);
+
+                  };
+                  self.uncheckAll = function() {
+                      self.selectionVoitureList.selectionVoitureListAll = ['id'];
+                      $cookieStore
+                      .put('FilterVoitureList',  self.selectionVoitureList.selectionVoitureListAll);
+
+                      self.selectionVoitureList.selectionVoitureEditAll = ['id'];
+                      $cookieStore
+                      .put('FilterVoitureEdit',  self.selectionVoitureEdit.selectionVoitureEditAll);
+                       };
+
+                   self.toggleSelection = function toggleSelection(qcmName) {
+
+                       var idxList = self.selectionVoitureList.selectionVoitureListAll.indexOf(qcmName);
+                       if (idxList > -1) {
+                           self.selectionVoitureList.selectionVoitureListAll.splice(idxList, 1);
+                           $cookieStore
+                           .put('FilterVoitureList',  self.selectionVoitureList.selectionVoitureListAll);
+                       }
+                       else {
+                           self.selectionVoitureList.selectionVoitureListAll.push(qcmName);
+                           $cookieStore
+                           .put('FilterVoitureList',  self.selectionVoitureList.selectionVoitureListAll);
+                       }
+                   };
+ 				#if($toggleSelectionEdit== true)
+      			 //toggleSelectionEdit function is validated to add in the controller
+       
+                  self.toggleSelectionEdit = function toggleSelection(qcmName) {
+
+                      var idxEdit = self.selectionVoitureEdit.selectionVoitureEditAll.indexOf(qcmName);
+                      if (idxEdit > -1) {
+                          self.selectionVoitureEdit.selectionVoitureEditAll.splice(idxEdit, 1);
+                          $cookieStore
+                          .put('FilterVoitureEdit',  self.selectionVoitureEdit.selectionVoitureEditAll);
+                      }
+                      else {
+                          self.selectionVoitureEdit.selectionVoitureEditAll.push(qcmName);
+                          $cookieStore
+                          .put('FilterVoitureEdit',  self.selectionVoitureEdit.selectionVoitureEditAll);
+                      }
+                  };
+                  #end
+                  var kk=0;
+                  #if($restoreArrayData== true)
+      			 //restoreArrayData function is validated to add in the controller
+       
+                  self.restoreArrayData= function()
+                  {
+                      for(var i= 0; i<self.selectionVoitureList.selectionVoitureListAll.length;i++)
+                      {
+
+                          if(self.selectionVoitureList.selectionVoitureListAll[i]=="attributesSelected")
+                          {
+                              i=i+1;
+                              self.resultFilterList[kk] = self.selectionVoitureList.selectionVoitureListAll[i];
+                              kk++;
+                          }
+                          else
+                          {
+                              self.resultFilterList[kk] = self.selectionVoitureList.selectionVoitureListAll[i];
+                              kk++;
+                          }
+
+
+                      }
+
+                      for(var i= 0; i<self.resultFilterList.length;i++) {
+                          if(self.resultFilterList[i]==undefined)
+                          {
+                              //self.resultFilter.shift();
+                              self.resultFilterList.splice(self.resultFilterList.length-1, 1);
+                          }
+                      }
+
+                      console.log("-----resultFilter-----"+self.resultFilterList);
+                      //console.log(self.resultFilterEdit.length);
+                      $cookieStore
+                      .put('FilterVoitureList', self.resultFilterList);
+                      $cookieStore
+                      .put('selectionVoitureListAllStore',self.resultFilterList);
+
+                      self.CountVoitureListFilter=true;
+
+                      $cookieStore
+                      .put('resVoitureListFilter',self.CountVoitureListFilter);
+                      console.log("bbbb"+self.CountVoitureListFilter)
+
+                      self.selectionVoitureListAll =  $cookieStore.get("selectionVoitureListAllStore");
+                      console.log("self.selectionVoitureListAll"+self.selectionVoitureListAll);
+                      $route.reload();
+
+                  }
+					#end
+                  var PP=0;
+                  #if($restoreArrayDataEdit== true)
+      			 //restoreArrayDataEdit function is validated to add in the controller
+       
+                  self.restoreArrayDataEdit= function()
+                  {
+                      for(var i= 0; i<self.selectionVoitureEdit.selectionVoitureEditAll.length;i++)
+                      {
+
+                          if(self.selectionVoitureEdit.selectionVoitureEditAll[i]=="attributesSelect")
+                          {
+                              i=i+1;
+                              self.resultFilterEdit[PP] = self.selectionVoitureEdit.selectionVoitureEditAll[i];
+                              PP++;
+                          }
+                          else
+                          {
+                              self.resultFilterEdit[PP] = self.selectionVoitureEdit.selectionVoitureEditAll[i];
+                              PP++;
+                          }
+
+
+                      }
+
+                      for(var i= 0; i<self.resultFilterEdit.length;i++) {
+                          if(self.resultFilterEdit[i]==undefined)
+                          {
+                              //self.resultFilter.shift();
+                              self.resultFilterEdit.splice(self.resultFilterEdit.length-1, 1);
+                          }
+                      }
+
+                      console.log("-----resultFilter-----"+self.resultFilterEdit);
+                      //console.log(self.resultFilterEdit.length);
+                      $cookieStore
+                      .put('FilterVoitureEdit', self.resultFilterEdit);
+                      $cookieStore
+                      .put('selectionVoitureEditAllStore',self.resultFilterEdit);
+
+                      self.CountVoitureEditFilter=true;
+
+                      $cookieStore
+                      .put('resVoitureEditFilter',self.CountVoitureEditFilter);
+                      console.log("bbbb"+self.CountVoitureEditFilter)
+
+                      self.selectionVoitureEditAll =  $cookieStore.get("selectionVoitureEditAllStore");
+                      console.log("self.selectionVoitureEditAll"+self.selectionVoitureEditAll);
+                      $route.reload();
+
+                  }
+                  #end
+
+                  self.resultFilterList=[];
+                  self.resultFilterEdit=[];
+                  self.CountVoitureListFilter=0;
+                  self.CountVoitureEditFilter=0;
+  				
+  					#if($showFrom== true)
+      			    //showFrom function is validated to add in the controller
+       
+                   self.showFrom = function(variable) {
+                       self.getCookiesVoitureList = $cookieStore.get('FilterVoitureList');
+                       if(self.getCookiesVoitureList==undefined)
+                       {
+                           self.getCookiesVoitureList='id';
+                       }
+                       if(self.getCookiesVoitureList!=undefined)
+                       {
+                          // console.log(self.getCookies.length);
+                           for(var i=0; i<self.getCookiesVoitureList.length;i++)
+                           {
+                               // console.log("dans cookies:////////"+ self.getCookies)
+                               if((self.getCookiesVoitureList[i]==variable)||(self.getCookiesVoitureList==variable))
+                               {
+                                   return true;
+                               }
+                           }
+                       }
+
+                       else
+                       {
+                           return false
+                       }
+                       return false
+                   };
+                   #end
+                   
+                   #if($showFromEdit== true)
+      			    //showFromEdit function is validated to add in the controller
+       
+                  self.showFromEdit = function(variable) {
+                      self.getCookiesVoitureEdit = $cookieStore.get('FilterVoitureEdit');
+
+                      if(self.getCookiesVoitureEdit==undefined)
+                      {
+                          self.getCookiesVoitureEdit='id';
+                      }
+                      if(self.getCookiesVoitureEdit!=undefined)
+                      {
+                          // console.log(self.getCookies.length);
+                          for(var i=0; i<self.getCookiesVoitureEdit.length;i++)
+                          {
+                              // console.log("dans cookies:////////"+ self.getCookies)
+                              if((self.getCookiesVoitureEdit[i]==variable)||(self.getCookiesVoitureEdit==variable))
+                              {
+                                  return true;
+                              }
+                          }
+                      }
+                      else
+                      {
+                          return false
+                      }
+                      return false
+                  };
+				#end
+                  //self.checkAll();

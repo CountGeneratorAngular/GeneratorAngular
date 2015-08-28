@@ -1,6 +1,5 @@
 package net.exacode.bootstrap.web.controller;
 
-import java.util.ArrayList;
 import java.util.Comparator;
 
 public class DepthComparator implements Comparator<String[]>{

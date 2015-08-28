@@ -1,0 +1,48 @@
+       self.new = function()                                          
+        {
+	   self.test = new ${EntityName}Factory();
+            if(self.test) {
+  
+                self.test = new ${EntityName}Factory();
+            #foreach($item in $Attributes)
+            	#if($item)
+            		#if($item.get(0).equals("id"))  
+            		if(self.${EntityName}Table)
+                		self.test.$item.get(0) = self.${EntityName}Table.length;
+                		else
+                		self.test.$item.get(0) = 0;
+             		#else
+        	    		#if($item.get(1).equals("Entity"))   
+           		 			#if($item.get(2).equals("true"))   
+            		 			self.test.$item.get(0)= [];
+            	   	 		#end
+           			 	#else
+           		 	 		#if($item.get(2).equals("true"))   
+            		 			self.test.$item.get(0)= [];
+            				#else	
+            		 			if(self.create${EntityName}Input)
+            		 				self.test.$item.get(0)= self.create${EntityName}Input.$item.get(0);
+								else
+									self.test.$item.get(0)= "";
+            		 		#end
+            			#end
+            		#end
+            	#end
+            #end	 		 
+            self.test.$save(#if($Parent.size() > 0){#foreach($p in $Parent)#set($indexVirgule = $foreach.count)#if($indexVirgule > 1),#end${p}Id : ${d}routeParams.${p}Id#end}#end).then(function () {
+            if(self.create${EntityName}Input)
+            self.Redirect('listView');
+     		$route.reload();
+    }, function (err) {
+                    console.error(err);
+                });
+            }
+                 else
+                {
+                     alert("error");
+                }
+            
+
+        };
+        
+        
