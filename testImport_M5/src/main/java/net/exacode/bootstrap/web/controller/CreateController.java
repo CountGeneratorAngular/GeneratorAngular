@@ -118,32 +118,37 @@ public class CreateController {
 	
 		/*Create Ecran*/
 		Ecran e =new Ecran("qcmTest");
+		String templateName, pageName;
 		context.put("EntityName", "qcmTest");
 		factoryList.add(e.getEcranName());
 		/*Create Page*/
 		
-		Page QcmPageL= new Page("qcmTestListView");
+		pageName = "qcmTestListView";
+		templateName = "listView";
+		Page QcmPageL= new Page(pageName);
 		e.addPage(QcmPageL);
 		
-		QcmPageL.setTemplate(mapTemplates.get("listView"));
-		listNamePageACtion.add(new String[]{"qcmTestListView", "listView"});
+		QcmPageL.setTemplate(mapTemplates.get(templateName), templateName);
+		listNamePageACtion.add(new String[]{pageName, templateName});
 		QcmPageL.setEntity("qcmTest");
 		
 		QcmPageL.SetAttribute("id");
 		QcmPageL.SetAttribute("Titre");
-		
+		QcmPageL.SetAttribute("Repondu");
 
 		QcmPageL.SetFunction("delete");
 		QcmPageL.SetFunction("goInto");			
 		QcmPageL.SetFunction("redirect");			
 		QcmPageL.SetFunction("switch");					
+		QcmPageL.SetFunction("new");
 		
-		
-		Page QcmPageC= new Page("qcmTestCreateView");
+		pageName = "qcmTestCreateView";
+		templateName = "createView";
+		Page QcmPageC= new Page(pageName);
 		e.addPage(QcmPageC);
-		QcmPageC.setTemplate(mapTemplates.get("createView"));
+		QcmPageC.setTemplate(mapTemplates.get(templateName), templateName);
 		
-		listNamePageACtion.add(new String[]{"qcmTestCreateView", "createView"});
+		listNamePageACtion.add(new String[]{pageName, templateName});
 		QcmPageC.setEntity("qcmTest");
 		QcmPageC.SetAttribute("id");
 		QcmPageC.SetAttribute("Titre");
@@ -156,7 +161,6 @@ public class CreateController {
 
 		e.updateFunctions();
 		
-		//List<Page> listPage=e.getListPage();
 		Object[] ListPageObjectSorted = new Object[listNamePageACtion.size()];
 		for(int i =0;i<listNamePageACtion.size();i++)
 		{
@@ -180,15 +184,13 @@ public class CreateController {
 		createFile(mapTemplates.get("sharedData"), context, "Src/Service/sharedData", "js");
 		createFile(mapTemplates.get("home"), context, "Src/View/home", "html");
 		createFile(mapTemplates.get("naviGatController"), context, "Src/Controller/NaviGatController", "js");
-		//createFile(mapTemplates.get("logsController"), context, "Src/Controller/logsController", "js");
-		//createFile(mapTemplates.get("indexController"), context, "Src/Controller/indexController", "js");
-		//createFile(mapTemplates.get("logsController"), context, "Src/View/logsController", "html");
-		//createFile(mapTemplates.get("logsFactory"), context, "Src/Factory/logsFactory", "js");
 
-// creation des fichiers AngularJs dependant des entites
+		// creation des fichiers AngularJs dependant des entites
 		setAttributes(EntitiesList, QcmPageL, context, ParentList, listAttribute);
+		QcmPageL.SendFunctions(context);		
 		QcmPageL.generate(context);
 		setAttributes(EntitiesList, QcmPageC, context, ParentList, listAttribute);
+		QcmPageC.SendFunctions(context);		
 		QcmPageC.generate(context);
 		e.generateGlobal(context, mapTemplates.get("controller"), mapTemplates.get("factory"));
 
@@ -200,7 +202,7 @@ public class CreateController {
 		}
 		context.put("factoryList",EntityNameList);
 		
-// creation de l'index avec l'appel vers tout les fichiers AngularJs
+		// creation de l'index avec l'appel vers tout les fichiers AngularJs
 		createFile(mapTemplates.get("index"), context, "index", "html");
 
 		return "createObjet";
@@ -419,13 +421,13 @@ public class CreateController {
 		EntityConstructor.add(e.getName());
 		listAttribute.add(new String[]{parent+e.getName(),e.getClass().getSimpleName()});
 		
-		ArrayList<Attribute> tempAtt = e.GetAttributes();
+		List<Attribute> tempAtt = e.GetAttributes();
 		for(int i =0; i<tempAtt.size();i++)
 		{
 			listAttribute.add(new String[]{parent+tempAtt.get(i).getName(), tempAtt.get(i).getType()});
 			EntityConstructor.add(tempAtt.get(i).getName());
 		}
-		ArrayList<Entity> tempEnt = e.GetEntities();
+		List<Entity> tempEnt = e.GetEntities();
 		for(int j = 0; j<tempEnt.size(); j++){
 			
 			parent+=tempEnt.get(j).getName()+">";
@@ -441,12 +443,12 @@ public class CreateController {
 	}
 	public static void getEntitiesAttributeFirstLevel(Entity e, List<String[]> listAttribute){
 		listAttribute.add(new String[]{e.getName(),e.getClass().getSimpleName(),e.isArray.toString()});
-		ArrayList<Attribute> tempAtt = e.GetAttributes();
+		List<Attribute> tempAtt = e.GetAttributes();
 		for(int i =0; i<tempAtt.size();i++)
 		{
 			listAttribute.add(new String[]{tempAtt.get(i).getName(), tempAtt.get(i).getType(),tempAtt.get(i).isArray.toString()});
 		}
-		ArrayList<Entity> tempEnt = e.GetEntities();
+		List<Entity> tempEnt = e.GetEntities();
 		for(int j = 0; j<tempEnt.size(); j++){
 			listAttribute.add(new String[]{tempEnt.get(j).getName(),tempEnt.get(j).getClass().getSimpleName(),tempEnt.get(j).isArray.toString()});
 		}
@@ -460,7 +462,7 @@ public class CreateController {
 			External.add(e.getName().substring(0,e.getName().length()-3));
 			
 		}
-		ArrayList<Attribute> tempAtt = e.GetAttributes();
+		List<Attribute> tempAtt = e.GetAttributes();
 		for(int i =0; i<tempAtt.size();i++)
 		{
 			Struct.add(new String[]{"Attribute",tempAtt.get(i).getName(), tempAtt.get(i).getType(),tempAtt.get(i).isArray.toString(), Integer.toString(depth)});

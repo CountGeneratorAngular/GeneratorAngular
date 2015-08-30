@@ -16,7 +16,7 @@ import objectsQcm.Entity;
  *
  */
 public class Page {
-	String PageName;
+	String PageName,TemplateName;
 	Template PageTemplate;
 	List<String> ListFunctions = new ArrayList<String>();
 	List<String>  ListAttributs = new ArrayList<String>();
@@ -27,8 +27,9 @@ public class Page {
 	public Page(String PageName) {
 		this.PageName=PageName;
 	}
-	public void setTemplate(Template temp){
+	public void setTemplate(Template temp, String tName){
 		this.PageTemplate=temp;
+		this.TemplateName=tName;
 	}
 	public String getPageName() {
 		return PageName;

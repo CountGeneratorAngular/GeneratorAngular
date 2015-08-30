@@ -1,11 +1,12 @@
 package objectsQcm;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class Entity {
 	public String Name;
-	public ArrayList<Attribute> attributes = new ArrayList<Attribute>();
-	public ArrayList<Entity> entities = new ArrayList<Entity>();
+	public List<Attribute> attributes = new ArrayList<Attribute>();
+	public List<Entity> entities = new ArrayList<Entity>();
 	public Boolean isArray = false;
 	
 	public String getName() {
@@ -28,7 +29,7 @@ public class Entity {
 	public void RemoveAttributeByIndex(int i){
 		this.attributes.remove(i);	
 	}
-	public ArrayList<Attribute> GetAttributes(){
+	public List<Attribute> GetAttributes(){
 		return this.attributes;
 	}
 	public Attribute GetAttribute(int i){
@@ -46,7 +47,7 @@ public class Entity {
 	public void RemoveEntityByIndex(int i){
 		this.entities.remove(i);	
 	}
-	public ArrayList<Entity> GetEntities(){
+	public List<Entity> GetEntities(){
 		return this.entities;
 	}
 	public Entity GetEntity(int i){
