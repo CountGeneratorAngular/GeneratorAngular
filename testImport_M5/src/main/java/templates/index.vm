@@ -18,10 +18,12 @@
 	<script src="Src/app.js" ></script>
 	<script type="text/javascript" src="Src/Route/routing.js"></script>
 	<script type="text/javascript" src="Src/Service/sharedData.js"></script>
+	
 	#foreach($fact in $factoryList)
 	<script type="text/javascript" src="Src/Controller/${fact}Controller.js"></script>
 	<script type="text/javascript" src="Src/Factory/${fact}Factory.js"></script>
 	#end
+	<script type="text/javascript" src="Src/Controller/emptyController.js"></script>
 	 <script type="text/javascript" src="Src/Controller/NaviGatController.js"></script>
 
 </head>
@@ -53,6 +55,7 @@
        				#if($item.get(0).equals("Entity") && $item.get(4) == 2 && $EcranEntities.contains($item.get(1)))
        					
                  <a class="list-group-item" ng-class="{active: matchesRoute('${item.get(1)}')}" href="#index/${item.get(1)}/listView" data-toggle="offcanvas">${item.get(1)}</a>
+                 <a class="list-group-item" ng-class="{active: matchesRoute('${item.get(1)}')}" href="#index/${item.get(1)}/jeuListView" data-toggle="offcanvas">${item.get(1)} JEU</a>
                		#end
                 #end  
                  </div>
@@ -73,7 +76,7 @@
         <p>Annee: 2015</p>
     </div>
 </div>
-
+<!-- #include("/templates/inscription.vm") -->
 </body>
 
 </html>

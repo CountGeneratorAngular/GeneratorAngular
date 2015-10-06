@@ -49,23 +49,25 @@ public class CreateController {
 	public String greetRequest(ModelMap model) {
 		
 // definition des variables
-		List<String> factoryList = new ArrayList<String>();//factory=usine
-		List<String[]> listAttribute= new ArrayList<String[]>();
-		List<Entity> EntitiesList = new ArrayList<Entity>();
-		List<String[]> ParentList = new ArrayList<String[]>();
+		List<String> factoryList = new ArrayList<String>();			// Liste des factory a générer
+		List<String[]> listAttribute= new ArrayList<String[]>();	// Liste des attributs du modèle
+		List<Entity> EntitiesList = new ArrayList<Entity>();		// liste des entités du modèle
+		List<String[]> ParentList = new ArrayList<String[]>();		// Liste des parents direct d'une entité
 		//ArrayList<String[]> liste = new ArrayList<String[]>();
 		//ArrayList<String[]> Entities = new ArrayList<String[]>();
-		List<String[]> Struct = new ArrayList<String[]>();
-		List<String[]> StructSorted = new ArrayList<String[]>(); //Sorted=triÃ©
-		List<String> External = new ArrayList<String>();
-		Entity globalDBB = new Entity("DBB",false);
+		List<String[]> Struct = new ArrayList<String[]>();			// Structure de données du modèle
+		List<String[]> StructSorted = new ArrayList<String[]>(); 	// Structure de données du modèle trié par ID
+		List<String> External = new ArrayList<String>();			// Structure de données des tables indépendantes
+		List<Page> allPages = new ArrayList<Page>();				// Liste des pages de l'application
+		List<Ecran> allEcrans = new ArrayList<Ecran>();				// Liste des écrans de l'application
+		Entity globalDBB = new Entity("DBB",false);					// Base de données qui contiendra les entités de l'application.
 		
 // definition des entites 
 		EntityDefinition(globalDBB, EntitiesList, ParentList);
 		
 // creation des listes pour Velocity a partir des entites
 		getEntitiesAndType(globalDBB, Struct, External,0);
-		Object[] StructObject = new Object[Struct.size()];
+		Object[] StructObject = new Object[Struct.size()];			// Type Object pour envoyer les données a velocity
 		Object[] StructObjectSorted = new Object[Struct.size()];
 		Object[] ExtObject = new Object[External.size()];
 		Object[] ParentListObject = new Object[ParentList.size()];
@@ -105,54 +107,96 @@ public class CreateController {
 // mise en place des templates
 		Map<String, Template> mapTemplates = new HashMap<String, Template>();		
 		setTemplates(mapTemplates, velocityEngine);				
-		
-/* creation et mise en place des ecrans
-		Ecran EListView = new Ecran();
-		SetEcranListView(EListView);
-		EListView.setEcran("templateView", "entityListCrud.vm");
-		EListView.setEcran("templateMenu", "entityCreateOptionsCrud.vm");
-		EListView.setPage(mapTemplates.get("listView"));	
-		*/		
+			
 //Meta-Modeling
-		/*Create Ecran*/
-		Ecran e =new Ecran("qcmTest");
-		String templateName, pageName;
-		context.put("EntityName", "qcmTest");
-		factoryList.add(e.getEcranName());
-		/*Create Page*/
-		pageName = "qcmTestListView";
-		templateName = "listView";
-		Page QcmPageL= new Page(pageName);
-		e.addPage(QcmPageL);
-		
-		QcmPageL.setTemplate(mapTemplates.get(templateName), templateName);
-		QcmPageL.setEntity("qcmTest");
-		
-		QcmPageL.SetAttribute("id");
-		QcmPageL.SetAttribute("Titre");
-		QcmPageL.SetAttribute("Repondu");
 
-		QcmPageL.SetFunction("delete");
-		QcmPageL.SetFunction("goInto");			
-		QcmPageL.SetFunction("redirect");	
-		QcmPageL.SetFunction("switch");		
-		QcmPageL.SetFunction("new");	
+		Ecran e =new Ecran("qcmTest");													// creation d'un écran
+		String templateName, pageName;		
+		context.put("EntityName", "qcmTest");											// definition de l'entité de l'écran
+		factoryList.add(e.getEcranName());												// Creation de la factory de l'écran
+
+		pageName = "qcmTestListView";													// Definition du nom de la page
+		templateName = "listView";														// Definition du template utilisé par la page
+		Page QcmPageL= new Page(pageName);												// Creation d'une Page
 		
+		
+		QcmPageL.setTemplate(mapTemplates.get(templateName), templateName);				// Mise en place du Template
+		QcmPageL.setEntity("qcmTest");													// Definition de l'entité de la page
+		QcmPageL.setCrud();																// La page est une page de CRUD (create/read/update/delete)
+		
+		QcmPageL.setAttribute("id");													// Definition des attributs utilisés par la page
+		QcmPageL.setAttribute("Titre");
+		QcmPageL.setAttribute("Repondu");
+
+		QcmPageL.setFunction("delete");													// Definition+ des fonctions utilisées par la page
+		QcmPageL.setFunction("goInto");			
+		QcmPageL.setFunction("redirect");	
+		QcmPageL.setFunction("select");
+		QcmPageL.setFunction("edit");
+		QcmPageL.setFunction("switch");		
+		QcmPageL.setFunction("new");	
+		e.addPage(QcmPageL);															// Ajout de la page a l'écran
+		// nouvelle page
 		pageName = "qcmTestCreateView";
 		templateName = "createView";
 		Page QcmPageC= new Page(pageName);
-		e.addPage(QcmPageC);
+		
 		QcmPageC.setTemplate(mapTemplates.get(templateName), templateName);
 		QcmPageC.setEntity("qcmTest");
-		QcmPageC.SetAttribute("id");
-		QcmPageC.SetAttribute("Titre");
-
-		QcmPageC.SetFunction("new");
-		QcmPageC.SetFunction("goInto");			
-		QcmPageC.SetFunction("redirect");					
+		QcmPageC.setCrud();
 		
-		e.updateFunctions();
-		e.setPageList(context);
+		QcmPageC.setAttribute("id");
+		QcmPageC.setAttribute("Titre");
+
+		QcmPageC.setFunction("new");
+		QcmPageC.setFunction("goInto");			
+		QcmPageC.setFunction("redirect");	
+		e.addPage(QcmPageC);
+		// nouvelle page
+		pageName = "qcmTestEditView";
+		templateName = "editView";
+		Page QcmPageE= new Page(pageName);
+		QcmPageE.setTemplate(mapTemplates.get(templateName), templateName);
+		QcmPageE.setEntity("qcmTest");
+		QcmPageE.setCrud();
+		
+		QcmPageE.setAttribute("id");
+		QcmPageE.setAttribute("Titre");
+		QcmPageE.setAttribute("Repondu");
+		QcmPageE.setRequiredId("qcmTest");
+		
+		QcmPageE.setFunction("redirect");
+		QcmPageE.setFunction("save");
+		e.addPage(QcmPageE);
+		
+		e.updateFunctions();															// Mise a jour des fonctions de l'écran 
+		allEcrans.add(e);																// Ajout de l'écran a la liste des écrans
+
+
+		// Nouvel écran
+		Ecran j =new Ecran("QCMJeu");
+		context.put("EntityName", "qcmTest");
+		factoryList.add(j.getEcranName());
+		/*Create Page*/
+		pageName = "jeuListView";
+		templateName = "jeuListView";
+		
+		// Nouvelle Page
+		Page QcmPageJeu= new Page(pageName);
+		QcmPageJeu.setTemplate(mapTemplates.get(templateName), templateName);
+		QcmPageJeu.setEntity("qcmTest");
+		QcmPageJeu.setAttribute("id");
+		QcmPageJeu.setAttribute("Titre");
+		QcmPageJeu.setFunction("redirect");
+		
+		j.addPage(QcmPageJeu);	
+				
+		
+		j.updateFunctions();
+		allEcrans.add(j);
+		context.put("Ecrans", allEcrans);												// Envoi de la liste des ecrans a velocity
+		context.put("Pages",allPages);													// Envoi de la liste des pages a velocity
+		
 		// creation des fichiers angularJs independants des entites
 		createFile(mapTemplates.get("app"), context, "Src/app", "js");
 		createFile(mapTemplates.get("server"), context, "Server/server", "js");
@@ -160,22 +204,35 @@ public class CreateController {
 		createFile(mapTemplates.get("sharedData"), context, "Src/Service/sharedData", "js");
 		createFile(mapTemplates.get("home"), context, "Src/View/home", "html");
 		createFile(mapTemplates.get("naviGatController"), context, "Src/Controller/NaviGatController", "js");
+		createFile(mapTemplates.get("emptyController"), context, "Src/Controller/emptyController", "js");
 		//createFile(mapTemplates.get("logsController"), context, "Src/Controller/logsController", "js");
 		//createFile(mapTemplates.get("indexController"), context, "Src/Controller/indexController", "js");
 		//createFile(mapTemplates.get("logsController"), context, "Src/View/logsController", "html");
 		//createFile(mapTemplates.get("logsFactory"), context, "Src/Factory/logsFactory", "js");
-
-// creation des fichiers AngularJs dependant des entites
-		setAttributesPage(EntitiesList, QcmPageL, context, ParentList, listAttribute);
-		QcmPageL.SendFunctions(context);
-		QcmPageL.generate(context);
+		
+		setAttributesPage(EntitiesList, QcmPageL, context, ParentList, listAttribute);							// Associe les attributs a la page selon les choix utilisateurs
+		QcmPageL.SendFunctions(context);																		// envoi la liste des fonctions de la page a l'écran	
+		QcmPageL.generate(context);																				// génère la page
 		setAttributesPage(EntitiesList, QcmPageC, context, ParentList, listAttribute);
 		QcmPageC.SendFunctions(context);
 		QcmPageC.generate(context);
+		setAttributesPage(EntitiesList, QcmPageE, context, ParentList, listAttribute);
+		QcmPageE.SendFunctions(context);
+		QcmPageE.generate(context);
+		
 		System.out.println("_________________________controller________________________");
 		setAttributesEcran(EntitiesList, e, context, ParentList, listAttribute);
-		e.generateGlobal(context, mapTemplates.get("controller"), mapTemplates.get("factory"));
+		e.generateGlobal(context, mapTemplates.get("controller"), mapTemplates.get("factory"));					// Génère les fichiers controlleur et factory de l'écran
+		setAttributesPage(EntitiesList, QcmPageJeu, context, ParentList, listAttribute);
+		QcmPageJeu.SendFunctions(context);
+		QcmPageJeu.generate(context);
+		//QcmPageJeu.setRequiredId("qcmTest");
+		
+		
+		j.generateGlobal(context, mapTemplates.get("controller"), mapTemplates.get("factory"));
 
+		
+		
 		Object[] EntityNameList = new Object[factoryList.size()];
 		for(int i =0;i<factoryList.size();i++)
 		{
@@ -188,12 +245,14 @@ public class CreateController {
 
 		return "createObjet";
 	}
-	
+	/*
+	 setAttributesEcran
+	 Envoi les objet necessaire a la generation des fichiers de l'écran vers le contexte
+	 (Parent, EntityName, Attributes, EcranEntities)
+	 */
 	public void setAttributesEcran(List<Entity> EntitiesList, Ecran  ecran, VelocityContext c, List<String[]> ParentList, List<String[]> listAttribute)
 	{		Object[] EntityFirstLevelObject;
-	/*
-	 * Get list Attributs choisis par l'utilisateur
-	 */
+
 	
 	ecran.updateAttributes();
 	ecran.updateEntities();
@@ -226,7 +285,8 @@ public class CreateController {
 		
 	}
 	
-	listAttribute.clear();}
+	listAttribute.clear();
+	}
 	public void setAttributesPage(List<Entity> EntitiesList, Page page, VelocityContext c, List<String[]> ParentList, List<String[]> listAttribute){
 		Object[] EntityFirstLevelObject;
 		/*
@@ -259,6 +319,12 @@ public class CreateController {
 		
 		listAttribute.clear();
 	}
+	/*
+	 setTemplates
+	 remplie la map de templates 
+	 
+	 */
+	
 	public void setTemplates(Map<String, Template> mapTemplates, VelocityEngine v){
 		mapTemplates.put("app",v.getTemplate("/templates/app.vm"));
 		mapTemplates.put("server",v.getTemplate("/templates/server.vm"));
@@ -277,10 +343,16 @@ public class CreateController {
 		//mapTemplates.put("logsFactory", v.getTemplate("/templates/logsFactory.vm"));
 		mapTemplates.put("naviGatController",v.getTemplate("/templates/NaviGatController.vm"));
 		mapTemplates.put("controller", v.getTemplate("/templates/Controller.vm"));
+		mapTemplates.put("emptyController", v.getTemplate("/templates/emptyController.vm"));
+		mapTemplates.put("jeuListView", v.getTemplate("/templates/jeuListView.vm"));
 		//mapTemplates.put("controllerCrud", v.getTemplate("/templates/controllerCrud.vm"));
 		mapTemplates.put("index",v.getTemplate("/templates/index.vm"));
 		
 	}
+	/*
+	EntityDefinition
+	Mise en place de la	modélisation des données de l'application.
+	*/
 	public void EntityDefinition(Entity globalDBB,List<Entity> entitiesList, List<String[]> parentList){
 
 		Entity qcmTest = new Entity("qcmTest", false);
@@ -412,6 +484,11 @@ public class CreateController {
 		
 	
 	}
+	/*
+	 createStruct
+	 Creation de la structure de dossiers et de fichiers de l'application angularJS. 
+	 
+	 */
 	public void createStruct()
 	{
 		
@@ -434,6 +511,12 @@ public class CreateController {
 		
 		
 	};
+	/*
+	 getEntitiesAttribute
+	 Récupère les entitées du modèle et en créé une structure d'objet utilisable dans velocity.
+	 la structure est stockée dans listAttribute, et l'arborescence est stockée dans parent.
+	 
+	 */
 	public static void getEntitiesAttribute(Entity e, List<String[]> listAttribute,List<String[]> Entities, String parent ){
 		ArrayList<String> EntityConstructor = new ArrayList<String>();
 		EntityConstructor.add(e.getName());
@@ -459,6 +542,11 @@ public class CreateController {
 		}
 		Entities.add(EntityWithAttributes);	
 	}
+	/*
+	 	getEntitiesAttributeFirstLevel
+	 	Récupère la liste des attributs du modèle dans le premier niveau de profondeur
+	 
+	 */
 	public static void getEntitiesAttributeFirstLevel(Entity e, List<String[]> listAttribute){
 		listAttribute.add(new String[]{e.getName(),e.getClass().getSimpleName(),e.isArray.toString()});
 		ArrayList<Attribute> tempAtt = e.GetAttributes();
@@ -471,6 +559,11 @@ public class CreateController {
 			listAttribute.add(new String[]{tempEnt.get(j).getName(),tempEnt.get(j).getClass().getSimpleName(),tempEnt.get(j).isArray.toString()});
 		}
 	}
+	/*
+	 getEntitiesAndType
+	 boucle recursive qui récupère les entités et les types du modèle, et créé la liste des tables externes.
+	 
+	 */
 	public static void getEntitiesAndType(Entity e, List<String[]> Struct,List<String> External, int depth){
 		depth++;		
 		Struct.add(new String[]{"Entity",e.getName(),"entity", e.isArray.toString(), Integer.toString(depth)});
@@ -487,7 +580,6 @@ public class CreateController {
 			if(tempAtt.get(i).getName().substring(tempAtt.get(i).getName().length()-2).equals("Id"))
 			{
 				External.add(tempAtt.get(i).getName().substring(0,tempAtt.get(i).getName().length()-2));
-				
 			}
 		}
 		ArrayList<Entity> tempEnt = e.GetEntities();
@@ -496,6 +588,12 @@ public class CreateController {
 			getEntitiesAndType(tempEnt.get(j), Struct,External, depth);
 		}
 	}
+	
+	/*
+	 createFile
+	 Génère un fichier en fonction du template, du nom et de l'extension donnée en parametre 
+	 
+	 */
 	public static void createFile(Template temp, Context context, String name, String ext){
 		
 		StringWriter writer = new StringWriter();
@@ -512,6 +610,12 @@ public class CreateController {
 		
 		
 	}
+	
+	/*
+	 DuplicateFile
+	 Copie un fichier  
+	 
+	 */
 	public void DuplicateFile(String origine, String destination)
 	{
 		try {
@@ -534,16 +638,6 @@ public class CreateController {
 		}
 		
 	}
-	public void SetEcranListView(Ecran e){
-		
-		ArrayList<String> listOptions = new ArrayList<String>();
-		listOptions.add("templateEdit");
-		listOptions.add("templateView");
-		listOptions.add("templateMenu");
-		listOptions.add("choixData");
-		e.setList(listOptions);
-		
-		
-	}
+
 	
 }

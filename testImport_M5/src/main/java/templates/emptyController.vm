@@ -1,0 +1,4 @@
+		  app
+    .controller('emptyController', ['$scope','$http','$routeParams','sharedData','$location','$route',  function($scope, $http,$routeParams,sharedData, $location,$route, loaded  ) {
+                var self = this;
+ }]);

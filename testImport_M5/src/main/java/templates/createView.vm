@@ -1,12 +1,6 @@
 
 <div ng-controller="${EntityName}Controller as ${EntityName}">
 #set($d = "$")
-<h2>Creer :${EntityName}</h2>
-<h3>aller a: <input type="text" /></h3> 
-<hr/>
-
-
-
 <form method="POST" ng-submit="${EntityName}.new()" name="Creation"  class="CreationLogs">
 	#foreach($att in $Attributes)
 		#if(($att)&& !($att.get(0).equals("id")))

@@ -1,3 +1,6 @@
+     // fonction CRUD
+     // fonction de creation d'entités 
+       
        self.new = function()                                          
         {
 	   self.test = new ${EntityName}Factory();

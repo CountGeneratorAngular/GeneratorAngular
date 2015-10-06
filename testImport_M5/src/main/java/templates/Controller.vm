@@ -1,12 +1,14 @@
-#set($d = "$")
-#set($a = "'")
+#set($d = "$")		// utilisé pour simuler le $ en javascript
+#set($a = "'")		// utilisé pour simuler le ' en javascript
 #set($nameAttributes = [])
 #set($nameAttributesRef = [])
+
 		  app
-    .controller('${EntityName}Controller', ['$scope','$http','${EntityName}Factory','$routeParams','sharedData','$location','$route','$cookieStore',  function($scope, $http,${EntityName}Factory,$routeParams,sharedData, $location,$route, $cookieStore, loaded  ) {
+    .controller('${controllerName}Controller', ['$scope','$http','${EntityName}Factory','$routeParams','sharedData','$location','$route','$cookieStore',  function($scope, $http,${EntityName}Factory,$routeParams,sharedData, $location,$route, $cookieStore, loaded  ) {
         var self = this;
         self.saving="";
         self.hidden = [];
+        self.requiredIdUrl="";
         if($routeParams.${EntityName}Id)
         {
         self.active = $routeParams.${EntityName}Id;

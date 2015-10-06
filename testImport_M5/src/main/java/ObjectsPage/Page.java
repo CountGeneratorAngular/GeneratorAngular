@@ -27,7 +27,8 @@ public class Page {
 	List<String> ListFunctions = new ArrayList<String>();
 	List<String>  ListAttributs = new ArrayList<String>();
 	String PageEntity;
-	
+	String requiredId = "";
+	Boolean isCrud = false;
 	
 	public Page(String pageName){
 		this.PageName=pageName;
@@ -38,6 +39,14 @@ public class Page {
 		this.TemplateName=tName;
 		
 	}
+	public void setCrud(){
+		
+	this.isCrud=true;
+	}
+	public boolean checkCrud(){
+		
+		return this.isCrud;
+	}
 	public String getPageName() {
 		return PageName;
 	}
@@ -47,6 +56,13 @@ public class Page {
 
 	public void setPageName(String pageName) {
 		PageName = pageName;
+	}
+	public String getRequiredId() {
+		return requiredId;
+	}
+
+	public void setRequiredId(String requiredId) {
+		this.requiredId = requiredId;
 	}
 	public String getEntity() {
 		return PageEntity;
@@ -61,7 +77,7 @@ public class Page {
 	 * @param ListAttributs
 	 */
 	
-	public void SetAttribute(String Attribut) {
+	public void setAttribute(String Attribut) {
 		
 		ListAttributs.add(Attribut);
 	}
@@ -82,7 +98,7 @@ public class Page {
 	public void SendFunctions(VelocityContext c){
 			c.put("listFunction", ListFunctions);
 	}
-	public void SetFunction(String Function)
+	public void setFunction(String Function)
 	{
 		ListFunctions.add(Function);		
 	}

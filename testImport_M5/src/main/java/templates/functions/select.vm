@@ -1,0 +1,4 @@
+	self.select = function(id){
+		self.requiredIdUrl = id;
+	}
+	

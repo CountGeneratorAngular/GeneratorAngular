@@ -153,6 +153,7 @@ public class Ecran {
 		try{
 		StringWriter writer = new StringWriter();
 		FileWriter fw;
+		context.put("controllerName", this.EcranName);
 		context.put("listFunction",this.listFunctions);
 		tCtrl.merge(context, writer);
 		fw = new FileWriter(System.getProperty("user.dir")+"/AngularNew/Src/Controller/"+this.EcranName+"Controller.js");
@@ -180,7 +181,9 @@ public class Ecran {
 	
 	public void setPageList(VelocityContext c){
 		c.put("Pages",this.listPages);
-		
+	}
+	public List<Page> getPageList(){
+		return this.listPages;
 	}
 	
 	public void setContext(VelocityContext c)
