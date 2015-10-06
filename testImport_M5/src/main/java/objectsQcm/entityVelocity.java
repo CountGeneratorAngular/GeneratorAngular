@@ -6,23 +6,38 @@ public class entityVelocity {
 	public String[] parent;
 	public String name;
 	
+	/** Constructeur avec troix variables
+	 * @param a est un tableau d'objet
+	 * @param p est la table des parent
+	 * @param n est le nom de l'entityVelocity
+	 */
 	public entityVelocity(Object[] a, String[] p, String n){
 		this.attributes = a;
 		this.parent = p;
-		this.name = n;
-		
-		
+		this.name = n;		
 	}
-	public Object[] getAtt(){
-		
+	
+	/**
+	 * Récupérer le tableau d'attributs
+	 * @return
+	 */
+	public Object[] getAtt(){		
 		return attributes;
 	}
-	public String[] getParent(){
-		
+	
+	/**
+	 * Récupérer le tableau des parents
+	 * @return
+	 */
+	public String[] getParent(){		
 		return parent;
 	}
-	public String getName(){
-		
+	
+	/**
+	 * Récupérer le nom de l'entityVelocity
+	 * @return
+	 */
+	public String getName(){		
 		return name;
 	}
 	
