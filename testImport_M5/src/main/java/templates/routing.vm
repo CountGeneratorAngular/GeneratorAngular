@@ -3,109 +3,95 @@ app
 	.config(["$routeProvider", function($routeProvider){
 	        $routeProvider
             .when("/index",{
-                templateUrl:"./Src/View/home.html"
+                templateUrl:"./Src/View/home.html",
+                controller:'emptyController as ctrl'
             })
 #set($parent = [])   
 #set($oldDepth = 2) 
 #set($ParentName = "")  
 #set($depthInt = 0)
 #set($depthIntTest = 0)
-
-#foreach($item in $structure)
-
-	#if($item.get(0).equals("Entity") && $depthInt.parseInt($item.get(4))>=2)  
-	#if($item.get(4)==2)
-	#set($parent=[])
-	#set($ParentName = "")
+#foreach($ecran in $Ecrans)
+	#foreach($page in $ecran.getPageList())
+		#foreach($item in $structure)
+		#if($page.getEntity() == $item.get(1))
+			#if($page.checkCrud())
+				#if($item.get(0).equals("Entity") && $depthInt.parseInt($item.get(4))>=2)  
+				#if($item.get(4)==2)
+				#set($parent=[])
+				#set($ParentName = "")
+				#end
+				
+				
+				#if( $oldDepthInt.parseInt($oldDepth) && $depthInt.parseInt($oldDepth)<$depthIntTest.parseInt($item.get(4)))
+					#set($xxx = $parent.add($ParentName))
+				#end
+				#if($oldDepthInt.parseInt($oldDepth) && $depthInt.parseInt($oldDepth)>$depthIntTest.parseInt($item.get(4)))
+				#set($tempmax = $depthInt.parseInt($oldDepth) - 1)
+				#set($range = [$depthIntTest.parseInt($item.get(4))..$tempmax])
+				#foreach($i in $range)
+					
+					#set($temp = $parent.size() - 1)
+					#if($temp > 0)
+						#set($xxx = $parent.remove($temp))
+					#end
+				#end
+				#end
+					#set($oldDepth=$item.get(4))
+					#set($ParentName=$item.get(1))
+						
+			            .when('/index/#foreach($url in $parent)${url}/:${url}Id/#end${item.get(1)}#if($page.getRequiredId().length()>0)/:${page.getRequiredId()}Id#end/${page.getTemplateName()}',{
+			                templateUrl:'./Src/View/${page.getPageName()}.html',
+			                controller:'${ecran.getEcranName()}Controller as ${item.get(1)}',
+			                resolve: {
+			                    loaded: ['${V}http','sharedData','${V}route', function(${V}http, sharedData, ${V}route){
+			                        return ${V}http.get("./rest/#foreach($url in $parent)${url}/"+$route.current.params.${url}Id+"/#end${item.get(1)}#if($page.getRequiredId().length()>0)/"+$route.current.params.${page.getRequiredId()}Id#else"#end).then(function(response){
+			                            sharedData.store('${item.get(1)}',response.data);
+			                           #foreach($item in $external)
+			                                return ${V}http.get("./rest/$item").then(function(response){
+											sharedData.store('$item',response.data);
+			                           #end
+			                           #set($tempSize = $external.size() - 1)
+			                           return sharedData.get('$external.get($tempSize)');
+			                            #foreach($item in $external)
+			                            });
+			                            #end
+			                           
+			                        })
+			                    } ]
+			                }
+			            })        
+			    #end
+			    #else
+		    // $page.getPageName()
+			            .when('/index/#foreach($url in $parent)${url}/:${url}Id/#end${item.get(1)}#if($page.getRequiredId().length()>0)/:${page.getRequiredId()}Id#end/${page.getTemplateName()}',{
+		                templateUrl:'./Src/View/${page.getPageName()}.html',
+		                controller:'${ecran.getEcranName()}Controller as ${item.get(1)}',
+		                resolve: {
+		                    loaded: ['${V}http','sharedData','${V}route', function(${V}http, sharedData, ${V}route){
+		                        return ${V}http.get("./rest/#foreach($url in $parent)${url}/"+$route.current.params.${url}Id+"/#end${item.get(1)}#if($page.getRequiredId().length()>0)/"+$route.current.params.${page.getRequiredId()}Id#else"#end).then(function(response){
+		                            sharedData.store('${item.get(1)}',response.data);
+		                           #foreach($item in $external)
+		                                return ${V}http.get("./rest/$item").then(function(response){
+										sharedData.store('$item',response.data);
+		                           #end
+		                           #set($tempSize = $external.size() - 1)
+		                           return sharedData.get('$external.get($tempSize)');
+		                            #foreach($item in $external)
+		                            });
+		                            #end
+		                           
+		                        })
+		                    } ]
+		                }
+		            })      
+				#end
+		    #end
+		 #end
 	#end
-	
-	
-	#if($depthInt.parseInt($oldDepth)<$depthIntTest.parseInt($item.get(4)))
-		#set($xxx = $parent.add($ParentName))
-	#end
-	#if($depthInt.parseInt($oldDepth)>$depthIntTest.parseInt($item.get(4)))
-	#set($tempmax = $depthInt.parseInt($oldDepth) - 1)
-	#set($range = [$depthIntTest.parseInt($item.get(4))..$tempmax])
-	#foreach($i in $range)
-		
-		#set($temp = $parent.size() - 1)
-		#if($temp > 0)
-			#set($xxx = $parent.remove($temp))
-		#end
-	#end
-	#end
-		#set($oldDepth=$item.get(4))
-		#set($ParentName=$item.get(1))
-			
-            .when('/index/#foreach($url in $parent)${url}/:${url}Id/#end${item.get(1)}/listView',{
-                templateUrl:'./Src/View/${item.get(1)}ListView.html',
-                controller:'${item.get(1)}Controller as ${item.get(1)}',
-                resolve: {
-                    loaded: ['${V}http','sharedData','${V}route', function(${V}http, sharedData, ${V}route){
-                        return ${V}http.get("./rest/#foreach($url in $parent)${url}/"+$route.current.params.${url}Id+"/#end${item.get(1)}").then(function(response){
-                            sharedData.store('${item.get(1)}',response.data);
-                           #foreach($item in $external)
-                                return ${V}http.get("./rest/$item").then(function(response){
-								sharedData.store('$item',response.data);
-                           #end
-                           #set($tempSize = $external.size() - 1)
-                           return sharedData.get('$external.get($tempSize)');
-                            #foreach($item in $external)
-                            });
-                            #end
-                           
-                        })
-                    } ]
-                }
-            })
-                        .when('/index/#foreach($url in $parent)${url}/:${url}Id/#end${item.get(1)}/:${item.get(1)}Id/Edit',{
-                templateUrl:'./Src/View/${item.get(1)}EditView.html',
-                controller:'${item.get(1)}Controller as ${item.get(1)}',
-                resolve: {
-                    loaded: ['${V}http','sharedData','${V}route', function(${V}http, sharedData, ${V}route){
-                        return ${V}http.get("./rest/#foreach($url in $parent)${url}/"+$route.current.params.${url}Id+"/#end${item.get(1)}/"+$route.current.params.${item.get(1)}Id).then(function(response){
-							sharedData.store('${item.get(1)}',response.data);
-                           
-                           #foreach($item in $external)
-                                return ${V}http.get("./rest/$item").then(function(response){
-								sharedData.store('$item',response.data);
-                           #end
-                           #set($tempSize = $external.size() - 1)
-                           return sharedData.get('$external.get($tempSize)');
-                            #foreach($item in $external)
-                            });
-                            #end
-                            
-
-                        })
-                    } ]
-                }
-            })
-            .when('/index/#foreach($url in $parent)${url}/:${url}Id/#end${item.get(1)}/createView',{
-                templateUrl:'./Src/View/${item.get(1)}CreateView.html',
-                controller:'${item.get(1)}Controller as ${item.get(1)}',
-                resolve: {
-                    loaded: ['${V}http','sharedData','${V}route', function(${V}http, sharedData, ${V}route){
-                        ${V}http.get("./rest/#foreach($url in $parent)${url}/"+$route.current.params.${url}Id+"/#end${item.get(1)}").then(function(response){
-                            sharedData.store('${item.get(1)}',response.data);
-                                                       #foreach($item in $external)
-                                return ${V}http.get("./rest/$item").then(function(response){
-								sharedData.store('$item',response.data);
-                           #end
-                           #set($tempSize = $external.size() - 1)
-                           return sharedData.get('$external.get($tempSize)');
-                            #foreach($item in $external)
-                            });
-                            #end
-                        })
-                    } ]
-                }
-            })
-        
-    #end
 #end
-
 			.otherwise({redirectTo:'/index'});			
 	
 	
 	}])
+	

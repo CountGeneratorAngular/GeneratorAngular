@@ -1,0 +1,30 @@
+        //inscription d'un administrateur dans la table USER
+        // parametre entrant: self.utilisateurIns => objet utilisateur a enregistrer
+        
+        self.inscription = function()
+        {
+        #foreach($att in $champs)
+        
+        
+        
+        
+        #end
+
+            $http
+            .post("./rest/User", self.utilisateurIns).then
+            (
+                function(responseIns)
+                {
+                    self.connectedUserId=responseIns.data._id;
+                    sharedData.store('userId', self.connectedUserId);
+
+                },
+                function(errResponseIns)
+                {
+                    console.log("errorPost");
+
+                }
+
+
+            );
+        };

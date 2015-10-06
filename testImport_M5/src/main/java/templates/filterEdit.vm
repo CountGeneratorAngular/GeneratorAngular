@@ -1,0 +1,29 @@
+
+    <div class="col-md-offset-2 col-sm-2">
+        <a id="displayButton1" value="Afficher" ng-click="${EntityName}.switch('displayTable','displayButton')">
+            <span class="glyphicon glyphicon-plus-sign"></span> Filter</a>
+    </div>
+    
+<div id="displayTable">
+   <label ng-repeat="attributesSelect in ${EntityName}.selection${EntityName}EditAll">
+        <input type="checkbox" checklist-model="${EntityName}.selection${EntityName}Edit.selection${EntityName}EditAll" checklist-value="attributesSelect" ng-click="${EntityName}.toggleSelectionEdit('attributesSelect')" > {{attributesSelect}}
+    <br></label>
+ <div>
+     <div class="form-group">
+         <div class="col-md-offset-2 col-sm-2">
+             <a id="Create2" name="Create2" class="btn btn-primary" ng-click="${EntityName}.checkAll()">
+                 <span class="glyphicon glyphicon-plus-sign"></span>Check all</a>
+         </div>
+          <div class="col-sm-2">
+             <a id="Create3" name="Create3" class="btn btn-primary" ng-click="${EntityName}.restoreArrayDataEdit()">
+                 <span class="glyphicon glyphicon-plus-sign"></span>Valider Filter</a>
+         </div>
+         <div class="col-sm-2">
+             <a id="Create3" name="Create3" class="btn btn-primary" ng-click="${EntityName}.uncheckAll()">
+                 <span class="glyphicon glyphicon-plus-sign"></span>Uncheck all</a>
+         </div>
+     </div>
+</div>
+</div>
+
+<hr/>

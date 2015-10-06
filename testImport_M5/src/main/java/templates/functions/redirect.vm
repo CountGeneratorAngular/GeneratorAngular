@@ -1,0 +1,12 @@
+// fonction de navigation
+// permet de rediriger vers le string donné en paramètre
+// parametre entrant: aim correspondant a la page CRUD de l'entité désirée
+// parametre optionnel: requiredUrl pour mettre en place la necessite d'un ID dans l'url
+
+        self.Redirect = function(aim){
+        if(self.requiredIdUrl)
+        aim = self.requiredIdUrl+"/"+aim;
+        ${d}location.path("/index/${EntityName}/"+aim);
+        }
+        
+        

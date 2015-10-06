@@ -1,22 +1,8 @@
 <div ng-controller="${EntityName}Controller as ${EntityName}">
 #set($d = "$")
-<div class="form-horizontal">
-    <h3>Create a new ${EntityName}</h3>
-    <div class="form-group">
-        <div class="col-md-offset-2 col-sm-2">
-            <a id="Create" name="Create" class="btn btn-primary" ng-click="${EntityName}.create('createView')">
-                <span class="glyphicon glyphicon-plus-sign"></span> Create</a>
-        </div>
-        <div class="col-sm-2">
-            <a id="Create1" name="Create1" class="btn btn-primary" ng-click="${EntityName}.new()">
-                <span class="glyphicon glyphicon-plus-sign"></span> Create Vide</a>
-        </div>
-    </div>
-</div>
-<hr/>
 <div>
 
-<div>
+<div style="display:none">
     <h3>Search for ${EntityName}</h3>
     <form id="EventSearch" class="form-horizontal">
         <div class="form-group">
@@ -32,43 +18,16 @@
             </div>
         </div>
     </form>
-
 </div>
-<hr/>
-<h3>Liste d'attributs</h3>
-    <div class="col-md-offset-2 col-sm-2">
-        <a id="displayButton1" value="Afficher" ng-click="${EntityName}.switch('displayTable','displayButton')">
-            <span class="glyphicon glyphicon-plus-sign"></span> Filter</a>
-    </div>
-    
-<div id="displayTable">
-   <label ng-repeat="attributesSelected in ${EntityName}.selectionAll">
-        <input type="checkbox" checklist-model="${EntityName}.selection.selectionAll" checklist-value="attributesSelected" ng-click="${EntityName}.toggleSelection('attributesSelected')" > {{attributesSelected}}
-    <br></label>
- <div>
-     <div class="form-group">
-         <div class="col-md-offset-2 col-sm-2">
-             <a id="Create2" name="Create2" class="btn btn-primary" ng-click="${EntityName}.checkAll()">
-                 <span class="glyphicon glyphicon-plus-sign"></span>Check all</a>
-         </div>
-         <div class="col-sm-2">
-             <a id="Create3" name="Create3" class="btn btn-primary" ng-click="${EntityName}.uncheckAll()">
-                 <span class="glyphicon glyphicon-plus-sign"></span>Uncheck all</a>
-         </div>
-     </div>
-</div>
-</div>
-<br>
-<hr/>
 #set($sub = $EntityName.length() - 3)
 #if($sub > 0 && $EntityName.substring($sub).equals("Agr"))
 
 
 <div ng-repeat="item in ${EntityName}.agregation.${EntityName}">
-<div ng-if="${EntityName}.showFrom('{item.Nom}')">{{item.Nom}} :{{${d}index}} <input type="text" ng-model = "${EntityName}.agregation.data[${d}index]"/>
+<div >{{item.Nom}} :{{${d}index}} <input type="text" ng-model = "${EntityName}.agregation.data[${d}index]"/>
 </div>
 </div>
-<div ng-if="${EntityName}.showFrom('{item.Nom}')">
+<div >
 <input type="button" ng-click="${EntityName}.SaveAgr()" value = "save"/>
 {{$EntityName.saving}}
 </div>
@@ -83,14 +42,16 @@
 		#foreach($att in $Attributes)
 			#if($att)
 			#set($idAtt = $foreach.count)
-			<th ng-if="${EntityName}.showFrom('${att.get(0)}')">${att.get(0)}</th>
+			<th >${att.get(0)}</th>
 			#end 
 		#end
+		#if($listFunction.contains("delete"))
 		 <th>Delete</th>
+		#end
 	</tr>
 	</thead>
                 <tbody id="search-results-body">
-     <tr ng-repeat="item in ${EntityName}.${EntityName}Table | orderBy : 'id'" ng-if="item.id>=0">
+     <tr ng-repeat="item in ${EntityName}.${EntityName}Table | orderBy : 'id'" ng-if="item.id>=0" ng-click="${EntityName}.select(item.id)">
 	#foreach($att in $Attributes)
 		#if($att)
 		#set($idAtt = $foreach.count)
@@ -98,11 +59,11 @@
 		#if($sub > 0 && $att.get(0).substring($sub).equals("Agr"))
 		#set($data = $att.get(0).substring(0,$sub))
 		
-		<td ng-click="${EntityName}.edit(item.id+'/${att.get(0)}/listView')" ng-if="${EntityName}.showFrom('${att.get(0)}')">
+		<td ng-click="${EntityName}.edit(item.id+'/${att.get(0)}/listView')" >
 			<input type="button" value="show List">
 			</td>
 	#else
-		<td ng-click="${EntityName}.edit(item.id+'/Edit')" ng-if="${EntityName}.showFrom('${att.get(0)}')">
+		<td ng-click="${EntityName}.edit(item.id+'/Edit')" >
 		#set($sub = $att.get(0).length() - 2)
 				#if($sub > 0 && $att.get(0).substring($sub).equals("Id"))
 				#set($data = $att.get(0).substring(0,$sub))
@@ -116,24 +77,36 @@
 		
 		#end
 	#end
-	<td class="deleteButton"><input  type="button" value="X" ng-click="${EntityName}.delete(item.id)"/></td>
+	#if($listFunction.contains("delete"))
+		<td class="deleteButton"><input  type="button" value="X" ng-click="${EntityName}.delete(item.id)"/></td>
+	#end
 	 </tr>
                 </tbody>
             </table>
+            <div class="form-horizontal">
+    
+    <div class="form-group">
+    #if($listFunction.contains("goInto"))
+        <div class="col-sm-3">
+            <a id="Create" name="Create" class="btn btn-primary" ng-click="${EntityName}.goInto('createView')">
+                <span class="glyphicon glyphicon-plus-sign"></span> Create</a>
+        </div>
+    	#if($listFunction.contains("goInto") && $listFunction.contains("edit"))
+    	        <div class="col-sm-3">
+            <a id="Edit" name="Edit" class="btn btn-primary" ng-click="${EntityName}.goInto('editView')">
+                <span class="glyphicon glyphicon-plus-sign"></span> Edit</a>
+        </div>
+        #end
+    #end
+    #if($listFunction.contains("new"))
+        <div class="col-sm-3">
+            <a id="Create1" name="Create1" class="btn btn-primary" ng-click="${EntityName}.new()">
+                <span class="glyphicon glyphicon-plus-sign"></span> Create Vide</a>
+        </div>
+    #end
+    </div>
 </div>
-<ul class="pagination pagination-centered">
-            <li ng-class="{disabled:currentPage == 0}">
-                <a id="prev" href ng-click="previous()">«</a>
-            </li>
-            <li ng-repeat="n in pageRange" ng-class="{active:currentPage == n}" ng-click="setPage(n)">
-                <a href ng-bind="n + 1">1</a>
-            </li>
-            <li ng-class="{disabled: currentPage == (numberOfPages() - 1)}">
-                <a id="next" href ng-click="next()">»</a>
-            </li>
-        </ul>
-
+</div>
     </div>
 #end
-
 </div></div>

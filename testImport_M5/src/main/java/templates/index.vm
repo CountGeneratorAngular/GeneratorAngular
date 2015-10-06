@@ -1,3 +1,5 @@
+// template fixe de la page de demarrage de l'application.
+
 <!DOCTYPE html>
 <html ng-app="${AppName}">
 <head>
@@ -12,16 +14,18 @@
     <script src="Js/angular.js" ></script>
     <script src="Js/angular-resource.js" ></script>
     <script src="Js/angular-route.js" ></script>
-     <script src="Js/checklist-model.js" ></script>
-     
+    <script src="Js/checklist-model.js" ></script>
+    <script src="http://code.angularjs.org/1.0.0rc10/angular-cookies-1.0.0rc10.js"></script>
      
 	<script src="Src/app.js" ></script>
 	<script type="text/javascript" src="Src/Route/routing.js"></script>
 	<script type="text/javascript" src="Src/Service/sharedData.js"></script>
+	
 	#foreach($fact in $factoryList)
 	<script type="text/javascript" src="Src/Controller/${fact}Controller.js"></script>
 	<script type="text/javascript" src="Src/Factory/${fact}Factory.js"></script>
 	#end
+	<script type="text/javascript" src="Src/Controller/emptyController.js"></script>
 	 <script type="text/javascript" src="Src/Controller/NaviGatController.js"></script>
 
 </head>
@@ -50,8 +54,10 @@
             <nav class="sidebar-nav" ng-controller="NaviGatController" role="navigation">
                 <div id="sidebar-entries" class="list-group">
                 #foreach($item in $structure)
-       				#if($item.get(0).equals("Entity") && $item.get(4) == 2)	
+       				#if($item.get(0).equals("Entity") && $item.get(4) == 2 && $EcranEntities.contains($item.get(1)))
+       					
                  <a class="list-group-item" ng-class="{active: matchesRoute('${item.get(1)}')}" href="#index/${item.get(1)}/listView" data-toggle="offcanvas">${item.get(1)}</a>
+                 <a class="list-group-item" ng-class="{active: matchesRoute('${item.get(1)}')}" href="#index/${item.get(1)}/jeuListView" data-toggle="offcanvas">${item.get(1)} JEU</a>
                		#end
                 #end  
                  </div>
@@ -59,6 +65,7 @@
         </div>
         <!-- main area-->
         <div class="col-sm-offset-1 col-xs-12 col-sm-8 well mainarea">
+        	// DIV dans laquelle les templates vues s'affichent
             <div id="main" class="ng-view">
             </div>
         </div>
@@ -72,6 +79,7 @@
         <p>Annee: 2015</p>
     </div>
 </div>
+<!-- #include("/templates/inscription.vm") -->
 </body>
 
 </html>

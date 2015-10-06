@@ -1,0 +1,17 @@
+	  self.switch = function(classToSwitch, buttonSwitchId)
+	  {
+	  var toSwitch = document.getElementById(classToSwitch);
+	  var buttonSwitch = document.getElementById(buttonSwitchId);
+	  if (toSwitch.style.display != "block")
+	  {
+	  	toSwitch.style.display="block";
+	  	//buttonSwitch.value="Cacher";
+	  	}
+	  else
+	  {
+	  	toSwitch.style.display="none";
+	  		buttonSwitch.value="Afficher";
+	  		}	  
+	  }
+	  
+	  

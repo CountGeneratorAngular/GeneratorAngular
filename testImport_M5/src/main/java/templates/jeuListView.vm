@@ -1,0 +1,24 @@
+// template de vue jeuListView
+// affichage de la partie normale de l'application qcmTest
+
+$qcmTest.qcmTestTable
+#foreach($qcm in $qcmTest.qcmTestTable)
+b
+	$qcm
+
+#end
+
+
+<div ng-controller="${EntityName}Controller as titleCtrl">
+    <a href = "#/index/login"><button  ng-disabled="indexCtrl.globalInputText" ng-hide="indexCtrl.modeEdition" class="edit">Mode Edition</button></a>
+    <button ng-click="titleCtrl.filter = {}">Tout les ${EntityName}</button>
+    <button ng-click="titleCtrl.filter={finish: true}">${EntityName} Répondu</button>
+    <button ng-click="titleCtrl.filter ={finish: undefined}">${EntityName} Non Répondu</button>
+    <br/>
+    
+    <div ng-repeat="${EntityName} in ${EntityName}Table | filter:titleCtrl.filter" ng-class="courant.${EntityName}[${EntityName}.id]">
+    <a ng-click="titleCtrl.go${EntityName}1(${EntityName}.id)" ng-class="titleCtrl.validate(${EntityName})" class="canClick"><span>#foreach($att in $Attributes) #if($att) {{${EntityName}.${att.get(0)}}}#end#end</span></a>
+    </div>
+</div>
+
+

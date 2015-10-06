@@ -1,0 +1,14 @@
+// fonction de navigation
+// permet de naviguer en supprimant les 8 derniers caractere. (exemple: passer de url/listview a url/PARAMETRE)
+// Parametre entrant: aim => texte a rajouter a la fin de l'url
+
+        self.goInto = function(aim){
+        var res = ${d}location.path().substr(0,${d}location.path().length-8);
+        console.log(res);
+        if(self.requiredIdUrl)
+        aim = self.requiredIdUrl+"/"+aim;
+        ${d}location.path(res+aim);
+        }
+        
+        
+        

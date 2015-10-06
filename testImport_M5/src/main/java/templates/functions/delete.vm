@@ -1,0 +1,18 @@
+// fonction CRUD
+// Supprimer un élément grace a son ID
+// Parametre entrant: ID
+        self.delete = function(id)                                     
+           {	
+            ${EntityName}Factory
+            .delete({#if($Parent.size() > 0)#foreach($p in $Parent)#set($indexVirgule = $foreach.count)#if($indexVirgule > 1),#end${p}Id : ${d}routeParams.${p}Id#end,#end${EntityName}Id:id})
+           .$promise
+            .then(function() {
+            $route.reload();  
+             },
+                function (err) {
+                    console.error(err);
+                });
+ 			};
+ 			
+ 			
+ 			

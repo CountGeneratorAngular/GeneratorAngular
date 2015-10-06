@@ -1,20 +1,20 @@
-#set($d = "$")
-#set($a = "'")
+#set($d = "$")		// utilisé pour simuler le $ en javascript
+#set($a = "'")		// utilisé pour simuler le ' en javascript
 #set($nameAttributes = [])
 #set($nameAttributesRef = [])
+
 		  app
-    .controller('${EntityName}Controller', ['$scope','$http','${EntityName}Factory','$routeParams','sharedData','$location','$route',  function($scope, $http,${EntityName}Factory,$routeParams,sharedData, $location,$route, loaded  ) {
+    .controller('${controllerName}Controller', ['$scope','$http','${EntityName}Factory','$routeParams','sharedData','$location','$route','$cookieStore',  function($scope, $http,${EntityName}Factory,$routeParams,sharedData, $location,$route, $cookieStore, loaded  ) {
         var self = this;
         self.saving="";
         self.hidden = [];
-		
-        
+        self.requiredIdUrl="";
         if($routeParams.${EntityName}Id)
         {
         self.active = $routeParams.${EntityName}Id;
         self.${EntityName}Active = sharedData.get('${EntityName}');
         }
-
+		
         self.${EntityName}Table = sharedData.get('${EntityName}');
         var tempClasse = "";
         self.Externe = {};
@@ -26,113 +26,50 @@
 				#end
 		self.agregation.data = [];
         
-        
-		#foreach($att in $Attributes)
-		
-		
-		
+		#foreach($att in $Attributes)	
 			#if($att && !$att.get(1).equals("Entity"))
 				#set($sub = $att.get(0).length() - 2)
 				#if($sub > 0 && $att.get(0).substring($sub).equals("Id"))
 				#set($data = $att.get(0).substring(0,$sub))
 				self.Externe.${att.get(0)} = sharedData.get('${data}');
 				self.display${data} = sharedData.get('${data}');
-            
-            
+                        
 				#end
 			#end
 		#end
 
-
-            
-            
-            
             console.log(self.${EntityName}Table);
-            sharedData.store('${EntityName}', self.${EntityName}Table);
-                
-              self.delete = function(id)                                     // Edition------------------------------
-           {	
-            ${EntityName}Factory
-            .delete({#if($Parent.size() > 0)#foreach($p in $Parent)#set($indexVirgule = $foreach.count)#if($indexVirgule > 1),#end${p}Id : ${d}routeParams.${p}Id#end,#end${EntityName}Id:id})
-           .$promise
-            .then(function() {
-            $route.reload();  
-             },
-                function (err) {
-                    console.error(err);
-                });
- 			};
- 			
-        self.goInto = function(aim){
-        var res = ${d}location.path().substr(0,${d}location.path().length-4);
-         ${d}location.path(res+aim);
-        }
-        self.Redirect = function(aim){
-        ${d}location.path("/index/${EntityName}/"+aim);
-        }
-         self.Create = function(aim){
+            sharedData.store('${EntityName}', self.${EntityName}Table);		// stockage de la derniere version de l'entité concernée
+        #foreach ($fct in $listFunction)
+            	#parse("/templates/functions/${fct}.vm")
+        #end
         
-         var res = ${d}location.path().substr(0,${d}location.path().length-8);
-         ${d}location.path(res+aim);
-        }
+
+        #if($create==true)
+        //create function is validated to be add in the controller
          self.create = function(aim){
          var res = ${d}location.path().substr(0,${d}location.path().length-8);
          ${d}location.path(res+aim);
-        
         }
-        self.edit = function(aim){
-        
+        #end
+        #if($edit== true)
+        //Edit function is validated to be add in the controller
+        self.edit = function(aim){        
          var res = ${d}location.path().substr(0,${d}location.path().length-8);
          ${d}location.path(res+aim);
         }
-       	self.Save = function()
-       	{
-			   self.test = new ${EntityName}Factory();
-	           ${EntityName}Factory.get({#foreach($url in $Parent) ${url}Id: $routeParams.${url}Id, #end${EntityName}Id:self.active})
-                .${d}promise.then(function(data) {
-			            #foreach($item in $Attributes)
-			            	#if($item)
-			            	
-			            	#set($tt=$a+$item.get(0)+$a)
-			                #set($bar = $nameAttributes.add($tt))
-			                
-			                 #set($sub = $item.get(0).length() - 3)
- 							 #if(($sub > 0 && $item.get(0).substring($sub).equals("Ref"))||($item.get(0).equals("id")))
- 							 #set($tar= $nameAttributesRef.add($tt))
- 							#end 							
-			        	    		#if($item.get(1).equals("Entity"))   
-			           		 			#if($item.get(2).equals("true"))   
-			            		 			data.$item.get(0)= "[]";
-			            	   	 		#end
-			           			 	#else
-			           		 	 		#if($item.get(2).equals("true"))   
-			            		 			data.$item.get(0)= "array";
-			            				#else	
-			            					#set($sub = $item.get(0).length() - 2)
-			            		 				data.$item.get(0)= self.${EntityName}Active.${item.get(0)};
-			            		 		#end
-			            			#end
-			            	#end
-			            #end	
-                        data.${d}save({#foreach($url in $Parent) ${url}Id: $routeParams.${url}Id, #end${EntityName}Id: self.active}).then(function(){self.Redirect('listView')});;
-                        self.Redirect('listView')
-                }
-            );
-	
-	
-	}
+        #end
+        
+        
 	   	#set($sub = $EntityName.length() - 3)
 		#if($sub > 0 && $EntityName.substring($sub).equals("Agr"))
 		#set($dataAgr = $EntityName.substring(0,$sub))
 	       	self.SaveAgr = function()
        	{
-
        	self.done = 0;
        	for(var i =0;i<self.agregation.data.length; i++)
        	{
        		self.test = new ${EntityName}Factory();
-
-				
        		self.test.Nom = self.Externe.${dataAgr}[i].Nom;
        		self.test.note = self.agregation.data[i];
        		self.${d}save({${EntityName}Id: self.active}).then(function(){self.done++});
@@ -146,114 +83,10 @@
                 .${d}promise.then(function(data) {	
                         
                     self.Redirect('listView');
-                
-                
            });
-         
-	
-	
 	}
 	  #end
-	  self.switch = function(classToSwitch, buttonSwitchId)
-	  {
-	  var toSwitch = document.getElementById(classToSwitch);
-	  var buttonSwitch = document.getElementById(buttonSwitchId);
-	  if (toSwitch.style.display != "block")
-	  {
-	  	toSwitch.style.display="block";
-	  	//buttonSwitch.value="Cacher";
-	  	}
-	  else
-	  {
-	  	toSwitch.style.display="none";
-	  		buttonSwitch.value="Afficher";
-	  		}
 	  
-	  }
-       self.new = function()                                          
-        {
-	
 
-	
-	
-   self.test = new ${EntityName}Factory();
-            if(self.test) {
-  
-                self.test = new ${EntityName}Factory();
-               
-            #foreach($item in $Attributes)
-            	#if($item)
-            		#if($item.get(0).equals("id"))  
-            		if(self.${EntityName}Table)
-                		self.test.$item.get(0) = self.${EntityName}Table.length;
-                		else
-                		self.test.$item.get(0) = 0;
-             		#else
-        	    		#if($item.get(1).equals("Entity"))   
-           		 			#if($item.get(2).equals("true"))   
-            		 			self.test.$item.get(0)= [];
-            	   	 		#end
-           			 	#else
-           		 	 		#if($item.get(2).equals("true"))   
-            		 			self.test.$item.get(0)= [];
-            				#else	
-            		 			if(self.create${EntityName}Input)
-            		 				self.test.$item.get(0)= self.create${EntityName}Input.$item.get(0);
-								else
-									self.test.$item.get(0)= "";
-            		 		#end
-            			#end
-            		#end
-            	#end
-            #end	 		 
-            self.test.$save(#if($Parent.size() > 0){#foreach($p in $Parent)#set($indexVirgule = $foreach.count)#if($indexVirgule > 1),#end${p}Id : ${d}routeParams.${p}Id#end}#end).then(function () {
-            if(self.create${EntityName}Input)
-            self.Redirect('listView');
-     		$route.reload();
-    }, function (err) {
-                    console.error(err);
-                });
-            }
-                 else
-                {
-                     alert("error");
-                }
-            
-
-        };
-         self.selectionAll=$nameAttributes;
-         self.selection={selectionAll: $nameAttributesRef};
-  
-                self.checkAll = function() {
-                      self.selection.selectionAll=[];
-                      self.selection.selectionAll = angular.copy(self.selectionAll);
-
-                  };
-                  self.uncheckAll = function() {
-                      self.selection.selectionAll = $nameAttributesRef;
-                       };
-                   self.toggleSelection = function toggleSelection(qcmName) {
-
-                       var idx = self.selection.selectionAll.indexOf(qcmName);
-                       if (idx > -1) {
-                           self.selection.selectionAll.splice(idx, 1);
-                       }
-                       else {
-                           self.selection.selectionAll.push(qcmName)
-                       }
-                   };
-                   self.showFrom = function(variable) {
-                       for(var i=0; i<self.selection.selectionAll.length;i++)
-                       {
-                           if(self.selection.selectionAll[i]==variable)
-                           {
-                               return true;
-                           }
-                       }
-                       return false
-                   };
-                   
-                   self.checkAll();
-                    
-    }])
+}])
     
