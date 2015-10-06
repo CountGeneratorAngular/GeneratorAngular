@@ -1,5 +1,6 @@
      // fonction CRUD
      // fonction de creation d'entités 
+     // parametre entrant: self.${EntityName}Table correspondant au formulaire de l'entité a enregistrer
        
        self.new = function()                                          
         {

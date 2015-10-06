@@ -1,3 +1,7 @@
+// EditView
+// vue associé a l'édition d'une entité
+// requiert une entité chargée dans le controleur par le biais d'un ID (requiredID)
+
 <div ng-controller="${EntityName}Controller as ${EntityName}">
 #set($d = "$")
 <h2>Edit :${EntityName}</h2>

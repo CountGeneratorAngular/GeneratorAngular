@@ -1,5 +1,6 @@
 // fonction CRUD
 // Supprimer un élément grace a son ID
+// Parametre entrant: ID
         self.delete = function(id)                                     
            {	
             ${EntityName}Factory

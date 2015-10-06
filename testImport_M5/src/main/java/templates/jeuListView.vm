@@ -1,3 +1,6 @@
+// template de vue jeuListView
+// affichage de la partie normale de l'application qcmTest
+
 $qcmTest.qcmTestTable
 #foreach($qcm in $qcmTest.qcmTestTable)
 b

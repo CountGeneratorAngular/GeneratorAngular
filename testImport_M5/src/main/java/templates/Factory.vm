@@ -1,3 +1,5 @@
+// Factory
+// template de création de factory necessaire a mongoDB pour les requetes du CRUD
 app
 #set($v = "$")
 .factory('${EntityName}Factory',['${v}resource',function(${v}resource){

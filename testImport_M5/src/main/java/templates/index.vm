@@ -1,3 +1,5 @@
+// template fixe de la page de demarrage de l'application.
+
 <!DOCTYPE html>
 <html ng-app="${AppName}">
 <head>
@@ -63,6 +65,7 @@
         </div>
         <!-- main area-->
         <div class="col-sm-offset-1 col-xs-12 col-sm-8 well mainarea">
+        	// DIV dans laquelle les templates vues s'affichent
             <div id="main" class="ng-view">
             </div>
         </div>

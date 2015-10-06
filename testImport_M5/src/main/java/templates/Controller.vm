@@ -14,7 +14,7 @@
         self.active = $routeParams.${EntityName}Id;
         self.${EntityName}Active = sharedData.get('${EntityName}');
         }
-
+		
         self.${EntityName}Table = sharedData.get('${EntityName}');
         var tempClasse = "";
         self.Externe = {};
@@ -39,7 +39,7 @@
 		#end
 
             console.log(self.${EntityName}Table);
-            sharedData.store('${EntityName}', self.${EntityName}Table);		
+            sharedData.store('${EntityName}', self.${EntityName}Table);		// stockage de la derniere version de l'entité concernée
         #foreach ($fct in $listFunction)
             	#parse("/templates/functions/${fct}.vm")
         #end
@@ -49,7 +49,7 @@
         //create function is validated to be add in the controller
          self.create = function(aim){
          var res = ${d}location.path().substr(0,${d}location.path().length-8);
-         ${d}location.path(res+aim);        
+         ${d}location.path(res+aim);
         }
         #end
         #if($edit== true)

@@ -1,3 +1,5 @@
+// template vue de la partie normale de qcmTest
+
 var DBB = [];
 
 #foreach($entity in $EntitiesConstruct)

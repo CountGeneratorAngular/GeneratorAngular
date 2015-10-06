@@ -1,4 +1,4 @@
-
+// vue CRUD de creation d'entité
 <div ng-controller="${EntityName}Controller as ${EntityName}">
 #set($d = "$")
 <form method="POST" ng-submit="${EntityName}.new()" name="Creation"  class="CreationLogs">
